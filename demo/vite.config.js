@@ -47,4 +47,4 @@ export default defineConfig({
       'wp-block-to-html': resolve(__dirname, '../dist/index.mjs'),
     },
   },
-}); 
+});

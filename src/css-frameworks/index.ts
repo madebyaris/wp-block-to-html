@@ -20,4 +20,4 @@ export function getCSSFrameworkMapping(framework: CSSFramework): CustomClassMap 
   }
 }
 
-export { tailwindMapping, bootstrapMapping }; 
+export { tailwindMapping, bootstrapMapping };

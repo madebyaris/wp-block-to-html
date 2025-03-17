@@ -12,9 +12,10 @@ export const tailwindMapping: CustomClassMap = {
       center: 'text-center',
       right: 'text-right',
     },
-    dropCap: 'first-letter:float-left first-letter:text-7xl first-letter:font-bold first-letter:mr-3',
+    dropCap:
+      'first-letter:float-left first-letter:text-7xl first-letter:font-bold first-letter:mr-3',
   },
-  
+
   'core/heading': {
     block: '',
     level: {
@@ -31,13 +32,13 @@ export const tailwindMapping: CustomClassMap = {
       right: 'text-right',
     },
   },
-  
+
   'core/list': {
     block: '',
     ordered: 'list-decimal pl-5',
     unordered: 'list-disc pl-5',
   },
-  
+
   // Media blocks
   'core/image': {
     block: 'max-w-full h-auto',
@@ -53,16 +54,16 @@ export const tailwindMapping: CustomClassMap = {
       full: 'w-full',
     },
   },
-  
+
   // Layout blocks
   'core/group': {
     block: 'p-4',
   },
-  
+
   'core/columns': {
     block: 'flex flex-wrap',
   },
-  
+
   'core/column': {
     block: 'flex-1 p-4',
     width: {
@@ -74,7 +75,7 @@ export const tailwindMapping: CustomClassMap = {
       '100': 'w-full',
     },
   },
-  
+
   // Widget blocks
   'core/button': {
     block: 'inline-block px-4 py-2 font-medium rounded',
@@ -88,7 +89,7 @@ export const tailwindMapping: CustomClassMap = {
       large: 'text-lg',
     },
   },
-  
+
   'core/separator': {
     block: 'border-t my-4',
     style: {
@@ -97,7 +98,7 @@ export const tailwindMapping: CustomClassMap = {
       dots: 'border-dotted border-gray-400',
     },
   },
-  
+
   'core/spacer': {
     block: '',
     height: {
@@ -106,4 +107,4 @@ export const tailwindMapping: CustomClassMap = {
       large: 'h-16',
     },
   },
-}; 
+};

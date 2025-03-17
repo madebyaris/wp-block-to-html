@@ -14,7 +14,7 @@ export const bootstrapMapping: CustomClassMap = {
     },
     dropCap: 'first-letter:float-start first-letter:fs-1 first-letter:fw-bold first-letter:me-2',
   },
-  
+
   'core/heading': {
     block: '',
     level: {
@@ -31,13 +31,13 @@ export const bootstrapMapping: CustomClassMap = {
       right: 'text-end',
     },
   },
-  
+
   'core/list': {
     block: '',
     ordered: 'list-group list-group-numbered',
     unordered: 'list-group',
   },
-  
+
   // Media blocks
   'core/image': {
     block: 'img-fluid',
@@ -53,16 +53,16 @@ export const bootstrapMapping: CustomClassMap = {
       full: 'w-100',
     },
   },
-  
+
   // Layout blocks
   'core/group': {
     block: 'p-3',
   },
-  
+
   'core/columns': {
     block: 'row',
   },
-  
+
   'core/column': {
     block: 'col p-2',
     width: {
@@ -74,7 +74,7 @@ export const bootstrapMapping: CustomClassMap = {
       '100': 'col-12',
     },
   },
-  
+
   // Widget blocks
   'core/button': {
     block: 'btn',
@@ -88,7 +88,7 @@ export const bootstrapMapping: CustomClassMap = {
       large: 'btn-lg',
     },
   },
-  
+
   'core/separator': {
     block: 'border-top my-4',
     style: {
@@ -97,7 +97,7 @@ export const bootstrapMapping: CustomClassMap = {
       dots: 'border-dotted',
     },
   },
-  
+
   'core/spacer': {
     block: '',
     height: {
@@ -106,4 +106,4 @@ export const bootstrapMapping: CustomClassMap = {
       large: 'my-5',
     },
   },
-}; 
+};

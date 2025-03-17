@@ -111,15 +111,19 @@
 </head>
 <body>
   <div class="container">
+    <a href="index.html" class="back-link">&larr; Back to Demo Index</a>
+    
     <header class="header">
-      <a href="index.html" class="back-link">← Back to Demo Home</a>
       <h1>WordPress Default Styling</h1>
-      <p>WordPress content with default styling, without any CSS framework applied.</p>
+      <p>This demo shows WordPress content with default styling, without any CSS framework applied.</p>
     </header>
-
-    <div id="posts-container">
-      <div class="loading">Loading posts...</div>
-    </div>
+    
+    <div id="loading-indicator" class="loading">Loading posts...</div>
+    <div id="error-container" class="error" style="display: none;"></div>
+    
+    <div id="posts-container"></div>
+    
+    <div id="conversion-output" class="mt-5"></div>
 
     <div class="conversion-demo">
       <h3>Block to HTML Conversion Demo</h3>
@@ -135,118 +139,72 @@
   </div>
 
   <script type="module">
-    // Import the wp-block-to-html library
-    import { convertBlocks } from 'wp-block-to-html';
+    import { convertBlocks } from '../dist/index.mjs';
     
-    // WordPress REST API endpoint using our proxy
+    // WordPress REST API endpoint
     const API_ENDPOINT = '/wp-api/wp/v2/posts';
     const WP_SITE_URL = 'https://wp.madebyaris.com';
     
     // DOM elements
     const postsContainer = document.getElementById('posts-container');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const errorContainer = document.getElementById('error-container');
     const conversionOutput = document.getElementById('conversion-output');
     
-    // Fix image URLs in HTML content
+    // Function to fix image URLs
     function fixImageUrls(html) {
-      // Fix image URLs by replacing relative URLs with absolute URLs
-      // This handles both /wp-content and wp-content paths
-      let fixedHtml = html.replace(/src="\/wp-content/g, `src="${WP_SITE_URL}/wp-content`);
-      fixedHtml = fixedHtml.replace(/src="wp-content/g, `src="${WP_SITE_URL}/wp-content`);
-      
-      // Also fix image URLs in srcset attributes
-      fixedHtml = fixedHtml.replace(/srcset="\/wp-content/g, `srcset="${WP_SITE_URL}/wp-content`);
-      fixedHtml = fixedHtml.replace(/srcset="wp-content/g, `srcset="${WP_SITE_URL}/wp-content`);
-      
-      return fixedHtml;
+      return html.replace(/src="\/wp-content\//g, `src="${WP_SITE_URL}/wp-content/`);
     }
     
-    // Apply basic styling to preformatted content
+    // Function to apply basic styling
     function applyBasicStyling(html) {
-      let modifiedHtml = html;
-      
-      // Add basic styling to preformatted content
-      modifiedHtml = modifiedHtml.replace(/<pre/g, '<pre class="wp-block-preformatted"');
-      
-      return modifiedHtml;
+      return html;
     }
     
     // Fetch posts from WordPress
     async function fetchPosts() {
+      loadingIndicator.style.display = 'block';
+      errorContainer.style.display = 'none';
+      
       try {
-        postsContainer.innerHTML = '<div class="loading">Loading posts...</div>';
-        
-        const response = await fetch(`${API_ENDPOINT}?_embed=true&per_page=5`);
+        const response = await fetch(API_ENDPOINT);
         
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         
-        const data = await response.json();
-        console.log('Fetched posts:', data);
+        const posts = await response.json();
         
-        if (data && data.length > 0) {
-          renderPosts(data);
-          
-          // Use the first post for the conversion demo
-          if (data[0].blocks) {
-            demonstrateConversion(data[0].blocks);
-          } else {
-            // If blocks aren't available, fetch the raw content
-            fetchBlocksForPost(data[0].id);
-          }
+        if (posts.length === 0) {
+          errorContainer.textContent = 'No posts found.';
+          errorContainer.style.display = 'block';
         } else {
-          postsContainer.innerHTML = '<div class="error">No posts found.</div>';
+          renderPosts(posts);
+          
+          // Get the first post's blocks for conversion demo
+          if (posts[0].blocks) {
+            showBlockConversion(posts[0].blocks);
+          }
         }
       } catch (error) {
         console.error('Error fetching posts:', error);
-        postsContainer.innerHTML = `
-          <div class="error">
-            <strong>Error fetching posts:</strong> ${error.message}
-          </div>
-        `;
+        errorContainer.textContent = `Error fetching posts: ${error.message}`;
+        errorContainer.style.display = 'block';
+      } finally {
+        loadingIndicator.style.display = 'none';
       }
     }
     
-    // Fetch blocks for a specific post
-    async function fetchBlocksForPost(postId) {
-      try {
-        const response = await fetch(`${API_ENDPOINT}/${postId}?_fields=blocks`);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.blocks) {
-          demonstrateConversion(data.blocks);
-        } else {
-          conversionOutput.innerHTML = `
-            <div class="error">
-              <strong>No blocks data available:</strong> The WordPress site may not have the blocks editor enabled or the REST API doesn't expose blocks.
-            </div>
-          `;
-        }
-      } catch (error) {
-        console.error('Error fetching blocks:', error);
-        conversionOutput.innerHTML = `
-          <div class="error">
-            <strong>Error fetching blocks:</strong> ${error.message}
-          </div>
-        `;
-      }
-    }
-    
-    // Demonstrate the conversion using wp-block-to-html
-    function demonstrateConversion(blocks) {
+    // Show block conversion example
+    function showBlockConversion(blocks) {
       try {
         // Convert blocks to HTML using our library
         const convertedHtml = convertBlocks(blocks);
         
-        // Display the result
         conversionOutput.innerHTML = `
-          <div>
-            <h4>Original Blocks:</h4>
+          <div class="conversion-example">
+            <h3>Block Conversion Example</h3>
+            <h4>Original Blocks (first 2):</h4>
             <pre>${JSON.stringify(blocks.slice(0, 2), null, 2)}</pre>
             <h4>Converted HTML:</h4>
             <div class="output">${convertedHtml}</div>
@@ -292,14 +250,16 @@
         const contentElement = document.createElement('div');
         contentElement.className = 'post-content';
         
-        // Get the rendered HTML content
-        let html = post.content.rendered;
+        // Convert blocks to HTML if available, otherwise use rendered content
+        let html;
+        if (post.blocks) {
+          html = convertBlocks(post.blocks);
+        } else {
+          html = post.content.rendered;
+        }
         
         // Fix image URLs
         html = fixImageUrls(html);
-        
-        // Apply basic styling
-        html = applyBasicStyling(html);
         
         contentElement.innerHTML = html;
         
