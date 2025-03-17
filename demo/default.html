@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WordPress Default Styling - Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: #007bff;
+      text-decoration: none;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    .post-container {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background-color: white;
+    }
+    .post-title {
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    .post-date {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .post-content img {
+      max-width: 100%;
+      height: auto;
+      margin: 1rem 0;
+    }
+    .post-content pre {
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow: auto;
+      font-family: monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 1rem 0;
+    }
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      font-size: 1.2rem;
+      color: #666;
+    }
+    .error {
+      color: #dc3545;
+      padding: 1rem;
+      border: 1px solid #dc3545;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+    .conversion-demo {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      border-radius: 8px;
+      background-color: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .conversion-demo h3 {
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    .conversion-demo pre {
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow: auto;
+      font-size: 0.9rem;
+      font-family: monospace;
+      line-height: 1.5;
+    }
+    .conversion-demo .output {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <a href="index.html" class="back-link">← Back to Demo Home</a>
+      <h1>WordPress Default Styling</h1>
+      <p>WordPress content with default styling, without any CSS framework applied.</p>
+    </header>
+
+    <div id="posts-container">
+      <div class="loading">Loading posts...</div>
+    </div>
+
+    <div class="conversion-demo">
+      <h3>Block to HTML Conversion Demo</h3>
+      <p>This demonstrates how the wp-block-to-html library converts WordPress blocks to HTML:</p>
+      <div id="conversion-output" class="output">
+        <div class="loading">Loading conversion demo...</div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>This demo uses the WordPress REST API to fetch posts from wp.madebyaris.com and the wp-block-to-html library for conversion.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    // Import the wp-block-to-html library
+    import { convertBlocks } from 'wp-block-to-html';
+    
+    // WordPress REST API endpoint using our proxy
+    const API_ENDPOINT = '/wp-api/wp/v2/posts';
+    const WP_SITE_URL = 'https://wp.madebyaris.com';
+    
+    // DOM elements
+    const postsContainer = document.getElementById('posts-container');
+    const conversionOutput = document.getElementById('conversion-output');
+    
+    // Fix image URLs in HTML content
+    function fixImageUrls(html) {
+      // Fix image URLs by replacing relative URLs with absolute URLs
+      // This handles both /wp-content and wp-content paths
+      let fixedHtml = html.replace(/src="\/wp-content/g, `src="${WP_SITE_URL}/wp-content`);
+      fixedHtml = fixedHtml.replace(/src="wp-content/g, `src="${WP_SITE_URL}/wp-content`);
+      
+      // Also fix image URLs in srcset attributes
+      fixedHtml = fixedHtml.replace(/srcset="\/wp-content/g, `srcset="${WP_SITE_URL}/wp-content`);
+      fixedHtml = fixedHtml.replace(/srcset="wp-content/g, `srcset="${WP_SITE_URL}/wp-content`);
+      
+      return fixedHtml;
+    }
+    
+    // Apply basic styling to preformatted content
+    function applyBasicStyling(html) {
+      let modifiedHtml = html;
+      
+      // Add basic styling to preformatted content
+      modifiedHtml = modifiedHtml.replace(/<pre/g, '<pre class="wp-block-preformatted"');
+      
+      return modifiedHtml;
+    }
+    
+    // Fetch posts from WordPress
+    async function fetchPosts() {
+      try {
+        postsContainer.innerHTML = '<div class="loading">Loading posts...</div>';
+        
+        const response = await fetch(`${API_ENDPOINT}?_embed=true&per_page=5`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Fetched posts:', data);
+        
+        if (data && data.length > 0) {
+          renderPosts(data);
+          
+          // Use the first post for the conversion demo
+          if (data[0].blocks) {
+            demonstrateConversion(data[0].blocks);
+          } else {
+            // If blocks aren't available, fetch the raw content
+            fetchBlocksForPost(data[0].id);
+          }
+        } else {
+          postsContainer.innerHTML = '<div class="error">No posts found.</div>';
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        postsContainer.innerHTML = `
+          <div class="error">
+            <strong>Error fetching posts:</strong> ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    // Fetch blocks for a specific post
+    async function fetchBlocksForPost(postId) {
+      try {
+        const response = await fetch(`${API_ENDPOINT}/${postId}?_fields=blocks`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.blocks) {
+          demonstrateConversion(data.blocks);
+        } else {
+          conversionOutput.innerHTML = `
+            <div class="error">
+              <strong>No blocks data available:</strong> The WordPress site may not have the blocks editor enabled or the REST API doesn't expose blocks.
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error fetching blocks:', error);
+        conversionOutput.innerHTML = `
+          <div class="error">
+            <strong>Error fetching blocks:</strong> ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    // Demonstrate the conversion using wp-block-to-html
+    function demonstrateConversion(blocks) {
+      try {
+        // Convert blocks to HTML using our library
+        const convertedHtml = convertBlocks(blocks);
+        
+        // Display the result
+        conversionOutput.innerHTML = `
+          <div>
+            <h4>Original Blocks:</h4>
+            <pre>${JSON.stringify(blocks.slice(0, 2), null, 2)}</pre>
+            <h4>Converted HTML:</h4>
+            <div class="output">${convertedHtml}</div>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error converting blocks:', error);
+        conversionOutput.innerHTML = `
+          <div class="error">
+            <strong>Error converting blocks:</strong> ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    // Render posts
+    function renderPosts(posts) {
+      postsContainer.innerHTML = '';
+      
+      posts.forEach((post) => {
+        // Create post container
+        const postElement = document.createElement('div');
+        postElement.className = 'post-container';
+        
+        // Add post title
+        const titleElement = document.createElement('h2');
+        titleElement.className = 'post-title';
+        titleElement.innerHTML = post.title.rendered;
+        postElement.appendChild(titleElement);
+        
+        // Add post date
+        const dateElement = document.createElement('div');
+        dateElement.className = 'post-date';
+        const postDate = new Date(post.date);
+        dateElement.textContent = postDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        postElement.appendChild(dateElement);
+        
+        // Add post content
+        const contentElement = document.createElement('div');
+        contentElement.className = 'post-content';
+        
+        // Get the rendered HTML content
+        let html = post.content.rendered;
+        
+        // Fix image URLs
+        html = fixImageUrls(html);
+        
+        // Apply basic styling
+        html = applyBasicStyling(html);
+        
+        contentElement.innerHTML = html;
+        
+        // Add a note about the styling
+        const noteElement = document.createElement('div');
+        noteElement.className = 'mt-3 p-3 bg-gray-100 border border-gray-300 rounded';
+        noteElement.innerHTML = '<small>This content is styled using the default WordPress styling.</small>';
+        contentElement.appendChild(noteElement);
+        
+        postElement.appendChild(contentElement);
+        postsContainer.appendChild(postElement);
+      });
+    }
+    
+    // Initial fetch
+    fetchPosts();
+  </script>
+</body>
+</html> 

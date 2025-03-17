@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind CSS Styling - Demo</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    /* Additional styles that might be needed */
+    .post-content img {
+      max-width: 100%;
+      height: auto;
+      margin: 1rem 0;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 0.25rem;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <header class="text-center mb-12">
+      <a href="index.html" class="inline-block mb-4 text-blue-600 hover:text-blue-800 hover:underline">← Back to Demo Home</a>
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Tailwind CSS Styling</h1>
+      <p class="text-xl text-gray-600">WordPress content styled with Tailwind CSS utility classes.</p>
+    </header>
+
+    <div id="posts-container">
+      <div class="flex flex-col items-center justify-center p-8">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <p class="mt-4 text-gray-600">Loading posts...</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg p-6 mt-12">
+      <h3 class="text-2xl font-bold text-gray-900 mb-4">Block to HTML Conversion Demo (Tailwind)</h3>
+      <p class="mb-4 text-gray-700">This demonstrates how the wp-block-to-html library converts WordPress blocks to HTML with Tailwind CSS styling:</p>
+      <div id="conversion-output">
+        <div class="flex flex-col items-center justify-center p-8">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          <p class="mt-4 text-gray-600">Loading conversion demo...</p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center text-gray-500 mt-12 text-sm">
+      <p>This demo uses the WordPress REST API to fetch posts from wp.madebyaris.com and the wp-block-to-html library for conversion.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    // Import the wp-block-to-html library
+    import { convertBlocks } from 'wp-block-to-html';
+    
+    // WordPress REST API endpoint using our proxy
+    const API_ENDPOINT = '/wp-api/wp/v2/posts';
+    const WP_SITE_URL = 'https://wp.madebyaris.com';
+    
+    // DOM elements
+    const postsContainer = document.getElementById('posts-container');
+    const conversionOutput = document.getElementById('conversion-output');
+    
+    // Apply Tailwind classes to HTML content
+    function applyTailwindClasses(html) {
+      let modifiedHtml = html;
+      
+      // Replace WordPress image classes with Tailwind classes
+      modifiedHtml = modifiedHtml.replace(/class="wp-image-\d+"/g, 'class="w-full max-w-full h-auto rounded shadow-md"');
+      
+      // Add Tailwind classes to tables
+      modifiedHtml = modifiedHtml.replace(/<table/g, '<table class="w-full border-collapse border border-slate-300 bg-white"');
+      
+      // Add Tailwind classes to blockquotes
+      modifiedHtml = modifiedHtml.replace(/<blockquote/g, '<blockquote class="pl-4 border-l-4 border-slate-500 italic my-4"');
+      
+      // Add Tailwind classes to lists
+      modifiedHtml = modifiedHtml.replace(/<ul/g, '<ul class="list-disc pl-5 space-y-2"');
+      modifiedHtml = modifiedHtml.replace(/<li/g, '<li class="ml-2"');
+      
+      // Add Tailwind classes to paragraphs
+      modifiedHtml = modifiedHtml.replace(/<p/g, '<p class="mb-4 text-slate-700"');
+      
+      // Add Tailwind classes to headings
+      modifiedHtml = modifiedHtml.replace(/<h2/g, '<h2 class="text-2xl font-bold text-slate-900 mt-6 mb-4"');
+      modifiedHtml = modifiedHtml.replace(/<h3/g, '<h3 class="text-xl font-bold text-slate-900 mt-5 mb-3"');
+      modifiedHtml = modifiedHtml.replace(/<h4/g, '<h4 class="text-lg font-bold text-slate-900 mt-4 mb-2"');
+      
+      // Add Tailwind classes to preformatted content
+      modifiedHtml = modifiedHtml.replace(/<pre/g, '<pre class="bg-gray-50 p-4 rounded-lg text-sm font-mono overflow-auto my-4 text-gray-800"');
+      
+      return modifiedHtml;
+    }
+    
+    // Fix image URLs in HTML content
+    function fixImageUrls(html) {
+      // Fix image URLs by replacing relative URLs with absolute URLs
+      // This handles both /wp-content and wp-content paths
+      let fixedHtml = html.replace(/src="\/wp-content/g, `src="${WP_SITE_URL}/wp-content`);
+      fixedHtml = fixedHtml.replace(/src="wp-content/g, `src="${WP_SITE_URL}/wp-content`);
+      
+      // Also fix image URLs in srcset attributes
+      fixedHtml = fixedHtml.replace(/srcset="\/wp-content/g, `srcset="${WP_SITE_URL}/wp-content`);
+      fixedHtml = fixedHtml.replace(/srcset="wp-content/g, `srcset="${WP_SITE_URL}/wp-content`);
+      
+      return fixedHtml;
+    }
+    
+    // Fetch posts from WordPress
+    async function fetchPosts() {
+      try {
+        const response = await fetch(`${API_ENDPOINT}?_embed=true&per_page=5`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Fetched posts:', data);
+        
+        if (data && data.length > 0) {
+          renderPosts(data);
+          
+          // Use the first post for the conversion demo
+          if (data[0].blocks) {
+            demonstrateConversion(data[0].blocks);
+          } else {
+            // If blocks aren't available, fetch the raw content
+            fetchBlocksForPost(data[0].id);
+          }
+        } else {
+          postsContainer.innerHTML = '<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">No posts found.</div>';
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        postsContainer.innerHTML = `
+          <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+            <strong>Error fetching posts:</strong> ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    // Fetch blocks for a specific post
+    async function fetchBlocksForPost(postId) {
+      try {
+        const response = await fetch(`${API_ENDPOINT}/${postId}?_fields=blocks`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.blocks) {
+          demonstrateConversion(data.blocks);
+        } else {
+          conversionOutput.innerHTML = `
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
+              <strong>No blocks data available:</strong> The WordPress site may not have the blocks editor enabled or the REST API doesn't expose blocks.
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error fetching blocks:', error);
+        conversionOutput.innerHTML = `
+          <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+            <strong>Error fetching blocks:</strong> ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    // Demonstrate the conversion using wp-block-to-html
+    function demonstrateConversion(blocks) {
+      try {
+        // Convert blocks to HTML using our library with Tailwind styling
+        const convertedHtml = convertBlocks(blocks, { cssFramework: 'tailwind' });
+        
+        // Display the result
+        conversionOutput.innerHTML = `
+          <div>
+            <h4 class="text-xl font-bold text-gray-900 mb-3">Original Blocks:</h4>
+            <pre class="bg-gray-50 p-4 rounded-lg text-sm overflow-auto mb-6">${JSON.stringify(blocks.slice(0, 2), null, 2)}</pre>
+            <h4 class="text-xl font-bold text-gray-900 mb-3">Converted HTML with Tailwind:</h4>
+            <div class="border border-gray-200 p-4 rounded-lg bg-white">${convertedHtml}</div>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error converting blocks:', error);
+        conversionOutput.innerHTML = `
+          <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+            <strong>Error converting blocks:</strong> ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    // Render posts
+    function renderPosts(posts) {
+      postsContainer.innerHTML = '';
+      
+      posts.forEach((post) => {
+        // Create post container
+        const postElement = document.createElement('div');
+        postElement.className = 'bg-white rounded-lg shadow-lg p-6 mb-8';
+        
+        // Add post title
+        const titleElement = document.createElement('h2');
+        titleElement.className = 'text-3xl font-bold text-slate-900 mb-2';
+        titleElement.innerHTML = post.title.rendered;
+        postElement.appendChild(titleElement);
+        
+        // Add post date
+        const dateElement = document.createElement('div');
+        dateElement.className = 'text-sm text-slate-500 mb-4';
+        const postDate = new Date(post.date);
+        dateElement.textContent = postDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        postElement.appendChild(dateElement);
+        
+        // Add post content
+        const contentElement = document.createElement('div');
+        contentElement.className = 'prose max-w-none';
+        
+        // Get the rendered HTML content
+        let html = post.content.rendered;
+        
+        // Fix image URLs
+        html = fixImageUrls(html);
+        
+        // Apply Tailwind classes
+        html = applyTailwindClasses(html);
+        
+        contentElement.innerHTML = html;
+        
+        // Add a note about the styling
+        const noteElement = document.createElement('div');
+        noteElement.className = 'p-4 mt-3 bg-blue-100 text-blue-800 rounded-lg shadow-sm border border-blue-200';
+        noteElement.innerHTML = '<small>This content is styled using the Tailwind CSS framework.</small>';
+        contentElement.appendChild(noteElement);
+        
+        postElement.appendChild(contentElement);
+        postsContainer.appendChild(postElement);
+      });
+    }
+    
+    // Initial fetch
+    fetchPosts();
+  </script>
+</body>
+</html> 

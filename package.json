@@ -1,0 +1,70 @@
+{
+  "name": "wp-block-to-html",
+  "version": "0.1.0",
+  "description": "Convert WordPress Gutenberg blocks to HTML or framework-specific components with customizable styling",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --watch --dts",
+    "lint": "eslint --ext .ts,.tsx src",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "prepare": "npm run build",
+    "prepare-beta": "node scripts/prepare-beta.js"
+  },
+  "keywords": [
+    "wordpress",
+    "gutenberg",
+    "blocks",
+    "html",
+    "tailwind",
+    "bootstrap",
+    "react",
+    "vue",
+    "angular",
+    "svelte",
+    "headless"
+  ],
+  "author": "Made by Aris",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/madebyaris/wp-block-to-html.git"
+  },
+  "homepage": "https://wp-block-to-html.madebyaris.com",
+  "bugs": {
+    "url": "https://github.com/madebyaris/wp-block-to-html/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vitest/coverage-v8": "^3.0.8",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "prettier": "^3.1.1",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
+}
