@@ -14,16 +14,16 @@ export const searchBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract search attributes
     const buttonText = block.attrs?.buttonText || 'Search';
     const buttonPosition = block.attrs?.buttonPosition || 'button-outside';
     const placeholder = block.attrs?.placeholder || 'Search...';
     const buttonUseIcon = block.attrs?.buttonUseIcon || false;
-    
+
     // Create a placeholder for the search form
     let content = '';
-    
+
     // Check if we have a custom search processor in options
     if (options.customSearchProcessor && typeof options.customSearchProcessor === 'function') {
       try {
@@ -35,12 +35,12 @@ export const searchBlockHandler: BlockHandler = {
         console.error('Error processing search block:', error);
       }
     }
-    
+
     // If no custom processor or it failed, return a default search form
     const inputClass = getSearchInputClass(options.cssFramework);
     const buttonClass = getSearchButtonClass(options.cssFramework);
     const formClass = getSearchFormClass(buttonPosition, options.cssFramework);
-    
+
     // Create the search form based on button position
     if (buttonPosition === 'button-inside') {
       content = `
@@ -70,15 +70,19 @@ export const searchBlockHandler: BlockHandler = {
         </form>
       `;
     }
-    
+
     // Create the search container
-    return createElement('div', { 
-      class: classes,
-      'data-button-position': buttonPosition,
-      'data-button-use-icon': buttonUseIcon ? 'true' : 'false'
-    }, content);
+    return createElement(
+      'div',
+      {
+        class: classes,
+        'data-button-position': buttonPosition,
+        'data-button-use-icon': buttonUseIcon ? 'true' : 'false',
+      },
+      content,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -92,7 +96,7 @@ export const searchBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-4',
@@ -113,13 +117,9 @@ export const searchBlockHandler: BlockHandler = {
 function getSearchFormClass(buttonPosition: string, cssFramework?: string): string {
   switch (cssFramework) {
     case 'tailwind':
-      return buttonPosition === 'button-outside' 
-        ? 'flex flex-row gap-2' 
-        : 'w-full';
+      return buttonPosition === 'button-outside' ? 'flex flex-row gap-2' : 'w-full';
     case 'bootstrap':
-      return buttonPosition === 'button-outside'
-        ? 'd-flex'
-        : 'w-100';
+      return buttonPosition === 'button-outside' ? 'd-flex' : 'w-100';
     default:
       return 'wp-block-search__form';
   }
@@ -167,4 +167,4 @@ function getSearchIcon(): string {
       <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
     </svg>
   `;
-} 
+}

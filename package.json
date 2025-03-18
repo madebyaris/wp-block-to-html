@@ -8,15 +8,73 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.mjs",
+      "require": "./dist/core.js"
+    },
+    "./frameworks/tailwind": {
+      "types": "./dist/frameworks/tailwind.d.ts",
+      "import": "./dist/frameworks/tailwind.mjs",
+      "require": "./dist/frameworks/tailwind.js"
+    },
+    "./frameworks/bootstrap": {
+      "types": "./dist/frameworks/bootstrap.d.ts",
+      "import": "./dist/frameworks/bootstrap.mjs",
+      "require": "./dist/frameworks/bootstrap.js"
+    },
+    "./blocks/text": {
+      "types": "./dist/blocks/text.d.ts",
+      "import": "./dist/blocks/text.mjs",
+      "require": "./dist/blocks/text.js"
+    },
+    "./blocks/media": {
+      "types": "./dist/blocks/media.d.ts",
+      "import": "./dist/blocks/media.mjs",
+      "require": "./dist/blocks/media.js"
+    },
+    "./blocks/layout": {
+      "types": "./dist/blocks/layout.d.ts",
+      "import": "./dist/blocks/layout.mjs",
+      "require": "./dist/blocks/layout.js"
+    },
+    "./blocks/widget": {
+      "types": "./dist/blocks/widget.d.ts",
+      "import": "./dist/blocks/widget.mjs",
+      "require": "./dist/blocks/widget.js"
+    },
+    "./blocks/dynamic": {
+      "types": "./dist/blocks/dynamic.d.ts",
+      "import": "./dist/blocks/dynamic.mjs",
+      "require": "./dist/blocks/dynamic.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.mjs",
+      "require": "./dist/react.js"
+    },
+    "./vue": {
+      "types": "./dist/vue.d.ts",
+      "import": "./dist/vue.mjs",
+      "require": "./dist/vue.js"
+    }
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --watch --dts",
+    "build": "tsup --config tsup.config.ts",
+    "dev": "tsup --config tsup.config.ts --watch",
     "lint": "eslint --ext .ts,.tsx src",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "prepare": "npm run build",
-    "prepare-beta": "node scripts/prepare-beta.js"
+    "prepare-beta": "node scripts/prepare-beta.js",
+    "serve": "npx serve ."
   },
   "keywords": [
     "wordpress",
@@ -46,6 +104,7 @@
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "@vitest/coverage-v8": "^3.0.8",
+    "esbuild": "^0.25.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.2",
@@ -56,13 +115,17 @@
   },
   "peerDependencies": {
     "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
+    "react-dom": ">=16.8.0",
+    "vue": ">=3.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
     "react-dom": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   },

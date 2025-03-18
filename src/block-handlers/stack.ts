@@ -15,7 +15,7 @@ export const stackBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Process inner blocks if any
     let innerContent = '';
     if (block.innerBlocks && block.innerBlocks.length > 0) {
@@ -25,49 +25,41 @@ export const stackBlockHandler: BlockHandler = {
       // If there's innerHTML, use that
       if (block.innerHTML) {
         innerContent = block.innerHTML;
-      } 
+      }
       // Otherwise join innerContent
       else if (block.innerContent.length > 0) {
         innerContent = block.innerContent.join('');
       }
     }
-    
+
     // Extract stack attributes
     const spacing = block.attrs?.spacing || 'default';
     const justifyContent = block.attrs?.justifyContent || 'flex-start';
     const orientation = block.attrs?.orientation || 'vertical';
-    
+
     // If we already have a div with the stack structure, we'll modify its attributes
     if (innerContent.trim().startsWith('<div') && innerContent.trim().endsWith('</div>')) {
       // Extract existing classes if any
       const existingClassMatch = innerContent.match(/class="([^"]*)"/);
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
+
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
+      const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+
       // Replace or add the class attribute
       if (existingClassMatch) {
-        innerContent = innerContent.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
+        innerContent = innerContent.replace(/class="([^"]*)"/, `class="${combinedClasses}"`);
       } else {
-        innerContent = innerContent.replace(
-          /^<div/,
-          `<div class="${classes}"`
-        );
+        innerContent = innerContent.replace(/^<div/, `<div class="${classes}"`);
       }
-      
+
       return innerContent;
     }
-    
+
     // If no stack structure, create one
     return createElement('div', { class: classes }, innerContent);
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -86,7 +78,7 @@ export const stackBlockHandler: BlockHandler = {
       },
       justifyContent: {
         'flex-start': 'justify-start',
-        'center': 'justify-center',
+        center: 'justify-center',
         'flex-end': 'justify-end',
         'space-between': 'justify-between',
         'space-around': 'justify-around',
@@ -100,7 +92,7 @@ export const stackBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'd-flex my-3',
@@ -117,7 +109,7 @@ export const stackBlockHandler: BlockHandler = {
       },
       justifyContent: {
         'flex-start': 'justify-content-start',
-        'center': 'justify-content-center',
+        center: 'justify-content-center',
         'flex-end': 'justify-content-end',
         'space-between': 'justify-content-between',
         'space-around': 'justify-content-around',
@@ -132,4 +124,4 @@ export const stackBlockHandler: BlockHandler = {
       },
     },
   },
-}; 
+};

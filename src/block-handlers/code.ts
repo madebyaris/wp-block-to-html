@@ -14,57 +14,49 @@ export const codeBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract the code content from innerContent
     let content = '';
-    
+
     // If there's innerHTML, use that
     if (block.innerHTML) {
       content = block.innerHTML;
-    } 
+    }
     // Otherwise join innerContent
     else if (block.innerContent.length > 0) {
       content = block.innerContent.join('');
     }
-    
+
     // If we already have a pre tag, we'll modify its attributes
     if (content.trim().startsWith('<pre') && content.trim().endsWith('</pre>')) {
       // Extract existing classes if any
       const existingClassMatch = content.match(/class="([^"]*)"/);
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
+
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
+      const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+
       // Replace or add the class attribute
       if (existingClassMatch) {
-        content = content.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
+        content = content.replace(/class="([^"]*)"/, `class="${combinedClasses}"`);
       } else {
-        content = content.replace(
-          /^<pre/,
-          `<pre class="${classes}"`
-        );
+        content = content.replace(/^<pre/, `<pre class="${classes}"`);
       }
-      
+
       return content;
     }
-    
+
     // Check if content is already wrapped in <code> tags
     if (content.trim().startsWith('<code') && content.trim().endsWith('</code>')) {
       // Wrap the code tag in a pre tag
       return createElement('pre', { class: classes }, content);
     }
-    
+
     // If no pre or code tags, wrap the content
     const codeElement = createElement('code', {}, content);
     return createElement('pre', { class: classes }, codeElement);
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -76,7 +68,7 @@ export const codeBlockHandler: BlockHandler = {
         right: 'text-right',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'bg-light rounded p-3 my-4 overflow-auto font-monospace',
@@ -87,4 +79,4 @@ export const codeBlockHandler: BlockHandler = {
       },
     },
   },
-}; 
+};

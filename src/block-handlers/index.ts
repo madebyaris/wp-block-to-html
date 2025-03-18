@@ -46,7 +46,7 @@ export function registerBuiltInBlockHandlers(): void {
   registerBlockHandler('core/verse', verseBlockHandler);
   registerBlockHandler('core/freeform', classicBlockHandler); // Classic editor
   registerBlockHandler('core/details', detailsBlockHandler);
-  
+
   // Media blocks
   registerBlockHandler('core/image', imageBlockHandler);
   registerBlockHandler('core/gallery', galleryBlockHandler);
@@ -56,20 +56,20 @@ export function registerBuiltInBlockHandlers(): void {
   registerBlockHandler('core/cover', coverBlockHandler);
   registerBlockHandler('core/media-text', mediaTextBlockHandler);
   registerBlockHandler('core/embed', embedBlockHandler);
-  
+
   // Widget blocks
   registerBlockHandler('core/table', tableBlockHandler);
   registerBlockHandler('core/button', buttonBlockHandler);
   registerBlockHandler('core/shortcode', shortcodeBlockHandler);
   registerBlockHandler('core/html', customHtmlBlockHandler);
-  
+
   // Dynamic blocks
   registerBlockHandler('core/latest-posts', latestPostsBlockHandler);
   registerBlockHandler('core/more', moreBlockHandler);
   registerBlockHandler('core/nextpage', pageBreakBlockHandler);
   registerBlockHandler('core/separator', separatorBlockHandler);
   registerBlockHandler('core/spacer', spacerBlockHandler);
-  
+
   // Layout blocks
   registerBlockHandler('core/group', groupBlockHandler);
   registerBlockHandler('core/columns', columnsBlockHandler);
@@ -80,7 +80,7 @@ export function registerBuiltInBlockHandlers(): void {
 }
 
 // Export individual handlers for direct use
-export { 
+export {
   paragraphBlockHandler,
   headingBlockHandler,
   listBlockHandler,
@@ -113,5 +113,5 @@ export {
   moreBlockHandler,
   shortcodeBlockHandler,
   customHtmlBlockHandler,
-  latestPostsBlockHandler
+  latestPostsBlockHandler,
 };

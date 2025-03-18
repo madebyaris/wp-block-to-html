@@ -14,23 +14,27 @@ export const moreBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract more attributes
     const customText = block.attrs?.customText || 'Read more';
     const noTeaser = block.attrs?.noTeaser || false;
-    
+
     // Create a more element
     const moreContent = `
       <span class="${getMoreTextClass(options.cssFramework)}">${customText}</span>
     `;
-    
+
     // Create the more container
-    return createElement('div', { 
-      class: classes,
-      'data-no-teaser': noTeaser ? 'true' : 'false'
-    }, moreContent);
+    return createElement(
+      'div',
+      {
+        class: classes,
+        'data-no-teaser': noTeaser ? 'true' : 'false',
+      },
+      moreContent,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -42,7 +46,7 @@ export const moreBlockHandler: BlockHandler = {
         right: 'ml-auto',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'border-top border-secondary py-2 my-4 text-center',
@@ -67,4 +71,4 @@ function getMoreTextClass(cssFramework?: string): string {
     default:
       return 'wp-block-more-text';
   }
-} 
+}

@@ -14,7 +14,7 @@ export const latestPostsBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract latest posts attributes
     const postsToShow = block.attrs?.postsToShow || 5;
     const displayPostDate = block.attrs?.displayPostDate || false;
@@ -27,13 +27,16 @@ export const latestPostsBlockHandler: BlockHandler = {
     const order = block.attrs?.order || 'desc';
     const orderBy = block.attrs?.orderBy || 'date';
     const categories = block.attrs?.categories || [];
-    
+
     // Create a placeholder for the latest posts
     // In a real implementation, this would be replaced with actual posts data
     let content = '';
-    
+
     // Check if we have a custom posts processor in options
-    if (options.customLatestPostsProcessor && typeof options.customLatestPostsProcessor === 'function') {
+    if (
+      options.customLatestPostsProcessor &&
+      typeof options.customLatestPostsProcessor === 'function'
+    ) {
       try {
         const processedContent = options.customLatestPostsProcessor(block, options);
         if (processedContent) {
@@ -43,50 +46,71 @@ export const latestPostsBlockHandler: BlockHandler = {
         console.error('Error processing latest posts:', error);
       }
     }
-    
+
     // If no custom processor or it failed, return a placeholder
     content = `
       <div class="${getLatestPostsContainerClass(postLayout, options.cssFramework)}">
-        ${Array(postsToShow).fill(0).map((_, i) => `
+        ${Array(postsToShow)
+          .fill(0)
+          .map(
+            (_, i) => `
           <div class="${getLatestPostItemClass(postLayout, options.cssFramework)}">
-            ${displayFeaturedImage ? `
+            ${
+              displayFeaturedImage
+                ? `
               <div class="${getLatestPostImageClass(options.cssFramework)}">
                 <img src="https://via.placeholder.com/300x200" alt="Placeholder image ${i + 1}" />
               </div>
-            ` : ''}
+            `
+                : ''
+            }
             <div class="${getLatestPostContentClass(options.cssFramework)}">
               <h3 class="${getLatestPostTitleClass(options.cssFramework)}">Latest Post ${i + 1}</h3>
-              ${displayPostDate ? `
+              ${
+                displayPostDate
+                  ? `
                 <div class="${getLatestPostDateClass(options.cssFramework)}">
                   ${new Date().toLocaleDateString()}
                 </div>
-              ` : ''}
-              ${displayPostContent ? `
+              `
+                  : ''
+              }
+              ${
+                displayPostContent
+                  ? `
                 <div class="${getLatestPostExcerptClass(options.cssFramework)}">
                   This is a placeholder for the ${displayPostContentRadio === 'excerpt' ? 'excerpt' : 'full content'} of the latest post ${i + 1}.
                 </div>
-              ` : ''}
+              `
+                  : ''
+              }
             </div>
           </div>
-        `).join('')}
+        `,
+          )
+          .join('')}
       </div>
     `;
-    
+
     // Create the latest posts container
-    return createElement('div', { 
-      class: classes,
-      'data-posts-to-show': postsToShow,
-      'data-display-post-date': displayPostDate ? 'true' : 'false',
-      'data-display-featured-image': displayFeaturedImage ? 'true' : 'false',
-      'data-display-post-content': displayPostContent ? 'true' : 'false',
-      'data-post-layout': postLayout,
-      'data-columns': columns,
-      'data-order': order,
-      'data-order-by': orderBy,
-      'data-categories': categories.join(',')
-    }, content);
+    return createElement(
+      'div',
+      {
+        class: classes,
+        'data-posts-to-show': postsToShow,
+        'data-display-post-date': displayPostDate ? 'true' : 'false',
+        'data-display-featured-image': displayFeaturedImage ? 'true' : 'false',
+        'data-display-post-content': displayPostContent ? 'true' : 'false',
+        'data-post-layout': postLayout,
+        'data-columns': columns,
+        'data-order': order,
+        'data-order-by': orderBy,
+        'data-categories': categories.join(','),
+      },
+      content,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -111,7 +135,7 @@ export const latestPostsBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-4',
@@ -151,7 +175,7 @@ function getLatestPostsContainerClass(postLayout: string, cssFramework?: string)
         return 'wp-block-latest-posts__grid-container';
     }
   }
-  
+
   switch (cssFramework) {
     case 'tailwind':
       return 'space-y-4';
@@ -173,7 +197,7 @@ function getLatestPostItemClass(postLayout: string, cssFramework?: string): stri
         return 'wp-block-latest-posts__grid-item';
     }
   }
-  
+
   switch (cssFramework) {
     case 'tailwind':
       return 'flex flex-col mb-4';
@@ -237,4 +261,4 @@ function getLatestPostExcerptClass(cssFramework?: string): string {
     default:
       return 'wp-block-latest-posts__excerpt';
   }
-} 
+}

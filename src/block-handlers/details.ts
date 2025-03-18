@@ -15,10 +15,10 @@ export const detailsBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract the summary text from attributes
     const summary = block.attrs?.summary || 'Details';
-    
+
     // Process inner blocks if any
     let innerContent = '';
     if (block.innerBlocks && block.innerBlocks.length > 0) {
@@ -28,48 +28,44 @@ export const detailsBlockHandler: BlockHandler = {
       // If there's innerHTML, use that
       if (block.innerHTML) {
         innerContent = block.innerHTML;
-      } 
+      }
       // Otherwise join innerContent
       else if (block.innerContent.length > 0) {
         innerContent = block.innerContent.join('');
       }
     }
-    
+
     // If we already have a details tag, we'll modify its attributes
     if (innerContent.trim().startsWith('<details') && innerContent.trim().endsWith('</details>')) {
       // Extract existing classes if any
       const existingClassMatch = innerContent.match(/class="([^"]*)"/);
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
+
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
+      const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+
       // Replace or add the class attribute
       if (existingClassMatch) {
-        innerContent = innerContent.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
+        innerContent = innerContent.replace(/class="([^"]*)"/, `class="${combinedClasses}"`);
       } else {
-        innerContent = innerContent.replace(
-          /^<details/,
-          `<details class="${classes}"`
-        );
+        innerContent = innerContent.replace(/^<details/, `<details class="${classes}"`);
       }
-      
+
       return innerContent;
     }
-    
+
     // If no details tag, create one
     // Create summary element
-    const summaryElement = createElement('summary', { class: getSummaryClass(options.cssFramework) }, summary);
-    
+    const summaryElement = createElement(
+      'summary',
+      { class: getSummaryClass(options.cssFramework) },
+      summary,
+    );
+
     // Create details element with summary and content
     return createElement('details', { class: classes }, `${summaryElement}${innerContent}`);
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -81,7 +77,7 @@ export const detailsBlockHandler: BlockHandler = {
         right: 'text-right',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-3 border rounded p-2',
@@ -106,4 +102,4 @@ function getSummaryClass(cssFramework?: string): string {
     default:
       return '';
   }
-} 
+}

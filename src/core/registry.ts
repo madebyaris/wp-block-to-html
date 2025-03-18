@@ -48,4 +48,4 @@ export function removeBlockHandler(blockName: string): void {
   if (blockName in blockHandlers) {
     delete blockHandlers[blockName];
   }
-} 
+}

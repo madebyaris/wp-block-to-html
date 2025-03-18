@@ -16,14 +16,14 @@ export const shortcodeBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract shortcode content
     let shortcodeContent = '';
-    
+
     // If there's content in the block, use that
     if (block.attrs?.content) {
       shortcodeContent = block.attrs.content;
-    } 
+    }
     // Otherwise check innerHTML
     else if (block.innerHTML) {
       shortcodeContent = block.innerHTML;
@@ -32,9 +32,12 @@ export const shortcodeBlockHandler: BlockHandler = {
     else if (block.innerContent.length > 0) {
       shortcodeContent = block.innerContent.join('');
     }
-    
+
     // Check if we have a custom shortcode processor in options
-    if (options.customShortcodeProcessor && typeof options.customShortcodeProcessor === 'function') {
+    if (
+      options.customShortcodeProcessor &&
+      typeof options.customShortcodeProcessor === 'function'
+    ) {
       try {
         const processedContent = options.customShortcodeProcessor(shortcodeContent, block, options);
         if (processedContent) {
@@ -44,15 +47,19 @@ export const shortcodeBlockHandler: BlockHandler = {
         console.error('Error processing shortcode:', error);
       }
     }
-    
+
     // If no custom processor or it failed, return the shortcode in a container
     // This preserves the shortcode for server-side processing
-    return createElement('div', { 
-      class: classes,
-      'data-shortcode': 'true'
-    }, shortcodeContent);
+    return createElement(
+      'div',
+      {
+        class: classes,
+        'data-shortcode': 'true',
+      },
+      shortcodeContent,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -66,7 +73,7 @@ export const shortcodeBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-3 p-2 border border-secondary border-opacity-25 bg-light',
@@ -79,4 +86,4 @@ export const shortcodeBlockHandler: BlockHandler = {
       },
     },
   },
-}; 
+};

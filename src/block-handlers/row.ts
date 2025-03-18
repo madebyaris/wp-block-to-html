@@ -15,7 +15,7 @@ export const rowBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Process inner blocks if any
     let innerContent = '';
     if (block.innerBlocks && block.innerBlocks.length > 0) {
@@ -25,49 +25,41 @@ export const rowBlockHandler: BlockHandler = {
       // If there's innerHTML, use that
       if (block.innerHTML) {
         innerContent = block.innerHTML;
-      } 
+      }
       // Otherwise join innerContent
       else if (block.innerContent.length > 0) {
         innerContent = block.innerContent.join('');
       }
     }
-    
+
     // Extract row attributes
     const justifyContent = block.attrs?.justifyContent || 'space-between';
     const verticalAlignment = block.attrs?.verticalAlignment || 'top';
     const isStackedOnMobile = block.attrs?.isStackedOnMobile !== false;
-    
+
     // If we already have a div with the row structure, we'll modify its attributes
     if (innerContent.trim().startsWith('<div') && innerContent.trim().endsWith('</div>')) {
       // Extract existing classes if any
       const existingClassMatch = innerContent.match(/class="([^"]*)"/);
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
+
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
+      const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+
       // Replace or add the class attribute
       if (existingClassMatch) {
-        innerContent = innerContent.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
+        innerContent = innerContent.replace(/class="([^"]*)"/, `class="${combinedClasses}"`);
       } else {
-        innerContent = innerContent.replace(
-          /^<div/,
-          `<div class="${classes}"`
-        );
+        innerContent = innerContent.replace(/^<div/, `<div class="${classes}"`);
       }
-      
+
       return innerContent;
     }
-    
+
     // If no row structure, create one
     return createElement('div', { class: classes }, innerContent);
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -75,9 +67,9 @@ export const rowBlockHandler: BlockHandler = {
       block: 'flex flex-wrap my-4',
       justifyContent: {
         'space-between': 'justify-between',
-        'center': 'justify-center',
-        'start': 'justify-start',
-        'end': 'justify-end',
+        center: 'justify-center',
+        start: 'justify-start',
+        end: 'justify-end',
         'space-around': 'justify-around',
         'space-evenly': 'justify-evenly',
       },
@@ -96,15 +88,15 @@ export const rowBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'row my-3',
       justifyContent: {
         'space-between': 'justify-content-between',
-        'center': 'justify-content-center',
-        'start': 'justify-content-start',
-        'end': 'justify-content-end',
+        center: 'justify-content-center',
+        start: 'justify-content-start',
+        end: 'justify-content-end',
         'space-around': 'justify-content-around',
         'space-evenly': 'justify-content-evenly',
       },
@@ -124,4 +116,4 @@ export const rowBlockHandler: BlockHandler = {
       },
     },
   },
-}; 
+};

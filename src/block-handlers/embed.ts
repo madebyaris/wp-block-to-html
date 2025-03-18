@@ -16,10 +16,10 @@ export const embedBlockHandler: BlockHandler = {
     if (options.customEmbedProcessor) {
       return options.customEmbedProcessor(block, options);
     }
-    
+
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract embed attributes
     const attrs = block.attrs || {};
     const url = attrs.url || '';
@@ -28,13 +28,13 @@ export const embedBlockHandler: BlockHandler = {
     const type = attrs.type || '';
     const responsive = attrs.responsive !== false;
     const align = attrs.align || 'none';
-    
+
     // Determine the provider based on the block name or provider slug
     const provider = getProviderFromBlock(block, providerNameSlug);
-    
+
     // Generate the embed HTML
     let embedHtml = '';
-    
+
     if (url) {
       // Generate embed HTML based on provider
       embedHtml = generateEmbedHtml(url, provider, responsive, options.cssFramework);
@@ -42,22 +42,26 @@ export const embedBlockHandler: BlockHandler = {
       // Placeholder for empty embed
       embedHtml = generatePlaceholderEmbed(provider, options.cssFramework);
     }
-    
+
     // Add caption if provided
     if (caption) {
       const captionClass = getCaptionClass(options.cssFramework);
       embedHtml += `<figcaption class="${captionClass}">${caption}</figcaption>`;
     }
-    
+
     // Create the embed container
-    return createElement('figure', { 
-      class: classes,
-      'data-provider': provider,
-      'data-embed-type': type,
-      'data-responsive': responsive ? 'true' : 'false'
-    }, embedHtml);
+    return createElement(
+      'figure',
+      {
+        class: classes,
+        'data-provider': provider,
+        'data-embed-type': type,
+        'data-responsive': responsive ? 'true' : 'false',
+      },
+      embedHtml,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -102,7 +106,7 @@ export const embedBlockHandler: BlockHandler = {
       wolfram: 'bg-orange-100',
       bluesky: 'bg-blue-100',
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-4',
@@ -156,15 +160,15 @@ function getProviderFromBlock(block: Block, providerNameSlug: string): string {
   if (providerNameSlug) {
     return providerNameSlug;
   }
-  
+
   // Otherwise, try to extract from block name
   const blockName = block.blockName || '';
   const match = blockName.match(/^core-embed\/(.+)$/) || blockName.match(/^core\/embed-(.+)$/);
-  
+
   if (match && match[1]) {
     return match[1];
   }
-  
+
   // Default to generic embed
   return 'embed';
 }
@@ -172,10 +176,15 @@ function getProviderFromBlock(block: Block, providerNameSlug: string): string {
 /**
  * Generate embed HTML based on provider
  */
-function generateEmbedHtml(url: string, provider: string, responsive: boolean, cssFramework?: string): string {
+function generateEmbedHtml(
+  url: string,
+  provider: string,
+  responsive: boolean,
+  cssFramework?: string,
+): string {
   // Get responsive class based on framework
   const responsiveClass = responsive ? getResponsiveClass(cssFramework) : '';
-  
+
   // Generate provider-specific embed HTML
   switch (provider) {
     case 'youtube':
@@ -208,7 +217,7 @@ function generateEmbedHtml(url: string, provider: string, responsive: boolean, c
 function generatePlaceholderEmbed(provider: string, cssFramework?: string): string {
   const providerClass = getProviderClass(provider, cssFramework);
   const responsiveClass = getResponsiveClass(cssFramework);
-  
+
   return `
     <div class="${responsiveClass} ${providerClass} flex items-center justify-center p-4 border border-gray-300 rounded">
       <div class="text-center">
@@ -256,7 +265,7 @@ function getProviderDisplayName(provider: string): string {
     wolfram: 'Wolfram',
     bluesky: 'Bluesky',
   };
-  
+
   return displayNames[provider] || provider.charAt(0).toUpperCase() + provider.slice(1);
 }
 
@@ -266,11 +275,11 @@ function getProviderDisplayName(provider: string): string {
 function generateYouTubeEmbed(url: string, responsiveClass: string): string {
   // Extract video ID from URL
   const videoId = extractYouTubeVideoId(url);
-  
+
   if (!videoId) {
     return `<div class="${responsiveClass}">Invalid YouTube URL</div>`;
   }
-  
+
   return `
     <div class="${responsiveClass}">
       <iframe 
@@ -303,11 +312,11 @@ function generateTwitterEmbed(url: string, responsiveClass: string): string {
 function generateVimeoEmbed(url: string, responsiveClass: string): string {
   // Extract video ID from URL
   const videoId = extractVimeoVideoId(url);
-  
+
   if (!videoId) {
     return `<div class="${responsiveClass}">Invalid Vimeo URL</div>`;
   }
-  
+
   return `
     <div class="${responsiveClass}">
       <iframe 
@@ -327,11 +336,11 @@ function generateSpotifyEmbed(url: string, responsiveClass: string): string {
   // Extract Spotify URI or ID
   const spotifyId = extractSpotifyId(url);
   const spotifyType = determineSpotifyType(url);
-  
+
   if (!spotifyId || !spotifyType) {
     return `<div class="${responsiveClass}">Invalid Spotify URL</div>`;
   }
-  
+
   return `
     <div class="${responsiveClass}">
       <iframe 
@@ -406,11 +415,11 @@ function generatePinterestEmbed(url: string, responsiveClass: string): string {
 function generateAmazonEmbed(url: string, responsiveClass: string): string {
   // Extract ASIN from URL
   const asin = extractAmazonAsin(url);
-  
+
   if (!asin) {
     return `<div class="${responsiveClass}">Invalid Amazon URL</div>`;
   }
-  
+
   return `
     <div class="${responsiveClass}">
       <iframe 
@@ -431,7 +440,7 @@ function generateAmazonEmbed(url: string, responsiveClass: string): string {
  */
 function generateGenericEmbed(url: string, provider: string, responsiveClass: string): string {
   const providerClass = getProviderClass(provider, 'tailwind');
-  
+
   return `
     <div class="${responsiveClass} ${providerClass}">
       <iframe 
@@ -450,7 +459,7 @@ function generateGenericEmbed(url: string, provider: string, responsiveClass: st
 function extractYouTubeVideoId(url: string): string | null {
   const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
   const match = url.match(regExp);
-  return (match && match[7].length === 11) ? match[7] : null;
+  return match && match[7].length === 11 ? match[7] : null;
 }
 
 function extractVimeoVideoId(url: string): string | null {
@@ -499,14 +508,14 @@ function getProviderClass(provider: string, cssFramework?: string): string {
   if (!cssFramework) {
     return `wp-block-embed-${provider}`;
   }
-  
+
   const framework = cssFramework as 'tailwind' | 'bootstrap';
   const mapping = embedBlockHandler.cssMapping?.[framework];
-  
+
   if (mapping && mapping[provider]) {
     return mapping[provider] as string;
   }
-  
+
   return '';
 }
 
@@ -519,4 +528,4 @@ function getCaptionClass(cssFramework?: string): string {
     default:
       return 'wp-block-embed__caption';
   }
-} 
+}

@@ -14,14 +14,14 @@ export const customHtmlBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract HTML content
     let htmlContent = '';
-    
+
     // If there's content in the block, use that
     if (block.attrs?.content) {
       htmlContent = block.attrs.content;
-    } 
+    }
     // Otherwise check innerHTML
     else if (block.innerHTML) {
       htmlContent = block.innerHTML;
@@ -30,7 +30,7 @@ export const customHtmlBlockHandler: BlockHandler = {
     else if (block.innerContent.length > 0) {
       htmlContent = block.innerContent.join('');
     }
-    
+
     // Check if we should sanitize the HTML
     if (options.sanitizeHtml && typeof options.sanitizeHtml === 'function') {
       try {
@@ -39,32 +39,36 @@ export const customHtmlBlockHandler: BlockHandler = {
         console.error('Error sanitizing HTML:', error);
       }
     }
-    
+
     // If we're outputting a component, wrap the HTML in a container
     if (options.outputFormat === 'component') {
       // For component output, we need to use the componentFactory
       // The actual handling of dangerouslySetInnerHTML will be done by the framework adapter
       if (options.componentFactory) {
-        return options.componentFactory('div', { 
-          class: classes,
-          'data-custom-html': 'true',
-          dangerouslySetInnerHTML: htmlContent
-        }, null);
+        return options.componentFactory(
+          'div',
+          {
+            class: classes,
+            'data-custom-html': 'true',
+            dangerouslySetInnerHTML: htmlContent,
+          },
+          null,
+        );
       }
-      
+
       // If no componentFactory, fall back to HTML
       return `<div class="${classes}" data-custom-html="true">${htmlContent}</div>`;
     }
-    
+
     // For HTML output, just return the HTML content
     // If classes are provided, wrap in a div
     if (classes) {
       return `<div class="${classes}" data-custom-html="true">${htmlContent}</div>`;
     }
-    
+
     return htmlContent;
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -78,7 +82,7 @@ export const customHtmlBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-3',
@@ -91,4 +95,4 @@ export const customHtmlBlockHandler: BlockHandler = {
       },
     },
   },
-}; 
+};

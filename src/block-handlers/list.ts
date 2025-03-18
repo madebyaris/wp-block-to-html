@@ -1,5 +1,5 @@
 import { Block, BlockHandler, ConversionOptions } from '../types';
-import { getBlockClasses, createElement } from '../core/utils';
+import { getBlockClasses, createElement, processContentWithRenderMode } from '../core/utils';
 
 /**
  * Handler for the 'core/list' block
@@ -14,62 +14,52 @@ export const listBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Determine list type (ordered or unordered)
     const isOrdered = block.attrs.ordered === true;
     const tag = isOrdered ? 'ol' : 'ul';
-    
+
     // Extract the list content from innerContent
     let content = '';
-    
+
     // If there's innerHTML, use that
     if (block.innerHTML) {
       content = block.innerHTML;
-    } 
+    }
     // Otherwise join innerContent
     else if (block.innerContent.length > 0) {
       content = block.innerContent.join('');
     }
-    
-    // If we already have a list tag, we'll modify its attributes
-    const listRegex = new RegExp(`^<${tag}[^>]*>.*</${tag}>$`, 's');
-    if (listRegex.test(content.trim())) {
-      // Extract existing classes if any
-      const existingClassMatch = content.match(/class="([^"]*)"/);
-      const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
-      // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
-      // Replace or add the class attribute
-      if (existingClassMatch) {
-        content = content.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
+
+    // Get the rendering mode from options
+    const renderMode = options.renderedContentHandling || 'rebuild';
+
+    // For lists, we handle the items specially in 'rebuild' mode
+    if (renderMode === 'rebuild') {
+      const listRegex = new RegExp(`^<${tag}[^>]*>(.*)</${tag}>$`, 's');
+      const match = content.match(listRegex);
+
+      if (match) {
+        // Extract the items from the existing list
+        const itemsContent = match[1];
+        return createElement(tag, { class: classes }, itemsContent);
       } else {
-        content = content.replace(
-          new RegExp(`^<${tag}`),
-          `<${tag} class="${classes}"`
-        );
+        // Process list items if we need to build from scratch
+        const items = content
+          .split('<li>')
+          .filter(Boolean)
+          .map((item) => {
+            return `<li>${item.replace('</li>', '')}</li>`;
+          });
+
+        return createElement(tag, { class: classes }, items.join(''));
       }
-      
-      return content;
     }
-    
-    // Process list items
-    // This is a simplistic approach - in a real-world scenario, 
-    // we would need to parse the HTML and properly handle nested lists
-    const items = content.split('<li>').filter(Boolean).map(item => {
-      return `<li>${item.replace('</li>', '')}</li>`;
-    });
-    
-    // Create list with items
-    return createElement(tag, { class: classes }, items.join(''));
+
+    // For 'respect' and 'preserve-attrs' modes, use the utility function
+    return processContentWithRenderMode(content, tag, { class: classes }, renderMode);
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -83,7 +73,7 @@ export const listBlockHandler: BlockHandler = {
         right: 'text-right',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: '',
@@ -96,4 +86,4 @@ export const listBlockHandler: BlockHandler = {
       },
     },
   },
-}; 
+};

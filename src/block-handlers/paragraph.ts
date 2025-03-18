@@ -1,5 +1,5 @@
 import { Block, BlockHandler, ConversionOptions } from '../types';
-import { getBlockClasses, createElement } from '../core/utils';
+import { getBlockClasses, processContentWithRenderMode, enhanceRenderedHTML } from '../core/utils';
 
 /**
  * Handler for the 'core/paragraph' block
@@ -14,74 +14,79 @@ export const paragraphBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract the paragraph content from innerContent
     let content = '';
-    
+
     // If there's innerHTML, use that
     if (block.innerHTML) {
       content = block.innerHTML;
-    } 
+    }
     // Otherwise join innerContent
-    else if (block.innerContent.length > 0) {
+    else if (block.innerContent && block.innerContent.length > 0) {
       content = block.innerContent.join('');
     }
-    
-    // If we already have a <p> tag, we'll modify its attributes
-    if (content.trim().startsWith('<p') && content.trim().endsWith('</p>')) {
-      // Extract existing classes if any
-      const existingClassMatch = content.match(/class="([^"]*)"/);
-      const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
-      // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
-      // Replace the <p> tag or add class attribute
-      if (existingClassMatch) {
-        content = content.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
-      } else {
-        content = content.replace(
-          /^<p/,
-          `<p class="${classes}"`
-        );
-      }
-      
-      return content;
+
+    // If content is empty, use the content attribute if available
+    if (content.trim() === '' && block.attrs?.content) {
+      content = block.attrs.content;
     }
-    
-    // If no <p> tag, wrap the content
-    return createElement('p', { class: classes }, content);
+
+    // Handle content based on contentHandling option (new method)
+    if (options.contentHandling) {
+      switch (options.contentHandling) {
+        case 'rendered':
+          // Use the rendered HTML as-is
+          return content;
+
+        case 'hybrid':
+          // Apply framework-specific styling to the rendered content
+          if (options.cssFramework && options.cssFramework !== 'none') {
+            return enhanceRenderedHTML(content, options);
+          }
+          // If no framework or 'none', fall back to the raw handling
+          break;
+
+        case 'raw':
+        default:
+          // Process using raw block data (default behavior)
+          break;
+      }
+    }
+
+    // Backward compatibility with renderedContentHandling
+    const renderMode = options.renderedContentHandling || 'rebuild';
+
+    // Process content based on the rendering mode
+    return processContentWithRenderMode(content, 'p', { class: classes }, renderMode);
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
     tailwind: {
-      block: '',
+      block: 'my-4 px-0',
       align: {
         left: 'text-left',
         center: 'text-center',
         right: 'text-right',
       },
       // Additional paragraph-specific mappings
-      dropCap: 'first-letter:float-left first-letter:text-7xl first-letter:font-bold first-letter:mr-3',
+      dropCap:
+        'first-letter:float-left first-letter:text-7xl first-letter:font-bold first-letter:mr-3 first-letter:mt-1',
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
-      block: '',
+      block: 'mb-4 px-0',
       align: {
         left: 'text-start',
         center: 'text-center',
         right: 'text-end',
       },
       // Additional paragraph-specific mappings
-      dropCap: 'first-letter:float-left first-letter:font-size-4 first-letter:font-weight-bold',
+      dropCap:
+        'first-letter:float-start first-letter:fs-1 first-letter:fw-bold first-letter:me-2 first-letter:mt-1',
     },
   },
-}; 
+};

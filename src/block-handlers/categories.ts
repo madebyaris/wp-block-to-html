@@ -14,19 +14,22 @@ export const categoriesBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract categories attributes
     const displayAsDropdown = block.attrs?.displayAsDropdown || false;
     const showHierarchy = block.attrs?.showHierarchy || false;
     const showPostCounts = block.attrs?.showPostCounts || false;
     const showOnlyTopLevel = block.attrs?.showOnlyTopLevel || false;
-    
+
     // Create a placeholder for the categories
     // In a real implementation, this would be replaced with actual categories data
     let content = '';
-    
+
     // Check if we have a custom categories processor in options
-    if (options.customCategoriesProcessor && typeof options.customCategoriesProcessor === 'function') {
+    if (
+      options.customCategoriesProcessor &&
+      typeof options.customCategoriesProcessor === 'function'
+    ) {
       try {
         const processedContent = options.customCategoriesProcessor(block, options);
         if (processedContent) {
@@ -36,7 +39,7 @@ export const categoriesBlockHandler: BlockHandler = {
         console.error('Error processing categories:', error);
       }
     }
-    
+
     // If no custom processor or it failed, return a placeholder
     if (displayAsDropdown) {
       content = `
@@ -52,17 +55,21 @@ export const categoriesBlockHandler: BlockHandler = {
         </ul>
       `;
     }
-    
+
     // Create the categories container
-    return createElement('div', { 
-      class: classes,
-      'data-display-as-dropdown': displayAsDropdown ? 'true' : 'false',
-      'data-show-hierarchy': showHierarchy ? 'true' : 'false',
-      'data-show-post-counts': showPostCounts ? 'true' : 'false',
-      'data-show-only-top-level': showOnlyTopLevel ? 'true' : 'false'
-    }, content);
+    return createElement(
+      'div',
+      {
+        class: classes,
+        'data-display-as-dropdown': displayAsDropdown ? 'true' : 'false',
+        'data-show-hierarchy': showHierarchy ? 'true' : 'false',
+        'data-show-post-counts': showPostCounts ? 'true' : 'false',
+        'data-show-only-top-level': showOnlyTopLevel ? 'true' : 'false',
+      },
+      content,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -76,7 +83,7 @@ export const categoriesBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-4',
@@ -120,10 +127,10 @@ function getCategoriesListClass(cssFramework?: string): string {
  * Generate placeholder category items
  */
 function generateCategoryPlaceholders(
-  count: number, 
-  showHierarchy: boolean, 
+  count: number,
+  showHierarchy: boolean,
   showPostCounts: boolean,
-  showOnlyTopLevel: boolean
+  showOnlyTopLevel: boolean,
 ): string {
   const categories = [
     { id: 1, name: 'Uncategorized', count: 5, parent: 0 },
@@ -134,24 +141,26 @@ function generateCategoryPlaceholders(
     { id: 6, name: 'UI/UX', count: 4, parent: 5 },
     { id: 7, name: 'Graphic Design', count: 3, parent: 5 },
   ];
-  
+
   // Filter categories based on showOnlyTopLevel
-  const filteredCategories = showOnlyTopLevel 
-    ? categories.filter(cat => cat.parent === 0)
+  const filteredCategories = showOnlyTopLevel
+    ? categories.filter((cat) => cat.parent === 0)
     : categories;
-  
+
   // Limit to the requested count
   const limitedCategories = filteredCategories.slice(0, count);
-  
+
   if (showHierarchy && !showOnlyTopLevel) {
     // For hierarchical display, we need to build a tree
     return buildCategoryHierarchy(categories, 0, showPostCounts);
   } else {
     // For flat display, just list the categories
-    return limitedCategories.map(cat => {
-      const postCountText = showPostCounts ? ` (${cat.count})` : '';
-      return `<li><a href="#">${cat.name}${postCountText}</a></li>`;
-    }).join('');
+    return limitedCategories
+      .map((cat) => {
+        const postCountText = showPostCounts ? ` (${cat.count})` : '';
+        return `<li><a href="#">${cat.name}${postCountText}</a></li>`;
+      })
+      .join('');
   }
 }
 
@@ -159,33 +168,35 @@ function generateCategoryPlaceholders(
  * Build a hierarchical category list
  */
 function buildCategoryHierarchy(
-  categories: Array<{id: number, name: string, count: number, parent: number}>,
+  categories: Array<{ id: number; name: string; count: number; parent: number }>,
   parentId: number,
   showPostCounts: boolean,
-  level: number = 0
+  level: number = 0,
 ): string {
-  const children = categories.filter(cat => cat.parent === parentId);
-  
+  const children = categories.filter((cat) => cat.parent === parentId);
+
   if (children.length === 0) {
     return '';
   }
-  
-  return children.map(cat => {
-    const postCountText = showPostCounts ? ` (${cat.count})` : '';
-    const padding = level > 0 ? ' style="margin-left: ' + (level * 20) + 'px;"' : '';
-    
-    const childrenHtml = buildCategoryHierarchy(categories, cat.id, showPostCounts, level + 1);
-    
-    if (childrenHtml) {
-      return `
+
+  return children
+    .map((cat) => {
+      const postCountText = showPostCounts ? ` (${cat.count})` : '';
+      const padding = level > 0 ? ' style="margin-left: ' + level * 20 + 'px;"' : '';
+
+      const childrenHtml = buildCategoryHierarchy(categories, cat.id, showPostCounts, level + 1);
+
+      if (childrenHtml) {
+        return `
         <li${padding}><a href="#">${cat.name}${postCountText}</a>
           <ul>
             ${childrenHtml}
           </ul>
         </li>
       `;
-    } else {
-      return `<li${padding}><a href="#">${cat.name}${postCountText}</a></li>`;
-    }
-  }).join('');
-} 
+      } else {
+        return `<li${padding}><a href="#">${cat.name}${postCountText}</a></li>`;
+      }
+    })
+    .join('');
+}

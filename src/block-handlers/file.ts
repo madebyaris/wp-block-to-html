@@ -14,19 +14,19 @@ export const fileBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract the file content from innerContent
     let content = '';
-    
+
     // If there's innerHTML, use that
     if (block.innerHTML) {
       content = block.innerHTML;
-    } 
+    }
     // Otherwise join innerContent
     else if (block.innerContent.length > 0) {
       content = block.innerContent.join('');
     }
-    
+
     // Extract file attributes
     const href = block.attrs?.href || '';
     const fileName = block.attrs?.fileName || '';
@@ -35,37 +35,29 @@ export const fileBlockHandler: BlockHandler = {
     const downloadButtonText = block.attrs?.downloadButtonText || 'Download';
     const displayPreview = block.attrs?.displayPreview;
     const previewHeight = block.attrs?.previewHeight;
-    
+
     // If we already have a div with the file structure, we'll modify its attributes
     if (content.trim().startsWith('<div') && content.trim().endsWith('</div>')) {
       // Extract existing classes if any
       const existingClassMatch = content.match(/class="([^"]*)"/);
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
+
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
+      const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+
       // Replace or add the class attribute
       if (existingClassMatch) {
-        content = content.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
+        content = content.replace(/class="([^"]*)"/, `class="${combinedClasses}"`);
       } else {
-        content = content.replace(
-          /^<div/,
-          `<div class="${classes}"`
-        );
+        content = content.replace(/^<div/, `<div class="${classes}"`);
       }
-      
+
       return content;
     }
-    
+
     // If no file structure, create one
     let fileContent = '';
-    
+
     // Create file preview if needed
     if (displayPreview && href && href.match(/\.(pdf|doc|docx|xls|xlsx|ppt|pptx)$/i)) {
       const previewStyle = previewHeight ? `height: ${previewHeight}px;` : '';
@@ -73,26 +65,26 @@ export const fileBlockHandler: BlockHandler = {
         <iframe src="${href}" frameborder="0"></iframe>
       </div>`;
     }
-    
+
     // Create file name and download button
     fileContent += `<div class="${getFileInfoClass(options.cssFramework)}">`;
-    
+
     // Add file name with link
     if (fileName) {
       fileContent += `<a href="${textLinkHref}" class="${getFileLinkClass(options.cssFramework)}">${fileName}</a>`;
     }
-    
+
     // Add download button if needed
     if (showDownloadButton) {
       fileContent += `<a href="${href}" class="${getDownloadButtonClass(options.cssFramework)}" download>${downloadButtonText}</a>`;
     }
-    
+
     fileContent += '</div>';
-    
+
     // Wrap in a div
     return createElement('div', { class: classes }, fileContent);
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -104,7 +96,7 @@ export const fileBlockHandler: BlockHandler = {
         right: 'ml-auto',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-3 p-3 border rounded',
@@ -171,4 +163,4 @@ function getDownloadButtonClass(cssFramework?: string): string {
     default:
       return 'wp-block-file__button';
   }
-} 
+}

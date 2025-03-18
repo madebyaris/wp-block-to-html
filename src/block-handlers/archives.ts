@@ -14,16 +14,16 @@ export const archivesBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract archives attributes
     const displayAsDropdown = block.attrs?.displayAsDropdown || false;
     const showPostCounts = block.attrs?.showPostCounts || false;
     const type = block.attrs?.type || 'monthly';
-    
+
     // Create a placeholder for the archives
     // In a real implementation, this would be replaced with actual archives data
     let content = '';
-    
+
     // Check if we have a custom archives processor in options
     if (options.customArchivesProcessor && typeof options.customArchivesProcessor === 'function') {
       try {
@@ -35,7 +35,7 @@ export const archivesBlockHandler: BlockHandler = {
         console.error('Error processing archives:', error);
       }
     }
-    
+
     // If no custom processor or it failed, return a placeholder
     if (displayAsDropdown) {
       content = `
@@ -51,16 +51,20 @@ export const archivesBlockHandler: BlockHandler = {
         </ul>
       `;
     }
-    
+
     // Create the archives container
-    return createElement('div', { 
-      class: classes,
-      'data-display-as-dropdown': displayAsDropdown ? 'true' : 'false',
-      'data-show-post-counts': showPostCounts ? 'true' : 'false',
-      'data-type': type
-    }, content);
+    return createElement(
+      'div',
+      {
+        class: classes,
+        'data-display-as-dropdown': displayAsDropdown ? 'true' : 'false',
+        'data-show-post-counts': showPostCounts ? 'true' : 'false',
+        'data-type': type,
+      },
+      content,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -74,7 +78,7 @@ export const archivesBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-4',
@@ -121,31 +125,47 @@ function generateArchivePlaceholders(count: number, type: string, showPostCounts
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
-  
+
   if (type === 'monthly') {
-    return Array(count).fill(0).map((_, i) => {
-      const monthIndex = (currentMonth - i + 12) % 12;
-      const year = currentYear - Math.floor((i + currentMonth) / 12);
-      const month = months[monthIndex];
-      const postCount = Math.floor(Math.random() * 10) + 1;
-      
-      if (showPostCounts) {
-        return `<option value="${year}/${monthIndex + 1}">${month} ${year} (${postCount})</option>`;
-      }
-      return `<option value="${year}/${monthIndex + 1}">${month} ${year}</option>`;
-    }).join('');
+    return Array(count)
+      .fill(0)
+      .map((_, i) => {
+        const monthIndex = (currentMonth - i + 12) % 12;
+        const year = currentYear - Math.floor((i + currentMonth) / 12);
+        const month = months[monthIndex];
+        const postCount = Math.floor(Math.random() * 10) + 1;
+
+        if (showPostCounts) {
+          return `<option value="${year}/${monthIndex + 1}">${month} ${year} (${postCount})</option>`;
+        }
+        return `<option value="${year}/${monthIndex + 1}">${month} ${year}</option>`;
+      })
+      .join('');
   } else {
-    return Array(count).fill(0).map((_, i) => {
-      const year = currentYear - i;
-      const postCount = Math.floor(Math.random() * 30) + 5;
-      
-      if (showPostCounts) {
-        return `<option value="${year}">${year} (${postCount})</option>`;
-      }
-      return `<option value="${year}">${year}</option>`;
-    }).join('');
+    return Array(count)
+      .fill(0)
+      .map((_, i) => {
+        const year = currentYear - i;
+        const postCount = Math.floor(Math.random() * 30) + 5;
+
+        if (showPostCounts) {
+          return `<option value="${year}">${year} (${postCount})</option>`;
+        }
+        return `<option value="${year}">${year}</option>`;
+      })
+      .join('');
   }
-} 
+}

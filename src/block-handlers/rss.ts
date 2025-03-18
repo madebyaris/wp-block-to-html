@@ -14,7 +14,7 @@ export const rssBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract RSS attributes
     const feedURL = block.attrs?.feedURL || '';
     const itemsToShow = block.attrs?.itemsToShow || 5;
@@ -22,11 +22,11 @@ export const rssBlockHandler: BlockHandler = {
     const displayAuthor = block.attrs?.displayAuthor || false;
     const displayDate = block.attrs?.displayDate || false;
     const excerptLength = block.attrs?.excerptLength || 55;
-    
+
     // Create a placeholder for the RSS feed
     // In a real implementation, this would be replaced with actual RSS data
     let content = '';
-    
+
     // Check if we have a custom RSS processor in options
     if (options.customRssProcessor && typeof options.customRssProcessor === 'function') {
       try {
@@ -38,26 +38,30 @@ export const rssBlockHandler: BlockHandler = {
         console.error('Error processing RSS feed:', error);
       }
     }
-    
+
     // If no custom processor or it failed, return a placeholder
     content = `
       <ul class="${getRssListClass(options.cssFramework)}">
         ${generateRssItemPlaceholders(itemsToShow, displayExcerpt, displayAuthor, displayDate, options.cssFramework)}
       </ul>
     `;
-    
+
     // Create the RSS container
-    return createElement('div', { 
-      class: classes,
-      'data-feed-url': feedURL,
-      'data-items-to-show': itemsToShow,
-      'data-display-excerpt': displayExcerpt ? 'true' : 'false',
-      'data-display-author': displayAuthor ? 'true' : 'false',
-      'data-display-date': displayDate ? 'true' : 'false',
-      'data-excerpt-length': excerptLength
-    }, content);
+    return createElement(
+      'div',
+      {
+        class: classes,
+        'data-feed-url': feedURL,
+        'data-items-to-show': itemsToShow,
+        'data-display-excerpt': displayExcerpt ? 'true' : 'false',
+        'data-display-author': displayAuthor ? 'true' : 'false',
+        'data-display-date': displayDate ? 'true' : 'false',
+        'data-excerpt-length': excerptLength,
+      },
+      content,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -71,7 +75,7 @@ export const rssBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-4',
@@ -141,26 +145,29 @@ function generateRssItemPlaceholders(
   displayExcerpt: boolean,
   displayAuthor: boolean,
   displayDate: boolean,
-  cssFramework?: string
+  cssFramework?: string,
 ): string {
-  return Array(count).fill(0).map((_, i) => {
-    const title = `RSS Item ${i + 1}`;
-    const author = `Author ${i + 1}`;
-    const date = new Date().toLocaleDateString();
-    const excerpt = 'This is a placeholder excerpt for the RSS item. In a real implementation, this would be replaced with actual content from the RSS feed.';
-    
-    let meta = '';
-    if (displayAuthor || displayDate) {
-      meta = `
+  return Array(count)
+    .fill(0)
+    .map((_, i) => {
+      const title = `RSS Item ${i + 1}`;
+      const author = `Author ${i + 1}`;
+      const date = new Date().toLocaleDateString();
+      const excerpt =
+        'This is a placeholder excerpt for the RSS item. In a real implementation, this would be replaced with actual content from the RSS feed.';
+
+      let meta = '';
+      if (displayAuthor || displayDate) {
+        meta = `
         <div class="${getRssMetaClass(cssFramework)}">
           ${displayAuthor ? `By ${author}` : ''}
           ${displayAuthor && displayDate ? ' on ' : ''}
           ${displayDate ? date : ''}
         </div>
       `;
-    }
-    
-    return `
+      }
+
+      return `
       <li>
         <div>
           <a class="${getRssTitleClass(cssFramework)}" href="#">${title}</a>
@@ -169,5 +176,6 @@ function generateRssItemPlaceholders(
         </div>
       </li>
     `;
-  }).join('');
-} 
+    })
+    .join('');
+}

@@ -60,4 +60,4 @@ export function registerBuiltInBlockHandlers(): void {
   registerBlockHandler('core/rss', rssBlockHandler);
   registerBlockHandler('core/search', searchBlockHandler);
   registerBlockHandler('core/social-links', socialLinksBlockHandler);
-} 
+}

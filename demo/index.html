@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordPress Block to HTML Converter Demo</title>
+  <title>wp-block-to-html Demo</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -22,103 +22,111 @@
       text-align: center;
       margin-bottom: 3rem;
     }
-    .lead {
-      font-size: 1.25rem;
-      font-weight: 300;
-      margin-bottom: 2rem;
-    }
-    .framework-cards {
+    .demo-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 2rem;
     }
     .card {
-      border: 1px solid #ddd;
+      background-color: white;
       border-radius: 8px;
-      overflow: hidden;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
+      overflow: hidden;
+      transition: transform 0.2s;
     }
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
     }
-    .card-header {
-      background-color: #f5f5f5;
-      padding: 1rem;
-      border-bottom: 1px solid #ddd;
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
     }
-    .card-body {
+    .card-content {
       padding: 1.5rem;
     }
-    .card-title {
-      margin: 0;
-      font-size: 1.5rem;
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      color: #333;
     }
-    .card-text {
+    .card p {
+      color: #666;
       margin-bottom: 1.5rem;
     }
     .btn {
       display: inline-block;
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1.2rem;
       background-color: #007bff;
       color: white;
       text-decoration: none;
       border-radius: 4px;
+      font-weight: 500;
       transition: background-color 0.2s;
     }
     .btn:hover {
       background-color: #0069d9;
     }
     .footer {
-      margin-top: 3rem;
+      margin-top: 4rem;
       text-align: center;
       color: #6c757d;
-      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header class="header">
-      <h1>WordPress Block to HTML Converter Demo</h1>
-      <p class="lead">This demo shows how WordPress Gutenberg blocks can be converted and styled with different CSS frameworks.</p>
+      <h1>wp-block-to-html Demo</h1>
+      <p>
+        This demo showcases the wp-block-to-html library, which converts WordPress Gutenberg blocks to HTML with various styling options.
+      </p>
     </header>
-
-    <div class="framework-cards">
+    
+    <div class="demo-cards">
       <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">WordPress Default</h2>
-        </div>
-        <div class="card-body">
-          <p class="card-text">View WordPress content with default styling, without any CSS framework applied.</p>
+        <img src="https://via.placeholder.com/600x320/f8f9fa/999999?text=Default+Styling" alt="Default Styling">
+        <div class="card-content">
+          <h2>Default Styling</h2>
+          <p>See WordPress blocks converted to HTML with default WordPress styling.</p>
           <a href="default.html" class="btn">View Demo</a>
         </div>
       </div>
-
+      
       <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">Bootstrap</h2>
-        </div>
-        <div class="card-body">
-          <p class="card-text">See how WordPress content looks when styled with Bootstrap CSS framework.</p>
+        <img src="https://via.placeholder.com/600x320/0d6efd/ffffff?text=Bootstrap" alt="Bootstrap">
+        <div class="card-content">
+          <h2>Bootstrap Styling</h2>
+          <p>See WordPress blocks converted to HTML with Bootstrap CSS framework styling.</p>
           <a href="bootstrap.html" class="btn">View Demo</a>
         </div>
       </div>
-
+      
       <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">Tailwind CSS</h2>
-        </div>
-        <div class="card-body">
-          <p class="card-text">Experience WordPress content styled with Tailwind CSS utility classes.</p>
+        <img src="https://via.placeholder.com/600x320/38bdf8/ffffff?text=Tailwind+CSS" alt="Tailwind CSS">
+        <div class="card-content">
+          <h2>Tailwind CSS Styling</h2>
+          <p>See WordPress blocks converted to HTML with Tailwind CSS framework styling.</p>
           <a href="tailwind.html" class="btn">View Demo</a>
         </div>
       </div>
-    </div>
 
+      <div class="card">
+        <img src="https://via.placeholder.com/600x320/6b7280/ffffff?text=Rendering+Modes" alt="Rendering Modes Demo">
+        <div class="card-content">
+          <h2>Rendering Modes</h2>
+          <p>Explore the different rendering modes (rebuild, respect, preserve-attrs) for handling pre-rendered content.</p>
+          <a href="../examples/render-modes.html" class="btn">View Demo</a>
+        </div>
+      </div>
+    </div>
+    
     <footer class="footer">
-      <p>This demo uses the WordPress REST API to fetch posts from wp.madebyaris.com and renders them with different CSS frameworks.</p>
+      <p>
+        <a href="https://github.com/yourusername/wp-block-to-html" target="_blank">GitHub Repository</a> |
+        <a href="https://www.npmjs.com/package/wp-block-to-html" target="_blank">NPM Package</a>
+      </p>
+      <p>&copy; 2023 Made by Aris. All rights reserved.</p>
     </footer>
   </div>
 </body>

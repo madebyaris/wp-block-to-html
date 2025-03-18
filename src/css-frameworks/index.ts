@@ -1,6 +1,7 @@
 import { CSSFramework, CustomClassMap } from '../types';
 import { tailwindMapping } from './tailwind';
 import { bootstrapMapping } from './bootstrap';
+import { customMapping } from './custom';
 
 /**
  * Get CSS mapping for a specific framework
@@ -14,10 +15,11 @@ export function getCSSFrameworkMapping(framework: CSSFramework): CustomClassMap 
     case 'bootstrap':
       return bootstrapMapping;
     case 'custom':
+      return customMapping;
     case 'none':
     default:
       return {};
   }
 }
 
-export { tailwindMapping, bootstrapMapping };
+export { tailwindMapping, bootstrapMapping, customMapping };

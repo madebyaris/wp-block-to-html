@@ -14,16 +14,16 @@ export const pageBreakBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Create a page break element
     const pageBreakContent = `
       <span class="${getPageBreakTextClass(options.cssFramework)}">Page Break</span>
     `;
-    
+
     // Create the page break container
     return createElement('div', { class: classes }, pageBreakContent);
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -35,7 +35,7 @@ export const pageBreakBlockHandler: BlockHandler = {
         right: 'ml-auto',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'border-top border-bottom border-secondary py-2 my-4 text-center',
@@ -60,4 +60,4 @@ function getPageBreakTextClass(cssFramework?: string): string {
     default:
       return 'wp-block-nextpage-text';
   }
-} 
+}

@@ -1,5 +1,99 @@
 # WordPress Block to HTML Converter - Release Notes
 
+## v1.2.0 (2023-07-29)
+
+This update introduces a revolutionary modular bundle structure that dramatically reduces bundle size for applications that only use specific features of the library. Our testing shows size reductions of up to 99% compared to the full bundle!
+
+### New Features
+
+#### Modular Import System
+- **Highly Optimized Bundle Size**: Import only what you need, reducing your application's bundle size by up to 99%
+- **Framework-Specific Modules**: Separate modules for React and Vue integrations (~250B each)
+- **CSS Framework Modules**: Dedicated modules for Tailwind CSS and Bootstrap (as small as 1.8KB)
+- **Block Category Modules**: Import only the block handlers you need, organized by category (300B-1.5KB per category)
+- **Enhanced Tree-Shaking**: Improved code organization for better dead code elimination
+
+#### Bundle Size Improvements
+- **Full Bundle**: 132KB (complete functionality)
+- **Core Only**: ~2KB (98.5% reduction)
+- **Individual Block Categories**: 300B-1.5KB per category (99% reduction)
+- **Framework Adapters**: ~250B per framework excluding peer dependencies (99.8% reduction)
+- **Minimal Viable Setup (Hybrid Mode)**: 7.5KB minified (94% reduction)
+
+#### Advanced Customization Options
+- **Enhanced Class Customization**: Multiple ways to modify and extend CSS classes
+- **Framework Extension**: Easily extend built-in framework mappings with custom classes
+- **Direct HTML Enhancement**: New utility functions for hybrid rendering workflows
+
+### Usage Examples
+
+```javascript
+// Import only core functionality
+import { convertBlocks } from 'wp-block-to-html/core';
+
+// Import specific CSS frameworks
+import { tailwindMapping } from 'wp-block-to-html/frameworks/tailwind';
+
+// Import specific block categories
+import { paragraphBlockHandler } from 'wp-block-to-html/blocks/text';
+import { imageBlockHandler } from 'wp-block-to-html/blocks/media';
+
+// Import framework-specific functionality
+import { convertBlocksToReact } from 'wp-block-to-html/react';
+import { convertBlocksToVue } from 'wp-block-to-html/vue';
+
+// Minimal Viable Setup (7.5KB minified)
+const html = convertBlocks(wordpressContent, { 
+  cssFramework: 'tailwind',
+  contentHandling: 'hybrid',
+  customClassMap: { tailwind: tailwindMapping }
+});
+```
+
+### Practical Usage Scenarios
+
+- **Static Site Generators**: Use the minimal essential bundle for 94% smaller imports in Gatsby, Next.js, etc.
+- **SPAs with Framework Integration**: Import only the React or Vue adapters for a 99% smaller bundle
+- **WordPress Theme Development**: Include only the block handlers you need for your specific theme design
+- **Headless WordPress**: Optimize bundle size based on which blocks your content actually uses
+
+### Bug Fixes and Improvements
+- Fixed numerous linting issues
+- Improved TypeScript type definitions
+- Enhanced module tree-shaking capability
+- Extensive documentation updates with bundle optimization guide
+- Added detailed examples for CSS class customization
+
+### Breaking Changes
+None - This update is fully backwards compatible with existing code while enabling new optimized import paths.
+
+## v1.1.0 (2023-07-22)
+
+This update introduces significant enhancements to handle both WordPress block data and rendered HTML content, making the library more flexible and compatible with various WordPress configurations.
+
+### New Features
+
+#### Enhanced WordPress REST API Support
+- **Dual Content Handling**: Seamlessly handle both raw block data and rendered HTML content
+- **Fallback Mechanism**: Gracefully fall back to rendered content when block data is unavailable
+- **Content Handling Options**: Three modes to control how content is processed:
+  - `raw`: Process raw block data for full control (default)
+  - `rendered`: Use rendered HTML as-is
+  - `hybrid`: Combine rendered HTML with framework-specific classes
+
+#### Updated Demo Pages
+- New examples showing how to handle different WordPress API responses
+- Interactive demos for comparing content handling modes
+- Integration examples for fetching from real WordPress API endpoints
+
+### Bug Fixes and Improvements
+- Fixed issue with handling missing block data
+- Improved error handling and fallback strategies
+- Enhanced documentation for WordPress API integration
+
+### Breaking Changes
+None - This update is fully backwards compatible with existing code.
+
 ## v1.0.0-beta (2023-07-15)
 
 We're excited to announce the first beta release of the WordPress Block to HTML Converter library! This library allows you to convert WordPress block data into HTML or framework-specific components.
@@ -114,11 +208,12 @@ const htmlWithBootstrap = convertBlocks(blocks, { cssFramework: 'bootstrap' });
 
 We welcome feedback and contributions! Please submit issues and pull requests on our [GitHub repository](https://github.com/yourusername/wp-block-to-html).
 
-## Upcoming Features (Planned for v1.0.0)
+## Upcoming Features (Planned for v1.3.0)
 
 - Angular framework adapter
 - Svelte framework adapter
-- Additional block handlers
-- Performance optimizations
-- Enhanced documentation
-- More comprehensive test coverage 
+- Server-side rendering optimizations
+- Incremental rendering for large block collections
+- Support for theme customization options
+- Performance benchmarking tools
+- Block validation and sanitization utilities 

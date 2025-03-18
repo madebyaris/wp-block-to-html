@@ -16,10 +16,10 @@ export const socialLinksBlockHandler: BlockHandler = {
     if (options.customSocialLinksProcessor) {
       return options.customSocialLinksProcessor(block, options);
     }
-    
+
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract social links attributes
     const attrs = block.attrs || {};
     const iconColor = attrs.iconColor || '';
@@ -28,39 +28,45 @@ export const socialLinksBlockHandler: BlockHandler = {
     const iconBackgroundColorValue = attrs.iconBackgroundColorValue || '';
     const size = attrs.size || 'normal';
     const layout = attrs.layout?.type || 'horizontal';
-    
+
     // Process inner blocks if any
     let innerContent = '';
     if (block.innerBlocks && block.innerBlocks.length > 0) {
       // Process each social link
-      innerContent = block.innerBlocks.map(socialLink => {
-        return processSocialLink(socialLink, options, {
-          iconColor,
-          iconColorValue,
-          iconBackgroundColor,
-          iconBackgroundColorValue,
-          size,
-          layout
-        });
-      }).join('');
+      innerContent = block.innerBlocks
+        .map((socialLink) => {
+          return processSocialLink(socialLink, options, {
+            iconColor,
+            iconColorValue,
+            iconBackgroundColor,
+            iconBackgroundColorValue,
+            size,
+            layout,
+          });
+        })
+        .join('');
     } else {
       // If no inner blocks, create placeholder social links
       innerContent = generatePlaceholderSocialLinks(options.cssFramework, size, layout);
     }
-    
+
     // Create the container class based on layout
     const containerClass = getSocialLinksContainerClass(layout, options.cssFramework);
-    
+
     // Create the social links container
-    return createElement('ul', { 
-      class: `${classes} ${containerClass}`,
-      'data-icon-color': iconColor,
-      'data-icon-background-color': iconBackgroundColor,
-      'data-size': size,
-      'data-layout': layout
-    }, innerContent);
+    return createElement(
+      'ul',
+      {
+        class: `${classes} ${containerClass}`,
+        'data-icon-color': iconColor,
+        'data-icon-background-color': iconBackgroundColor,
+        'data-size': size,
+        'data-layout': layout,
+      },
+      innerContent,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -83,7 +89,7 @@ export const socialLinksBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-4',
@@ -111,7 +117,7 @@ export const socialLinksBlockHandler: BlockHandler = {
  * Process a single social link block
  */
 function processSocialLink(
-  socialLink: Block, 
+  socialLink: Block,
   options: ConversionOptions,
   parentAttrs: {
     iconColor: string;
@@ -120,20 +126,20 @@ function processSocialLink(
     iconBackgroundColorValue: string;
     size: string;
     layout: string;
-  }
+  },
 ): string {
   // Extract social link attributes
   const attrs = socialLink.attrs || {};
   const service = attrs.service || '';
   const url = attrs.url || '#';
   const label = attrs.label || service;
-  
+
   // Get the social icon
   const icon = getSocialIcon(service);
-  
+
   // Get the social link class
   const linkClass = getSocialLinkClass(service, parentAttrs.size, options.cssFramework);
-  
+
   // Create inline styles for colors if provided
   let style = '';
   if (parentAttrs.iconColorValue) {
@@ -142,7 +148,7 @@ function processSocialLink(
   if (parentAttrs.iconBackgroundColorValue) {
     style += `background-color: ${parentAttrs.iconBackgroundColorValue};`;
   }
-  
+
   // Create the social link
   return `
     <li class="${getSocialLinkItemClass(options.cssFramework)}">
@@ -157,14 +163,19 @@ function processSocialLink(
 /**
  * Generate placeholder social links
  */
-function generatePlaceholderSocialLinks(cssFramework?: string, size: string = 'normal', layout: string = 'horizontal'): string {
+function generatePlaceholderSocialLinks(
+  cssFramework?: string,
+  size: string = 'normal',
+  layout: string = 'horizontal',
+): string {
   const socialServices = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube'];
-  
-  return socialServices.map(service => {
-    const icon = getSocialIcon(service);
-    const linkClass = getSocialLinkClass(service, size, cssFramework);
-    
-    return `
+
+  return socialServices
+    .map((service) => {
+      const icon = getSocialIcon(service);
+      const linkClass = getSocialLinkClass(service, size, cssFramework);
+
+      return `
       <li class="${getSocialLinkItemClass(cssFramework)}">
         <a href="#" class="${linkClass}" title="${service}">
           ${icon}
@@ -172,7 +183,8 @@ function generatePlaceholderSocialLinks(cssFramework?: string, size: string = 'n
         </a>
       </li>
     `;
-  }).join('');
+    })
+    .join('');
 }
 
 /**
@@ -181,8 +193,8 @@ function generatePlaceholderSocialLinks(cssFramework?: string, size: string = 'n
 function getSocialLinksContainerClass(layout: string, cssFramework?: string): string {
   switch (cssFramework) {
     case 'tailwind':
-      return layout === 'horizontal' 
-        ? 'flex flex-row flex-wrap gap-2 list-none p-0' 
+      return layout === 'horizontal'
+        ? 'flex flex-row flex-wrap gap-2 list-none p-0'
         : 'flex flex-col gap-2 list-none p-0';
     case 'bootstrap':
       return layout === 'horizontal'
@@ -208,7 +220,7 @@ function getSocialLinkItemClass(cssFramework?: string): string {
 
 function getSocialLinkClass(service: string, size: string, cssFramework?: string): string {
   const sizeClass = getSocialLinkSizeClass(size, cssFramework);
-  
+
   switch (cssFramework) {
     case 'tailwind':
       return `flex items-center justify-center p-2 rounded-full bg-gray-700 text-white hover:bg-gray-600 ${sizeClass}`;
@@ -223,15 +235,21 @@ function getSocialLinkSizeClass(size: string, cssFramework?: string): string {
   switch (cssFramework) {
     case 'tailwind':
       switch (size) {
-        case 'small': return 'w-8 h-8 text-sm';
-        case 'large': return 'w-12 h-12 text-lg';
-        default: return 'w-10 h-10 text-base';
+        case 'small':
+          return 'w-8 h-8 text-sm';
+        case 'large':
+          return 'w-12 h-12 text-lg';
+        default:
+          return 'w-10 h-10 text-base';
       }
     case 'bootstrap':
       switch (size) {
-        case 'small': return 'btn-sm';
-        case 'large': return 'btn-lg';
-        default: return '';
+        case 'small':
+          return 'btn-sm';
+        case 'large':
+          return 'btn-lg';
+        default:
+          return '';
       }
     default:
       return `has-${size}-icon-size`;
@@ -281,4 +299,4 @@ function getSocialIcon(service: string): string {
         <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.007 12.422c-2.44 0-4.422-1.982-4.422-4.422 0-2.44 1.982-4.421 4.422-4.421 2.44 0 4.421 1.981 4.421 4.421 0 2.44-1.981 4.422-4.421 4.422z"/>
       </svg>`;
   }
-} 
+}

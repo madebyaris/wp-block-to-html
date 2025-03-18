@@ -14,86 +14,76 @@ export const buttonBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract the button content from innerContent
     let content = '';
-    
+
     // If there's innerHTML, use that
     if (block.innerHTML) {
       content = block.innerHTML;
-    } 
+    }
     // Otherwise join innerContent
     else if (block.innerContent.length > 0) {
       content = block.innerContent.join('');
     }
-    
+
     // Extract button attributes
     const url = block.attrs?.url || '#';
     const linkTarget = block.attrs?.linkTarget || '';
     const rel = block.attrs?.rel || '';
     const text = block.attrs?.text || '';
     const buttonStyle = block.attrs?.style || {};
-    
+
     // If we already have a button or anchor tag, we'll modify its attributes
-    if ((content.trim().startsWith('<button') && content.trim().endsWith('</button>')) ||
-        (content.trim().startsWith('<a') && content.trim().endsWith('</a>'))) {
-      
+    if (
+      (content.trim().startsWith('<button') && content.trim().endsWith('</button>')) ||
+      (content.trim().startsWith('<a') && content.trim().endsWith('</a>'))
+    ) {
       // Extract existing classes if any
       const existingClassMatch = content.match(/class="([^"]*)"/);
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
+
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
+      const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+
       // Replace or add the class attribute
       if (existingClassMatch) {
-        content = content.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
+        content = content.replace(/class="([^"]*)"/, `class="${combinedClasses}"`);
       } else {
         // Add class to button or anchor tag
         if (content.trim().startsWith('<button')) {
-          content = content.replace(
-            /^<button/,
-            `<button class="${classes}"`
-          );
+          content = content.replace(/^<button/, `<button class="${classes}"`);
         } else {
-          content = content.replace(
-            /^<a/,
-            `<a class="${classes}"`
-          );
+          content = content.replace(/^<a/, `<a class="${classes}"`);
         }
       }
-      
+
       return content;
     }
-    
+
     // If no button or anchor tag, create the structure
     // Determine button text content
     const buttonText = text || content || 'Button';
-    
+
     // Create attributes for the anchor tag
     const attributes: Record<string, string> = {
       href: url,
       class: classes,
     };
-    
+
     // Add optional attributes if they exist
     if (linkTarget) {
       attributes.target = linkTarget;
     }
-    
+
     if (rel) {
       attributes.rel = rel;
     }
-    
+
     // Create the button as an anchor tag
     return createElement('a', attributes, buttonText);
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -122,7 +112,7 @@ export const buttonBlockHandler: BlockHandler = {
         right: 'ml-auto',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'btn',
@@ -150,4 +140,4 @@ export const buttonBlockHandler: BlockHandler = {
       },
     },
   },
-}; 
+};

@@ -14,69 +14,58 @@ export const quoteBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract the quote content from innerContent
     let content = '';
-    
+
     // If there's innerHTML, use that
     if (block.innerHTML) {
       content = block.innerHTML;
-    } 
+    }
     // Otherwise join innerContent
     else if (block.innerContent.length > 0) {
       content = block.innerContent.join('');
     }
-    
+
     // Extract citation if present
     const citation = block.attrs.citation || '';
-    
+
     // If we already have a blockquote tag, we'll modify its attributes
     if (content.trim().startsWith('<blockquote') && content.trim().endsWith('</blockquote>')) {
       // Extract existing classes if any
       const existingClassMatch = content.match(/class="([^"]*)"/);
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
+
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
+      const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+
       // Replace or add the class attribute
       if (existingClassMatch) {
-        content = content.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
+        content = content.replace(/class="([^"]*)"/, `class="${combinedClasses}"`);
       } else {
-        content = content.replace(
-          /^<blockquote/,
-          `<blockquote class="${classes}"`
-        );
+        content = content.replace(/^<blockquote/, `<blockquote class="${classes}"`);
       }
-      
+
       // If there's a citation and it's not already present, add it
       if (citation && !content.includes('<cite>')) {
-        content = content.replace(
-          '</blockquote>',
-          `<cite>${citation}</cite></blockquote>`
-        );
+        content = content.replace('</blockquote>', `<cite>${citation}</cite></blockquote>`);
       }
-      
+
       return content;
     }
-    
+
     // If no blockquote tag, create the structure
     let quoteContent = content;
-    
+
     // Add citation if present
     if (citation) {
       quoteContent += `<cite>${citation}</cite>`;
     }
-    
+
     // Wrap in blockquote
     return createElement('blockquote', { class: classes }, quoteContent);
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -93,7 +82,7 @@ export const quoteBlockHandler: BlockHandler = {
       },
       citation: 'block mt-2 text-sm text-gray-600',
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'blockquote border-start border-4 ps-4 my-4',
@@ -109,4 +98,4 @@ export const quoteBlockHandler: BlockHandler = {
       citation: 'd-block mt-2 small text-muted',
     },
   },
-}; 
+};

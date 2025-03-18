@@ -25,70 +25,62 @@ export const galleryBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract the gallery content from innerContent
     let content = '';
-    
+
     // If there's innerHTML, use that
     if (block.innerHTML) {
       content = block.innerHTML;
-    } 
+    }
     // Otherwise join innerContent
     else if (block.innerContent.length > 0) {
       content = block.innerContent.join('');
     }
-    
+
     // Extract gallery attributes
     const images = block.attrs?.images || [];
     const columns = block.attrs?.columns || 3;
     const linkTo = block.attrs?.linkTo || 'none';
     const caption = block.attrs?.caption || '';
-    
+
     // If we already have a gallery structure, we'll modify its attributes
     if (content.trim().startsWith('<figure') && content.trim().endsWith('</figure>')) {
       // Extract existing classes if any
       const existingClassMatch = content.match(/class="([^"]*)"/);
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
+
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
+      const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+
       // Replace or add the class attribute
       if (existingClassMatch) {
-        content = content.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
+        content = content.replace(/class="([^"]*)"/, `class="${combinedClasses}"`);
       } else {
-        content = content.replace(
-          /^<figure/,
-          `<figure class="${classes}"`
-        );
+        content = content.replace(/^<figure/, `<figure class="${classes}"`);
       }
-      
+
       return content;
     }
-    
+
     // If no gallery structure, create one
     let galleryContent = '';
-    
+
     // Process images if available
     if (images.length > 0) {
       const imageElements = images.map((image: GalleryImage) => {
         const { url, id, alt, caption: imgCaption, link } = image;
-        
+
         // Create image element
         let imgElement = `<img src="${url}" alt="${alt || ''}" class="${getImageClass(options.cssFramework)}" />`;
-        
+
         // Add link if specified
         if (linkTo === 'media') {
           imgElement = `<a href="${url}" class="${getLinkClass(options.cssFramework)}">${imgElement}</a>`;
         } else if (linkTo === 'attachment' && link) {
           imgElement = `<a href="${link}" class="${getLinkClass(options.cssFramework)}">${imgElement}</a>`;
         }
-        
+
         // Add caption if available
         if (imgCaption) {
           imgElement = `
@@ -98,25 +90,25 @@ export const galleryBlockHandler: BlockHandler = {
             </figure>
           `;
         }
-        
+
         // Wrap in column div
         return `<div class="${getColumnClass(options.cssFramework, columns)}">${imgElement}</div>`;
       });
-      
+
       // Join image elements
       galleryContent = imageElements.join('');
     } else {
       // If no images array but we have content, use that
       galleryContent = content;
     }
-    
+
     // Create gallery wrapper
     let galleryHtml = `
       <div class="${getGalleryWrapperClass(options.cssFramework, columns)}">
         ${galleryContent}
       </div>
     `;
-    
+
     // Add caption if available
     if (caption) {
       galleryHtml = `
@@ -128,10 +120,10 @@ export const galleryBlockHandler: BlockHandler = {
     } else {
       galleryHtml = `<figure class="${classes}">${galleryHtml}</figure>`;
     }
-    
+
     return galleryHtml;
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -153,7 +145,7 @@ export const galleryBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-3',
@@ -258,4 +250,4 @@ function getLinkClass(cssFramework?: string): string {
     default:
       return '';
   }
-} 
+}

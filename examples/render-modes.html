@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WordPress Block to HTML - Rendering Modes Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../dist/index.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+  <div class="max-w-4xl mx-auto bg-white p-8 shadow-md rounded-lg">
+    <h1 class="text-3xl font-bold mb-6">Rendering Modes Demo</h1>
+    
+    <p class="mb-4">
+      This demo shows how the wp-block-to-html library handles pre-rendered HTML content
+      from the WordPress API using different rendering modes.
+    </p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+      <!-- Original Content -->
+      <div class="border p-4 rounded-lg">
+        <h3 class="text-lg font-bold mb-2">Original Content</h3>
+        <div id="original" class="border-l-4 border-gray-300 pl-4">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+      
+      <!-- Respect Mode -->
+      <div class="border p-4 rounded-lg">
+        <h3 class="text-lg font-bold mb-2">'respect' Mode</h3>
+        <p class="text-sm text-gray-600 mb-2">Uses original HTML as-is</p>
+        <div id="respect" class="border-l-4 border-blue-300 pl-4">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+      
+      <!-- Rebuild Mode -->
+      <div class="border p-4 rounded-lg">
+        <h3 class="text-lg font-bold mb-2">'rebuild' Mode</h3>
+        <p class="text-sm text-gray-600 mb-2">Extracts content and rebuilds with our classes</p>
+        <div id="rebuild" class="border-l-4 border-green-300 pl-4">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+      
+      <!-- Preserve-attrs Mode -->
+      <div class="border p-4 rounded-lg md:col-span-3">
+        <h3 class="text-lg font-bold mb-2">'preserve-attrs' Mode</h3>
+        <p class="text-sm text-gray-600 mb-2">Keeps original HTML but adds our classes</p>
+        <div id="preserve" class="border-l-4 border-purple-300 pl-4">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-8">
+      <h2 class="text-2xl font-bold mb-4">How it works</h2>
+      <p class="mb-2">
+        This demo shows the three rendering modes available in wp-block-to-html:
+      </p>
+      <ul class="list-disc pl-6 mb-4">
+        <li><code>respect</code>: Uses the pre-rendered HTML exactly as provided by WordPress</li>
+        <li><code>rebuild</code>: Extracts content from tags and rebuilds elements with our framework's classes</li>
+        <li><code>preserve-attrs</code>: Keeps the original HTML structure but adds our CSS classes to existing tags</li>
+      </ul>
+      <p>
+        These modes give you flexibility when working with WordPress content, especially when
+        using the REST API which can provide both rendered HTML and raw block data.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sample WordPress block with pre-rendered HTML
+      const sampleBlock = {
+        blockName: 'core/paragraph',
+        attrs: {
+          align: 'center',
+          dropCap: true,
+          content: 'This is a paragraph with some styling.'
+        },
+        innerBlocks: [],
+        innerContent: ['<p class="has-text-align-center has-drop-cap">This is a paragraph with some styling.</p>']
+      };
+      
+      // Sample heading block with pre-rendered HTML
+      const headingBlock = {
+        blockName: 'core/heading',
+        attrs: {
+          level: 2,
+          align: 'center',
+          content: 'This is a heading'
+        },
+        innerBlocks: [],
+        innerContent: ['<h2 class="has-text-align-center">This is a heading</h2>']
+      };
+
+      // Sample list block with pre-rendered HTML
+      const listBlock = {
+        blockName: 'core/list',
+        attrs: {
+          ordered: true
+        },
+        innerBlocks: [],
+        innerContent: ['<ol class="wp-block-list"><li>First item</li><li>Second item</li><li>Third item</li></ol>']
+      };
+      
+      // Display the original content
+      document.getElementById('original').innerHTML = 
+        sampleBlock.innerContent[0] + '<br><br>' + 
+        headingBlock.innerContent[0] + '<br><br>' + 
+        listBlock.innerContent[0];
+      
+      // Process with 'respect' mode
+      const respectContent = wpBlockToHtml.convertBlocks(
+        [sampleBlock, headingBlock, listBlock], 
+        { 
+          cssFramework: 'tailwind',
+          renderedContentHandling: 'respect'
+        }
+      );
+      document.getElementById('respect').innerHTML = respectContent;
+      
+      // Process with 'rebuild' mode
+      const rebuildContent = wpBlockToHtml.convertBlocks(
+        [sampleBlock, headingBlock, listBlock], 
+        { 
+          cssFramework: 'tailwind',
+          renderedContentHandling: 'rebuild'
+        }
+      );
+      document.getElementById('rebuild').innerHTML = rebuildContent;
+      
+      // Process with 'preserve-attrs' mode
+      const preserveContent = wpBlockToHtml.convertBlocks(
+        [sampleBlock, headingBlock, listBlock], 
+        { 
+          cssFramework: 'tailwind',
+          renderedContentHandling: 'preserve-attrs'
+        }
+      );
+      document.getElementById('preserve').innerHTML = preserveContent;
+    });
+  </script>
+</body>
+</html> 

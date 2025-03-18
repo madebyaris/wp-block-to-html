@@ -82,4 +82,4 @@ export interface ConversionOptions {
 export const DEFAULT_OPTIONS: ConversionOptions = {
   outputFormat: 'html',
   cssFramework: 'none',
-}; 
+};

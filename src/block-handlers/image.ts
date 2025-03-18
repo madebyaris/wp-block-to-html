@@ -14,59 +14,58 @@ export const imageBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract the image content from innerContent
     let content = '';
-    
+
     // If there's innerHTML, use that
     if (block.innerHTML) {
       content = block.innerHTML;
-    } 
+    }
     // Otherwise join innerContent
     else if (block.innerContent.length > 0) {
       content = block.innerContent.join('');
     }
-    
-    // If we already have a figure tag with img, we'll modify its attributes
+
+    // Get the rendering mode from options
+    const renderMode = options.renderedContentHandling || 'rebuild';
+
+    // For image blocks with rendered content
     if (content.trim().startsWith('<figure') && content.includes('<img')) {
-      // Extract and process the img tag
-      const imgMatch = content.match(/<img [^>]*>/);
-      if (imgMatch) {
-        const imgTag = imgMatch[0];
-        
-        // Extract existing classes if any
-        const existingClassMatch = imgTag.match(/class="([^"]*)"/);
-        const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-        
-        // Combine existing classes with our framework classes
-        const combinedClasses = existingClass
-          ? `${existingClass} ${classes}`
-          : classes;
-        
-        // Replace or add the class attribute to the img tag
-        let newImgTag;
-        if (existingClassMatch) {
-          newImgTag = imgTag.replace(
-            /class="([^"]*)"/,
-            `class="${combinedClasses}"`
-          );
-        } else {
-          newImgTag = imgTag.replace(
-            /^<img/,
-            `<img class="${classes}"`
-          );
-        }
-        
-        // Replace the img tag in the content
-        content = content.replace(imgTag, newImgTag);
-        
+      // Image blocks are often wrapped in a figure tag, which we should preserve
+      if (renderMode === 'respect') {
         return content;
+      } else if (renderMode === 'preserve-attrs') {
+        // Extract and process the img tag
+        const imgMatch = content.match(/<img [^>]*>/);
+        if (imgMatch) {
+          const imgTag = imgMatch[0];
+
+          // Extract existing classes if any
+          const existingClassMatch = imgTag.match(/class="([^"]*)"/);
+          const existingClass = existingClassMatch ? existingClassMatch[1] : '';
+
+          // Combine existing classes with our framework classes
+          const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+
+          // Replace or add the class attribute to the img tag
+          let newImgTag;
+          if (existingClassMatch) {
+            newImgTag = imgTag.replace(/class="([^"]*)"/, `class="${combinedClasses}"`);
+          } else {
+            newImgTag = imgTag.replace(/^<img/, `<img class="${classes}"`);
+          }
+
+          // Replace the img tag in the content
+          return content.replace(imgTag, newImgTag);
+        }
       }
     }
-    
-    // If no figure/img structure, try to extract src, alt, etc. from the block
-    const { src, alt, href, caption, width, height } = block.attrs;
-    
+
+    // For rebuild mode or if we need to build from scratch
+    // Extract attributes from the block
+    const { src, alt, href, caption, width, height } = block.attrs || {};
+
     if (src) {
       // Create image attributes
       const imgAttrs: Record<string, string | number | boolean> = {
@@ -74,34 +73,38 @@ export const imageBlockHandler: BlockHandler = {
         src,
         alt: alt || '',
       };
-      
+
       // Add optional attributes
       if (width) imgAttrs.width = width;
       if (height) imgAttrs.height = height;
-      
+
       // Create the image tag
       const imgHtml = createElement('img', imgAttrs);
-      
+
       // If there's a caption, wrap in figure
       if (caption) {
-        return createElement('figure', {}, `
+        return createElement(
+          'figure',
+          {},
+          `
           ${imgHtml}
           <figcaption>${caption}</figcaption>
-        `);
+        `,
+        );
       }
-      
+
       // If there's a link, wrap in anchor
       if (href) {
         return createElement('a', { href }, imgHtml);
       }
-      
+
       return imgHtml;
     }
-    
+
     // Fallback: return original content
     return content;
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -119,7 +122,7 @@ export const imageBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'img-fluid',
@@ -136,4 +139,4 @@ export const imageBlockHandler: BlockHandler = {
       },
     },
   },
-}; 
+};

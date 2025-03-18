@@ -9,6 +9,8 @@ Convert WordPress Gutenberg blocks to HTML or framework-specific components with
 
 - Convert WordPress Gutenberg blocks to clean HTML
 - Support for all WordPress core blocks
+- Handle both raw block data and rendered HTML content
+- Multiple content handling modes for switching between raw and rendered content
 - Customizable CSS class mapping
 - Built-in support for Tailwind CSS and Bootstrap
 - Framework-specific output options (React, Vue, etc.)
@@ -52,6 +54,42 @@ const tailwindHtml = convertBlocks(blockData, { cssFramework: 'tailwind' });
 console.log(tailwindHtml); // <p class="text-center">Hello WordPress!</p>
 ```
 
+## WordPress REST API Integration
+
+The WordPress REST API can return content in two forms:
+
+1. **Raw Block Data**: Available in the `blocks` property when the WordPress site has the Gutenberg block editor enabled and is configured to expose block data
+2. **Rendered HTML**: Always available in the `content.rendered` property
+
+This library handles both formats:
+
+```javascript
+import { convertBlocks } from 'wp-block-to-html';
+
+// Fetching a post from WordPress API
+async function fetchWordPressPost() {
+  const response = await fetch('https://example.com/wp-json/wp/v2/posts/1?_fields=id,title,content,blocks');
+  const post = await response.json();
+  
+  let htmlContent;
+  
+  // Check if blocks data is available
+  if (post.blocks) {
+    // Use raw block data with your preferred content handling mode
+    htmlContent = convertBlocks(post.blocks, {
+      cssFramework: 'tailwind',
+      contentHandling: 'raw'
+    });
+  } 
+  // Fall back to rendered content if no blocks are available
+  else if (post.content && post.content.rendered) {
+    htmlContent = post.content.rendered;
+  }
+  
+  document.getElementById('content').innerHTML = htmlContent;
+}
+```
+
 ## Configuration Options
 
 ```javascript
@@ -62,6 +100,9 @@ const options = {
   
   // CSS framework (default: 'none')
   cssFramework: 'tailwind', // 'none' | 'tailwind' | 'bootstrap' | 'custom'
+  
+  // Content handling (default: 'raw')
+  contentHandling: 'raw', // 'raw' | 'rendered' | 'hybrid'
   
   // Custom class mapping
   customClassMap: {
@@ -89,6 +130,105 @@ const options = {
 const result = convertBlocks(blockData, options);
 ```
 
+## Handling Rendered WordPress Content
+
+When working with WordPress REST API, you have options for handling the content:
+
+```javascript
+// WordPress block with rendered HTML in innerContent
+const blockWithRenderedHTML = {
+  blockName: 'core/paragraph',
+  attrs: { align: 'center' },
+  innerContent: ['<p class="has-text-align-center">Pre-rendered paragraph</p>']
+};
+
+// 1. Raw mode - Process raw block data for full control
+const htmlRaw = convertBlocks(blockWithRenderedHTML, { 
+  contentHandling: 'raw'
+});
+// Output: <p class="text-center">Pre-rendered paragraph</p> (with Tailwind)
+
+// 2. Rendered mode - use the rendered HTML as-is
+const htmlRendered = convertBlocks(blockWithRenderedHTML, { 
+  contentHandling: 'rendered'
+});
+// Output: <p class="has-text-align-center">Pre-rendered paragraph</p>
+
+// 3. Hybrid mode - keep rendered HTML but add framework classes
+const htmlHybrid = convertBlocks(blockWithRenderedHTML, { 
+  cssFramework: 'tailwind',
+  contentHandling: 'hybrid'
+});
+// Output: <p class="has-text-align-center text-center">Pre-rendered paragraph</p>
+```
+
+### Choosing the Right Content Handling Mode
+
+Each content handling mode has specific use cases:
+
+- **raw** (default): Best when you want to process the raw block data for full control over the output HTML and apply your chosen CSS framework consistently.
+- **rendered**: Best when you want to preserve the exact HTML and styling provided by WordPress, without modifications.
+- **hybrid**: A middle ground that keeps WordPress attributes (like IDs, data attributes) but adds your framework's classes.
+
+## Fallback Strategy
+
+For WordPress sites that don't expose block data, or for specific posts without block data, you can implement a fallback strategy:
+
+```javascript
+function renderWordPressContent(post) {
+  try {
+    // Check if blocks data is available
+    if (post.blocks) {
+      console.log('Using raw block data for conversion');
+      return convertBlocks(post.blocks, {
+        cssFramework: 'bootstrap',
+        contentHandling: 'raw'
+      });
+    } 
+    // If no blocks but we have rendered content
+    else if (post.content && post.content.rendered) {
+      console.log('No blocks found, using rendered content');
+      return post.content.rendered;
+    } 
+    // Neither blocks nor rendered content
+    else {
+      console.error('No content found for this post');
+      return '<div class="error">No content found</div>';
+    }
+  } catch (error) {
+    console.error('Error converting content:', error);
+    return `<div class="error">Error converting content: ${error.message}</div>`;
+  }
+}
+```
+
+## Examples and Demos
+
+Check out the examples and demos to see the library in action:
+
+1. **Content Handling Modes Demo**: See how different content handling modes work
+   - [View Example](./examples/content-handling-modes.html)
+   
+2. **CSS Framework Demo**: Compare WordPress default, Bootstrap, and Tailwind styling
+   - [View Demo](./demo/index.html)
+
+To run the demos locally:
+
+```bash
+# Install dependencies
+npm install
+
+# Build the library
+npm run build
+
+# Start the demo server
+npm run serve
+```
+
+Then navigate to:
+- `http://localhost:3000/examples/content-handling-modes.html` - To see the content handling modes demo
+- `http://localhost:3000/demo/index.html` - To see the CSS framework demo
+
 ## Framework Integration
 
 ### React
@@ -96,11 +236,19 @@ const result = convertBlocks(blockData, options);
 ```javascript
 import { convertBlocks } from 'wp-block-to-html';
 
-function WordPressContent({ blocks }) {
-  const html = convertBlocks(blocks, { 
-    outputFormat: 'html', 
-    cssFramework: 'tailwind' 
-  });
+function WordPressContent({ post }) {
+  // Handle both block data and rendered content
+  let html = '';
+  
+  if (post.blocks) {
+    html = convertBlocks(post.blocks, { 
+      outputFormat: 'html', 
+      cssFramework: 'tailwind',
+      contentHandling: 'raw'
+    });
+  } else if (post.content && post.content.rendered) {
+    html = post.content.rendered;
+  }
   
   return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }
@@ -108,9 +256,14 @@ function WordPressContent({ blocks }) {
 // Or use the React component output
 import { convertBlocksToReact } from 'wp-block-to-html/react';
 
-function WordPressContent({ blocks }) {
-  const components = convertBlocksToReact(blocks, { 
-    cssFramework: 'tailwind' 
+function WordPressContent({ post }) {
+  if (!post.blocks) {
+    return <div dangerouslySetInnerHTML={{ __html: post.content?.rendered || '' }} />;
+  }
+  
+  const components = convertBlocksToReact(post.blocks, { 
+    cssFramework: 'tailwind',
+    contentHandling: 'raw'
   });
   
   return <div>{components}</div>;
@@ -159,3 +312,220 @@ For complete documentation, visit [wp-block-to-html.madebyaris.com](https://wp-b
 ## License
 
 MIT 
+
+## Optimizing Bundle Size
+
+The library supports tree-shaking and modular imports to dramatically reduce bundle size. Our extensive testing shows these impressive size reductions:
+
+| Import Type | Bundle Size | Reduction |
+|-------------|-------------|-----------|
+| Full Bundle | 132KB | 0% |
+| Core + Tailwind + Single Block Handler | 12KB | 91% |
+| Minimal Essential Bundle (minified) | 7.5KB | 94% |
+| Tailwind Mapping Only | 1.8KB | 99% |
+
+You can achieve these optimizations by importing only the components and functionality you need:
+
+### Core Functionality Only
+
+```javascript
+// Import only core functionality without block handlers
+import { convertBlocks, registerBlockHandler } from 'wp-block-to-html/core';
+
+// Register only the block handlers you need
+import { paragraphBlockHandler, headingBlockHandler } from 'wp-block-to-html/blocks/text';
+
+// Register custom block handlers
+registerBlockHandler('core/paragraph', paragraphBlockHandler);
+registerBlockHandler('core/heading', headingBlockHandler);
+```
+
+### Specific CSS Framework
+
+```javascript
+// Import only Tailwind CSS support
+import { tailwindMapping } from 'wp-block-to-html/frameworks/tailwind';
+
+// Import only Bootstrap support
+import { bootstrapMapping } from 'wp-block-to-html/frameworks/bootstrap';
+```
+
+### Specific Block Categories
+
+```javascript
+// Import only text block handlers and a registration function
+import { registerTextBlockHandlers } from 'wp-block-to-html/blocks/text';
+registerTextBlockHandlers(); // Registers all text block handlers
+
+// Or import only media block handlers
+import { registerMediaBlockHandlers } from 'wp-block-to-html/blocks/media';
+registerMediaBlockHandlers(); // Registers all media block handlers
+
+// Available categories:
+// - wp-block-to-html/blocks/text
+// - wp-block-to-html/blocks/media
+// - wp-block-to-html/blocks/layout
+// - wp-block-to-html/blocks/widget
+// - wp-block-to-html/blocks/dynamic
+```
+
+### Framework-Specific Imports
+
+```javascript
+// React-specific imports
+import { convertBlocksToReact, createReactComponent } from 'wp-block-to-html/react';
+
+// Vue-specific imports
+import { convertBlocksToVue, createVueComponentOptions } from 'wp-block-to-html/vue';
+```
+
+### Minimum Viable Bundle Example
+
+The most optimized approach uses the hybrid mode with just core functionality and CSS mapping:
+
+```javascript
+// Import only core convertBlocks (2KB)
+import { convertBlocks } from 'wp-block-to-html/core';
+// Import only tailwind mapping (1.8KB)
+import { tailwindMapping } from 'wp-block-to-html/frameworks/tailwind';
+
+// Process pre-rendered HTML content with Tailwind classes
+const html = convertBlocks(wordpressContent, { 
+  cssFramework: 'tailwind',
+  contentHandling: 'hybrid',
+  customClassMap: { tailwind: tailwindMapping }
+});
+```
+
+This approach results in a bundle as small as 7.5KB minified!
+
+## Customizing CSS Classes
+
+The library offers several ways to customize CSS classes applied to blocks:
+
+### 1. Using the customClassMap Option
+
+You can provide a custom class mapping for specific blocks:
+
+```javascript
+import { convertBlocks } from 'wp-block-to-html';
+
+const customClasses = {
+  'core/paragraph': {
+    block: 'my-custom-paragraph-class',
+    align: {
+      center: 'my-custom-center-class',
+      left: 'my-custom-left-class',
+      right: 'my-custom-right-class'
+    },
+    dropCap: 'my-custom-dropcap-class'
+  },
+  'core/heading': {
+    block: 'my-custom-heading-class',
+    level: {
+      '1': 'my-h1-class',
+      '2': 'my-h2-class',
+      // ... other levels
+    }
+  }
+  // ... other block types
+};
+
+const html = convertBlocks(blocks, {
+  cssFramework: 'custom',
+  customClassMap: { custom: customClasses }
+});
+```
+
+### 2. Extending a Built-in Framework
+
+You can extend the built-in frameworks with your own classes:
+
+```javascript
+import { convertBlocks } from 'wp-block-to-html';
+import { tailwindMapping } from 'wp-block-to-html/frameworks/tailwind';
+
+// Create a deep copy of the Tailwind mapping
+const extendedTailwind = JSON.parse(JSON.stringify(tailwindMapping));
+
+// Add or modify mappings
+extendedTailwind['core/paragraph'].block = 'my-4 px-4 custom-para'; // Add to existing
+extendedTailwind['core/image'].customAttribute = 'my-custom-image-class'; // Add new attribute
+
+// Use the extended mapping
+const html = convertBlocks(blocks, {
+  cssFramework: 'tailwind',
+  customClassMap: { tailwind: extendedTailwind }
+});
+```
+
+### 3. Creating a Custom Block Handler
+
+For complete control, register a custom block handler:
+
+```javascript
+import { registerBlockHandler } from 'wp-block-to-html/core';
+import { getBlockClasses } from 'wp-block-to-html/core';
+
+// Custom block handler for paragraphs
+registerBlockHandler('core/paragraph', {
+  transform(block, options) {
+    const { attrs, innerContent } = block;
+    const content = innerContent.join('');
+    
+    // Get classes using the built-in mechanism
+    const classes = getBlockClasses(block, 'core/paragraph', options);
+    
+    // Add additional custom classes
+    let customClasses = classes;
+    if (attrs.customAttribute === 'special') {
+      customClasses += ' my-special-class';
+    }
+    
+    // Return the transformed HTML
+    return `<p class="${customClasses}">${content}</p>`;
+  },
+  
+  // Define CSS framework mappings for this block
+  cssMapping: {
+    tailwind: {
+      block: 'text-base my-4',
+      align: {
+        center: 'text-center',
+        left: 'text-left',
+        right: 'text-right'
+      },
+      // Custom attribute mappings
+      customSize: {
+        small: 'text-sm',
+        large: 'text-lg'
+      }
+    },
+    bootstrap: {
+      // Bootstrap specific mappings
+    }
+  }
+});
+```
+
+### 4. Using the enhanceRenderedHTML Function for Hybrid Mode
+
+The hybrid mode uses `enhanceRenderedHTML` internally, but you can use it directly:
+
+```javascript
+import { enhanceRenderedHTML } from 'wp-block-to-html/core';
+import { tailwindMapping } from 'wp-block-to-html/frameworks/tailwind';
+
+// WordPress rendered HTML
+const renderedHTML = '<p class="has-text-align-center">Hello WordPress!</p>';
+
+// Enhance with Tailwind classes
+const enhancedHTML = enhanceRenderedHTML(renderedHTML, {
+  cssFramework: 'tailwind',
+  customClassMap: { tailwind: tailwindMapping }
+});
+
+console.log(enhancedHTML); // <p class="has-text-align-center text-center">Hello WordPress!</p>
+```
+
+This approach is perfect for handling pre-rendered content while still applying your CSS framework classes. 

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Framework Test</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  
+  <style>
+    .debug-info {
+      margin: 1rem 0;
+      padding: 1rem;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    .option-selector {
+      margin: 1rem 0;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      border: 1px solid #dee2e6;
+    }
+
+    .option-selector select {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ced4da;
+      margin-left: 0.5rem;
+    }
+
+    .option-selector button {
+      padding: 0.5rem 1rem;
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+
+    .option-selector button:hover {
+      background-color: #0b5ed7;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 p-8">
+  <div class="container mx-auto max-w-3xl">
+    <h1 class="text-2xl font-bold mb-4">WordPress Block Converter Test</h1>
+    <p>This page tests how our library handles different WordPress block formats and rendering modes.</p>
+    
+    <div class="option-selector">
+      <strong>Rendering Mode:</strong>
+      <select id="renderMode">
+        <option value="rebuild">rebuild - Extract content and rebuild</option>
+        <option value="respect">respect - Keep WordPress HTML as-is</option>
+        <option value="preserve-attrs">preserve-attrs - Keep HTML but add our classes</option>
+      </select>
+      <button id="updateRender">Update</button>
+    </div>
+    
+    <div id="output" class="mt-8"></div>
+    <div id="debug" class="debug-info"></div>
+  </div>
+
+  <script type="module">
+    import { convertBlocks } from '../dist/index.mjs';
+    
+    // Sample paragraph block with content as attribute
+    const paragraphBlock = {
+      blockName: "core/paragraph",
+      attrs: { content: "This is a test paragraph with content as attribute." },
+      innerBlocks: [],
+      innerContent: [""]
+    };
+    
+    // WordPress-style paragraph block with pre-rendered HTML
+    const wpParagraphBlock = {
+      blockName: "core/paragraph",
+      attrs: {
+        content: "This is a WordPress-style paragraph block with pre-rendered HTML.",
+        dropCap: false,
+        align: "left"
+      },
+      innerBlocks: [],
+      innerContent: ["<p>This is a WordPress-style paragraph block with pre-rendered HTML.</p>"]
+    };
+    
+    // Sample heading block
+    const headingBlock = {
+      blockName: "core/heading",
+      attrs: { content: "Test Heading", level: 2 },
+      innerBlocks: [],
+      innerContent: ["<h2>Test Heading</h2>"]
+    };
+    
+    // Elements
+    const debug = document.getElementById('debug');
+    const output = document.getElementById('output');
+    const renderModeSelect = document.getElementById('renderMode');
+    const updateButton = document.getElementById('updateRender');
+    
+    // Run the conversion with current settings
+    function runConversion() {
+      const renderMode = renderModeSelect.value;
+      
+      try {
+        console.log(`Testing with Tailwind CSS framework, render mode: ${renderMode}`);
+        
+        // Convert blocks with the selected rendering mode
+        const options = { 
+          cssFramework: 'tailwind',
+          renderedContentHandling: renderMode
+        };
+        
+        // Test regular block
+        console.log('Converting regular block...');
+        const convertedHtml = convertBlocks([paragraphBlock, headingBlock], options);
+        console.log('Regular blocks converted HTML:', convertedHtml);
+        
+        // Test WordPress-style block
+        console.log('Converting WordPress-style block...');
+        const wpConvertedHtml = convertBlocks([wpParagraphBlock], options);
+        console.log('WordPress-style block converted HTML:', wpConvertedHtml);
+        
+        // Display the results
+        output.innerHTML = `
+          <h3 class="text-xl font-semibold mb-2">Tailwind CSS Output with <code>${renderMode}</code> mode:</h3>
+          
+          <h4 class="font-medium mt-4 mb-2">Regular Block Format:</h4>
+          <div class="border p-4 rounded bg-white mb-6">${convertedHtml}</div>
+          
+          <h4 class="font-medium mt-4 mb-2">WordPress Block Format:</h4>
+          <div class="border p-4 rounded bg-white">${wpConvertedHtml}</div>
+        `;
+        
+        // Analyze the HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = convertedHtml;
+        
+        const wpTempDiv = document.createElement('div');
+        wpTempDiv.innerHTML = wpConvertedHtml;
+        
+        const paragraphs = tempDiv.querySelectorAll('p');
+        const headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        const wpParagraphs = wpTempDiv.querySelectorAll('p');
+        
+        let debugInfo = `<h3 class="text-xl font-semibold mb-2">Debug Info (${renderMode} mode):</h3>`;
+        
+        debugInfo += '<p><strong>Regular Paragraph Elements:</strong></p><ul>';
+        paragraphs.forEach((p, index) => {
+          debugInfo += `<li>Paragraph ${index + 1} classes: <code>${p.getAttribute('class') || 'none'}</code></li>`;
+        });
+        debugInfo += '</ul>';
+        
+        debugInfo += '<p><strong>WordPress Paragraph Elements:</strong></p><ul>';
+        wpParagraphs.forEach((p, index) => {
+          debugInfo += `<li>Paragraph ${index + 1} classes: <code>${p.getAttribute('class') || 'none'}</code></li>`;
+        });
+        debugInfo += '</ul>';
+        
+        debugInfo += '<p><strong>Heading Elements:</strong></p><ul>';
+        headings.forEach((h, index) => {
+          debugInfo += `<li>${h.tagName} ${index + 1} classes: <code>${h.getAttribute('class') || 'none'}</code></li>`;
+        });
+        debugInfo += '</ul>';
+        
+        debug.innerHTML = debugInfo;
+      } catch (error) {
+        console.error('Error:', error);
+        output.innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded">Error: ${error.message}</div>`;
+        debug.innerHTML = `<pre>${error.stack}</pre>`;
+      }
+    }
+    
+    // Run initial conversion
+    runConversion();
+    
+    // Add event listener for update button
+    updateButton.addEventListener('click', runConversion);
+  </script>
+</body>
+</html> 

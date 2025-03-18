@@ -14,15 +14,15 @@ export const pageListBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract page list attributes
     const parentPageId = block.attrs?.parentPageId || 0;
     const showHierarchy = block.attrs?.showHierarchy || true;
-    
+
     // Create a placeholder for the page list
     // In a real implementation, this would be replaced with actual page data
     let content = '';
-    
+
     // Check if we have a custom page list processor in options
     if (options.customPageListProcessor && typeof options.customPageListProcessor === 'function') {
       try {
@@ -34,22 +34,26 @@ export const pageListBlockHandler: BlockHandler = {
         console.error('Error processing page list:', error);
       }
     }
-    
+
     // If no custom processor or it failed, return a placeholder
     content = `
       <ul class="${getPageListClass(options.cssFramework)}">
         ${generatePagePlaceholders(5, parentPageId, showHierarchy)}
       </ul>
     `;
-    
+
     // Create the page list container
-    return createElement('div', { 
-      class: classes,
-      'data-parent-page-id': parentPageId,
-      'data-show-hierarchy': showHierarchy ? 'true' : 'false'
-    }, content);
+    return createElement(
+      'div',
+      {
+        class: classes,
+        'data-parent-page-id': parentPageId,
+        'data-show-hierarchy': showHierarchy ? 'true' : 'false',
+      },
+      content,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -63,7 +67,7 @@ export const pageListBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-4',
@@ -98,7 +102,7 @@ function getPageListClass(cssFramework?: string): string {
 function generatePagePlaceholders(
   count: number,
   parentPageId: number,
-  showHierarchy: boolean
+  showHierarchy: boolean,
 ): string {
   // Sample pages
   const pages = [
@@ -111,23 +115,26 @@ function generatePagePlaceholders(
     { id: 7, title: 'SEO', parent: 5 },
     { id: 8, title: 'Contact', parent: 0 },
   ];
-  
+
   // Filter pages based on parentPageId
-  const filteredPages = parentPageId === 0
-    ? pages.filter(page => page.parent === 0)
-    : pages.filter(page => page.parent === parentPageId);
-  
+  const filteredPages =
+    parentPageId === 0
+      ? pages.filter((page) => page.parent === 0)
+      : pages.filter((page) => page.parent === parentPageId);
+
   // Limit to the requested count
   const limitedPages = filteredPages.slice(0, count);
-  
+
   if (showHierarchy) {
     // For hierarchical display, we need to build a tree
     return buildPageHierarchy(pages, parentPageId);
   } else {
     // For flat display, just list the pages
-    return limitedPages.map(page => {
-      return `<li><a href="#">${page.title}</a></li>`;
-    }).join('');
+    return limitedPages
+      .map((page) => {
+        return `<li><a href="#">${page.title}</a></li>`;
+      })
+      .join('');
   }
 }
 
@@ -135,31 +142,33 @@ function generatePagePlaceholders(
  * Build a hierarchical page list
  */
 function buildPageHierarchy(
-  pages: Array<{id: number, title: string, parent: number}>,
+  pages: Array<{ id: number; title: string; parent: number }>,
   parentId: number,
-  level: number = 0
+  level: number = 0,
 ): string {
-  const children = pages.filter(page => page.parent === parentId);
-  
+  const children = pages.filter((page) => page.parent === parentId);
+
   if (children.length === 0) {
     return '';
   }
-  
-  return children.map(page => {
-    const padding = level > 0 ? ' style="margin-left: ' + (level * 20) + 'px;"' : '';
-    
-    const childrenHtml = buildPageHierarchy(pages, page.id, level + 1);
-    
-    if (childrenHtml) {
-      return `
+
+  return children
+    .map((page) => {
+      const padding = level > 0 ? ' style="margin-left: ' + level * 20 + 'px;"' : '';
+
+      const childrenHtml = buildPageHierarchy(pages, page.id, level + 1);
+
+      if (childrenHtml) {
+        return `
         <li${padding}><a href="#">${page.title}</a>
           <ul>
             ${childrenHtml}
           </ul>
         </li>
       `;
-    } else {
-      return `<li${padding}><a href="#">${page.title}</a></li>`;
-    }
-  }).join('');
-} 
+      } else {
+        return `<li${padding}><a href="#">${page.title}</a></li>`;
+      }
+    })
+    .join('');
+}

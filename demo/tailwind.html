@@ -3,69 +3,166 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tailwind CSS Styling - Demo</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  
-  
-
-  <style>
-    /* Additional styles that might be needed */
-    .post-content img {
-      max-width: 100%;
-      height: auto;
-      margin: 1rem 0;
+  <title>WordPress with Tailwind CSS - Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style type="text/tailwindcss">
+    @layer components {
+      .btn {
+        @apply px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors;
+      }
     }
   </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 text-gray-800">
   <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <a href="index.html" class="text-blue-600 hover:text-blue-800 mb-4 inline-block">&larr; Back to Demo Index</a>
+    <a href="index.html" class="inline-block mb-4 text-blue-500 hover:underline">&larr; Back to Demo Index</a>
     
     <header class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Tailwind CSS Styling</h1>
-      <p class="text-xl text-gray-600">This demo shows WordPress content styled with the Tailwind CSS framework.</p>
+      <h1 class="text-3xl font-bold mb-2">WordPress with Tailwind CSS</h1>
+      <p class="text-gray-600 mb-4">This demo shows WordPress content styled with Tailwind CSS.</p>
+      
+      <div class="max-w-md mx-auto bg-white p-4 rounded shadow">
+        <div class="mb-4">
+          <label for="render-mode" class="block mb-2 font-medium">Render Mode:</label>
+          <select id="render-mode" class="w-full p-2 border border-gray-300 rounded">
+            <option value="rebuild">rebuild (re-create all HTML)</option>
+            <option value="respect">respect (use existing HTML when available)</option>
+            <option value="preserve-attrs">preserve-attrs (maintain attributes)</option>
+          </select>
+          <p class="mt-1 text-sm text-gray-500">
+            Choose how WordPress content should be rendered.
+          </p>
+        </div>
+        
+        <div class="flex items-center mb-2">
+          <input type="checkbox" id="use-real-api" class="mr-2">
+          <label for="use-real-api" class="font-medium cursor-pointer">Use Live WordPress API</label>
+        </div>
+        <p class="text-sm text-gray-500">
+          Toggle to switch between mock data and real WordPress API data.
+        </p>
+      </div>
     </header>
     
-    <div id="loading-indicator" class="flex justify-center items-center my-8">
-      <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      <span class="ml-3 text-gray-700">Loading posts...</span>
-    </div>
+    <div id="loading-indicator" class="text-center p-8 text-lg text-gray-600">Loading posts...</div>
     
-    <div id="error-container" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" style="display: none;"></div>
+    <div id="posts-container" class="space-y-6"></div>
     
-    <div id="posts-container"></div>
-    
-    <div id="conversion-output" class="mt-8"></div>
+    <div id="content-container" class="mt-8 bg-white p-6 rounded shadow"></div>
+
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+      <p>This demo uses the WordPress REST API to fetch posts from wp.madebyaris.com and the wp-block-to-html library for conversion with Tailwind CSS.</p>
+    </footer>
   </div>
 
   <script type="module">
     import { convertBlocks } from '../dist/index.mjs';
     
     // WordPress REST API endpoint
-    const API_ENDPOINT = '/wp-api/wp/v2/posts';
-    const WP_SITE_URL = 'https://wp.madebyaris.com';
+    const API_ENDPOINT = 'https://wp.madebyaris.com/wp-json/wp/v2/posts?_fields=id,title,date,content,blocks&_embed';
     
-    // DOM elements
+    // Get references to DOM elements
     const postsContainer = document.getElementById('posts-container');
+    const contentContainer = document.getElementById('content-container');
+    const renderModeSelect = document.getElementById('render-mode');
+    const liveApiToggle = document.getElementById('use-real-api');
     const loadingIndicator = document.getElementById('loading-indicator');
-    const errorContainer = document.getElementById('error-container');
-    const conversionOutput = document.getElementById('conversion-output');
     
-    // Function to fix image URLs
-    function fixImageUrls(html) {
-      return html.replace(/src="\/wp-content\//g, `src="${WP_SITE_URL}/wp-content/`);
+    // State
+    let currentPosts = [];
+    let useRealApi = false;
+    
+    // Mock data for the demo
+    const MOCK_POSTS = [
+      {
+        title: {
+          rendered: "Demo Post with Various Blocks"
+        },
+        date: "2023-07-15T12:00:00",
+        content: {
+          rendered: "<p class=\"has-text-align-center\">This is a pre-rendered paragraph from WordPress with center alignment.</p><h2 class=\"has-text-align-left\">This is a heading</h2><p>This is a regular paragraph with no special formatting. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>"
+        },
+        blocks: [
+          {
+            blockName: "core/paragraph",
+            attrs: { 
+              align: "center",
+              content: "This is a pre-rendered paragraph from WordPress with center alignment."
+            },
+            innerBlocks: [],
+            innerContent: [
+              "<p class=\"has-text-align-center\">This is a pre-rendered paragraph from WordPress with center alignment.</p>"
+            ]
+          },
+          {
+            blockName: "core/heading",
+            attrs: {
+              align: "left",
+              level: 2,
+              content: "This is a heading"
+            },
+            innerBlocks: [],
+            innerContent: [
+              "<h2 class=\"has-text-align-left\">This is a heading</h2>"
+            ]
+          },
+          {
+            blockName: "core/paragraph",
+            attrs: {
+              content: "This is a regular paragraph with no special formatting. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            },
+            innerBlocks: [],
+            innerContent: [
+              "<p>This is a regular paragraph with no special formatting. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>"
+            ]
+          },
+          {
+            blockName: "core/list",
+            attrs: {
+              ordered: true
+            },
+            innerBlocks: [],
+            innerContent: [
+              "<ol class=\"wp-block-list\"><li>First item in an ordered list</li><li>Second item in the list</li><li>Third item with some <strong>bold text</strong></li></ol>"
+            ]
+          },
+          {
+            blockName: "core/image",
+            attrs: {
+              align: "center",
+              url: "https://via.placeholder.com/800x400",
+              alt: "Placeholder Image",
+              caption: "This is an example caption for the image"
+            },
+            innerBlocks: [],
+            innerContent: [
+              "<figure class=\"wp-block-image aligncenter\"><img src=\"https://via.placeholder.com/800x400\" alt=\"Placeholder Image\"/><figcaption>This is an example caption for the image</figcaption></figure>"
+            ]
+          }
+        ]
+      }
+    ];
+    
+    // Toggle between mock data and real API data
+    function toggleDataSource() {
+      useRealApi = liveApiToggle.checked;
+      console.log("Data source changed to:", useRealApi ? "Real WordPress API" : "Mock Data");
+      
+      if (useRealApi) {
+        loadingIndicator.style.display = 'block';
+        fetchPosts();
+      } else {
+        renderPosts(MOCK_POSTS);
+      }
     }
     
-    // Fetch posts from WordPress
+    // Fetch posts from WordPress API
     async function fetchPosts() {
-      loadingIndicator.style.display = 'block';
-      errorContainer.style.display = 'none';
+      // Show loading state
+      loadingIndicator.style.display = "block";
       
       try {
+        console.log("Fetching posts from:", API_ENDPOINT);
         const response = await fetch(API_ENDPOINT);
         
         if (!response.ok) {
@@ -75,116 +172,123 @@
         const posts = await response.json();
         
         if (posts.length === 0) {
-          errorContainer.textContent = 'No posts found.';
-          errorContainer.style.display = 'block';
-        } else {
-          renderPosts(posts);
-          
-          // Get the first post's blocks for conversion demo
-          if (posts[0].blocks) {
-            showBlockConversion(posts[0].blocks);
-          }
+          throw new Error("No posts found in the API response.");
         }
+        
+        console.log("API responded with", posts.length, "posts");
+        currentPosts = posts;
+        
+        // Process the posts
+        renderPosts(currentPosts);
       } catch (error) {
-        console.error('Error fetching posts:', error);
-        errorContainer.textContent = `Error fetching posts: ${error.message}`;
-        errorContainer.style.display = 'block';
+        console.error("Error fetching posts:", error);
+        loadingIndicator.textContent = `Error fetching posts: ${error.message}. Falling back to mock data.`;
+        
+        // Fall back to mock data
+        renderPosts(MOCK_POSTS);
       } finally {
-        loadingIndicator.style.display = 'none';
+        // Hide loading state
+        loadingIndicator.style.display = "none";
       }
     }
     
-    // Show block conversion example
-    function showBlockConversion(blocks) {
+    // Function to handle block conversion
+    function showBlockConversion(post) {
       try {
-        // Convert blocks to HTML using our library with Tailwind styling
-        const convertedHtml = convertBlocks(blocks, { cssFramework: 'tailwind' });
+        // Use the selected render mode
+        const renderMode = renderModeSelect.value;
+        console.log(`Converting with render mode: ${renderMode}`);
         
-        conversionOutput.innerHTML = `
-          <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-            <div class="bg-gray-100 px-4 py-3 border-b">
-              <h3 class="text-lg font-semibold">Block Conversion Example</h3>
-            </div>
-            <div class="p-4">
-              <h4 class="text-md font-medium mb-2">Original Blocks (first 2):</h4>
-              <pre class="bg-gray-100 p-3 rounded text-sm overflow-auto">${JSON.stringify(blocks.slice(0, 2), null, 2)}</pre>
-              <h4 class="text-md font-medium mt-4 mb-2">Converted HTML with Tailwind:</h4>
-              <div class="border rounded p-4">${convertedHtml}</div>
-            </div>
-          </div>
-        `;
+        // Check if we have blocks data
+        if (post.blocks) {
+          console.log('Using blocks data for conversion');
+          // Convert blocks to HTML
+          const convertedHTML = convertBlocks(post.blocks, {
+            renderedContentHandling: renderMode,
+            cssFramework: 'tailwind'
+          });
+          
+          contentContainer.innerHTML = convertedHTML;
+        } 
+        // If no blocks but we have rendered content
+        else if (post.content && post.content.rendered) {
+          console.log('No blocks found, using rendered content');
+          contentContainer.innerHTML = `
+            <div class="bg-blue-100 text-blue-700 p-3 rounded mb-4 text-sm">No blocks found, using rendered content</div>
+            ${post.content.rendered}
+          `;
+        } 
+        // Neither blocks nor rendered content
+        else {
+          console.error('No content found for this post');
+          contentContainer.innerHTML = '<div class="bg-red-100 text-red-600 p-4 rounded">No content found for this post</div>';
+        }
       } catch (error) {
         console.error('Error converting blocks:', error);
-        conversionOutput.innerHTML = `
-          <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
-            <strong>Error converting blocks:</strong> ${error.message}
-          </div>
-        `;
+        contentContainer.innerHTML = `<div class="bg-red-100 text-red-600 p-4 rounded">Error converting content: ${error.message}</div>`;
       }
     }
     
-    // Render posts
+    // Function to render posts
     function renderPosts(posts) {
+      if (!posts || posts.length === 0) {
+        postsContainer.innerHTML = '<div class="bg-red-100 text-red-600 p-4 rounded">No posts found</div>';
+        return;
+      }
+      
+      currentPosts = posts;
       postsContainer.innerHTML = '';
       
+      // Add a note about the data source
+      const dataSourceNote = document.createElement('div');
+      dataSourceNote.className = 'bg-blue-100 text-blue-700 p-3 rounded mb-4 text-sm';
+      dataSourceNote.textContent = useRealApi ? 'Using real WordPress API data from wp.madebyaris.com' : 'Using mock data';
+      postsContainer.appendChild(dataSourceNote);
+      
+      // Render each post
       posts.forEach((post) => {
-        // Create post container
         const postElement = document.createElement('div');
-        postElement.className = 'bg-white rounded-lg shadow-md overflow-hidden mb-8';
+        postElement.className = 'bg-white rounded shadow p-4';
         
-        // Add post header
-        const headerElement = document.createElement('div');
-        headerElement.className = 'bg-gray-100 px-4 py-3 border-b';
+        const title = document.createElement('h2');
+        title.className = 'text-xl font-bold mb-2';
+        title.textContent = post.title.rendered || 'Untitled';
         
-        // Add post title
-        const titleElement = document.createElement('h2');
-        titleElement.className = 'text-xl font-bold text-gray-900';
-        titleElement.innerHTML = post.title.rendered;
-        headerElement.appendChild(titleElement);
+        const date = document.createElement('div');
+        date.className = 'text-gray-500 text-sm mb-3';
+        date.textContent = new Date(post.date).toLocaleDateString();
         
-        // Add post date
-        const dateElement = document.createElement('div');
-        dateElement.className = 'text-sm text-gray-600';
-        const postDate = new Date(post.date);
-        dateElement.textContent = postDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        });
-        headerElement.appendChild(dateElement);
+        const button = document.createElement('button');
+        button.className = 'btn';
+        button.textContent = 'Show Content';
+        button.addEventListener('click', () => showBlockConversion(post));
         
-        postElement.appendChild(headerElement);
+        postElement.appendChild(title);
+        postElement.appendChild(date);
+        postElement.appendChild(button);
         
-        // Add post content
-        const contentElement = document.createElement('div');
-        contentElement.className = 'p-4';
-        
-        // Convert blocks to HTML if available, otherwise use rendered content
-        let html;
-        if (post.blocks) {
-          html = convertBlocks(post.blocks, { cssFramework: 'tailwind' });
-        } else {
-          html = post.content.rendered;
-        }
-        
-        // Fix image URLs
-        html = fixImageUrls(html);
-        
-        contentElement.innerHTML = html;
-        
-        // Add a note about the styling
-        const noteElement = document.createElement('div');
-        noteElement.className = 'mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800';
-        noteElement.innerHTML = 'This content is styled using Tailwind CSS framework.';
-        contentElement.appendChild(noteElement);
-        
-        postElement.appendChild(contentElement);
         postsContainer.appendChild(postElement);
       });
+      
+      // Show the first post by default
+      if (posts.length > 0) {
+        showBlockConversion(posts[0]);
+      }
     }
     
-    // Initial fetch
-    fetchPosts();
+    // Set up event listeners
+    liveApiToggle.addEventListener('change', toggleDataSource);
+    
+    // Event listener for render mode dropdown
+    renderModeSelect.addEventListener('change', () => {
+      if (currentPosts.length > 0) {
+        showBlockConversion(currentPosts[0]);
+      }
+    });
+    
+    // Initialize
+    loadingIndicator.style.display = 'none';
+    renderPosts(MOCK_POSTS);
   </script>
 </body>
 </html> 

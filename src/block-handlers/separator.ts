@@ -14,50 +14,42 @@ export const separatorBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract the separator content from innerContent
     let content = '';
-    
+
     // If there's innerHTML, use that
     if (block.innerHTML) {
       content = block.innerHTML;
-    } 
+    }
     // Otherwise join innerContent
     else if (block.innerContent.length > 0) {
       content = block.innerContent.join('');
     }
-    
+
     // If we already have an hr tag, we'll modify its attributes
     if (content.trim().startsWith('<hr') && content.trim().endsWith('>')) {
       // Extract existing classes if any
       const existingClassMatch = content.match(/class="([^"]*)"/);
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
-      
+
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass
-        ? `${existingClass} ${classes}`
-        : classes;
-      
+      const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+
       // Replace or add the class attribute
       if (existingClassMatch) {
-        content = content.replace(
-          /class="([^"]*)"/,
-          `class="${combinedClasses}"`
-        );
+        content = content.replace(/class="([^"]*)"/, `class="${combinedClasses}"`);
       } else {
-        content = content.replace(
-          /^<hr/,
-          `<hr class="${classes}"`
-        );
+        content = content.replace(/^<hr/, `<hr class="${classes}"`);
       }
-      
+
       return content;
     }
-    
+
     // If no hr tag, create one
     return createElement('hr', { class: classes });
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -74,7 +66,7 @@ export const separatorBlockHandler: BlockHandler = {
         right: 'ml-auto mr-0 w-1/4',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-4 border-top',
@@ -90,4 +82,4 @@ export const separatorBlockHandler: BlockHandler = {
       },
     },
   },
-}; 
+};

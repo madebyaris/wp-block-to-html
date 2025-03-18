@@ -14,29 +14,29 @@ export const classicBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract the content from innerContent
     let content = '';
-    
+
     // If there's innerHTML, use that
     if (block.innerHTML) {
       content = block.innerHTML;
-    } 
+    }
     // Otherwise join innerContent
     else if (block.innerContent.length > 0) {
       content = block.innerContent.join('');
     }
-    
+
     // For classic editor content, we generally want to preserve the HTML as is
     // We'll just wrap it in a div with our framework classes if needed
     if (options.cssFramework !== 'none' && classes) {
       return `<div class="${classes}">${content}</div>`;
     }
-    
+
     // Otherwise, return the content as is
     return content;
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -48,7 +48,7 @@ export const classicBlockHandler: BlockHandler = {
         right: 'text-right',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-3',
@@ -59,4 +59,4 @@ export const classicBlockHandler: BlockHandler = {
       },
     },
   },
-}; 
+};

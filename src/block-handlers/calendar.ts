@@ -14,15 +14,15 @@ export const calendarBlockHandler: BlockHandler = {
   transform(block: Block, options: ConversionOptions): string | unknown {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
-    
+
     // Extract calendar attributes
     const month = block.attrs?.month || new Date().getMonth() + 1;
     const year = block.attrs?.year || new Date().getFullYear();
-    
+
     // Create a placeholder for the calendar
     // In a real implementation, this would be replaced with actual calendar data
     let content = '';
-    
+
     // Check if we have a custom calendar processor in options
     if (options.customCalendarProcessor && typeof options.customCalendarProcessor === 'function') {
       try {
@@ -34,18 +34,22 @@ export const calendarBlockHandler: BlockHandler = {
         console.error('Error processing calendar:', error);
       }
     }
-    
+
     // If no custom processor or it failed, return a placeholder calendar
     content = generateCalendarPlaceholder(month, year, options.cssFramework);
-    
+
     // Create the calendar container
-    return createElement('div', { 
-      class: classes,
-      'data-month': month,
-      'data-year': year
-    }, content);
+    return createElement(
+      'div',
+      {
+        class: classes,
+        'data-month': month,
+        'data-year': year,
+      },
+      content,
+    );
   },
-  
+
   // CSS framework mappings
   cssMapping: {
     // Tailwind CSS mappings
@@ -59,7 +63,7 @@ export const calendarBlockHandler: BlockHandler = {
         full: 'w-full',
       },
     },
-    
+
     // Bootstrap mappings
     bootstrap: {
       block: 'my-4',
@@ -79,20 +83,30 @@ export const calendarBlockHandler: BlockHandler = {
  */
 function generateCalendarPlaceholder(month: number, year: number, cssFramework?: string): string {
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
-  
+
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDay = new Date(year, month - 1, 1).getDay();
-  
+
   // Get CSS classes based on framework
   const tableClass = getCalendarTableClass(cssFramework);
   const captionClass = getCalendarCaptionClass(cssFramework);
   const headerClass = getCalendarHeaderClass(cssFramework);
   const dayClass = getCalendarDayClass(cssFramework);
   const todayClass = getCalendarTodayClass(cssFramework);
-  
+
   // Generate the calendar table
   let calendar = `
     <table class="${tableClass}">
@@ -112,16 +126,16 @@ function generateCalendarPlaceholder(month: number, year: number, cssFramework?:
       </thead>
       <tbody>
   `;
-  
+
   // Create the calendar days
   let day = 1;
   const today = new Date();
   const isCurrentMonth = today.getMonth() === month - 1 && today.getFullYear() === year;
   const currentDay = today.getDate();
-  
+
   for (let i = 0; i < 6; i++) {
     let row = '<tr>';
-    
+
     for (let j = 0; j < 7; j++) {
       if (i === 0 && j < firstDay) {
         row += `<td class="${dayClass}"></td>`;
@@ -134,20 +148,20 @@ function generateCalendarPlaceholder(month: number, year: number, cssFramework?:
         day++;
       }
     }
-    
+
     row += '</tr>';
     calendar += row;
-    
+
     if (day > daysInMonth) {
       break;
     }
   }
-  
+
   calendar += `
       </tbody>
     </table>
   `;
-  
+
   return calendar;
 }
 
@@ -207,4 +221,4 @@ function getCalendarTodayClass(cssFramework?: string): string {
     default:
       return 'wp-block-calendar-today';
   }
-} 
+}

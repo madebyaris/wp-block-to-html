@@ -31,36 +31,45 @@
     .back-link:hover {
       text-decoration: underline;
     }
-    .post-container {
+    .post {
       margin-bottom: 2rem;
       padding: 1.5rem;
       border-radius: 8px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       background-color: white;
     }
-    .post-title {
-      margin-bottom: 1rem;
+    .post h2 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
       color: #333;
     }
-    .post-date {
+    .date {
       color: #666;
       font-size: 0.9rem;
       margin-bottom: 1rem;
     }
-    .post-content img {
+    .post button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .post button:hover {
+      background-color: #0069d9;
+    }
+    .content-container {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background-color: white;
+    }
+    .content-container img {
       max-width: 100%;
       height: auto;
-      margin: 1rem 0;
-    }
-    .post-content pre {
-      background-color: #f5f5f5;
-      padding: 1rem;
-      border-radius: 4px;
-      overflow: auto;
-      font-family: monospace;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      margin: 1rem 0;
     }
     .loading {
       text-align: center;
@@ -81,31 +90,48 @@
       color: #6c757d;
       font-size: 0.9rem;
     }
-    .conversion-demo {
-      margin-top: 3rem;
-      padding: 1.5rem;
-      border-radius: 8px;
-      background-color: white;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .conversion-demo h3 {
-      margin-bottom: 1rem;
-      color: #333;
-    }
-    .conversion-demo pre {
-      background-color: #f5f5f5;
-      padding: 1rem;
+    .data-source-note {
+      background-color: #e9f5fe;
+      color: #0069d9;
+      padding: 0.5rem 1rem;
       border-radius: 4px;
-      overflow: auto;
+      margin-bottom: 1.5rem;
       font-size: 0.9rem;
-      font-family: monospace;
-      line-height: 1.5;
     }
-    .conversion-demo .output {
-      margin-top: 1rem;
-      padding: 1rem;
+    .controls {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 15px;
       border: 1px solid #ddd;
       border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    .control-group {
+      margin-bottom: 15px;
+    }
+    .control-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .control-group select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .control-group p {
+      margin-top: 5px;
+      font-size: 0.9em;
+      color: #666;
+    }
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .toggle-label input {
+      margin-right: 10px;
     }
   </style>
 </head>
@@ -116,22 +142,47 @@
     <header class="header">
       <h1>WordPress Default Styling</h1>
       <p>This demo shows WordPress content with default styling, without any CSS framework applied.</p>
+      
+      <div class="controls">
+        <div class="control-group">
+          <label for="render-mode">Content Handling Mode:</label>
+          <select id="render-mode">
+            <option value="raw">raw (process raw block data)</option>
+            <option value="rendered">rendered (use rendered HTML as-is)</option>
+            <option value="hybrid">hybrid (enhance rendered HTML with framework styles)</option>
+          </select>
+          <p>
+            Choose how WordPress content should be handled.
+          </p>
+        </div>
+        
+        <div class="control-group">
+          <label for="css-framework">CSS Framework:</label>
+          <select id="css-framework">
+            <option value="none">None (default WordPress styling)</option>
+            <option value="tailwind">Tailwind CSS</option>
+            <option value="bootstrap">Bootstrap</option>
+          </select>
+          <p>
+            Select a CSS framework to apply to the content.
+          </p>
+        </div>
+        
+        <label class="toggle-label">
+          <input type="checkbox" id="use-real-api">
+          <span>Use Live WordPress API</span>
+        </label>
+        <p>
+          Toggle to switch between mock data and real WordPress API data.
+        </p>
+      </div>
     </header>
     
     <div id="loading-indicator" class="loading">Loading posts...</div>
-    <div id="error-container" class="error" style="display: none;"></div>
     
     <div id="posts-container"></div>
     
-    <div id="conversion-output" class="mt-5"></div>
-
-    <div class="conversion-demo">
-      <h3>Block to HTML Conversion Demo</h3>
-      <p>This demonstrates how the wp-block-to-html library converts WordPress blocks to HTML:</p>
-      <div id="conversion-output" class="output">
-        <div class="loading">Loading conversion demo...</div>
-      </div>
-    </div>
+    <div id="content-container" class="content-container"></div>
 
     <footer class="footer">
       <p>This demo uses the WordPress REST API to fetch posts from wp.madebyaris.com and the wp-block-to-html library for conversion.</p>
@@ -142,31 +193,111 @@
     import { convertBlocks } from '../dist/index.mjs';
     
     // WordPress REST API endpoint
-    const API_ENDPOINT = '/wp-api/wp/v2/posts';
-    const WP_SITE_URL = 'https://wp.madebyaris.com';
+    const API_ENDPOINT = 'https://wp.madebyaris.com/wp-json/wp/v2/posts?_fields=id,title,date,content,blocks&_embed';
     
-    // DOM elements
+    // Get references to DOM elements
     const postsContainer = document.getElementById('posts-container');
+    const contentContainer = document.getElementById('content-container');
+    const renderModeSelect = document.getElementById('render-mode');
+    const cssFrameworkSelect = document.getElementById('css-framework');
+    const liveApiToggle = document.getElementById('use-real-api');
     const loadingIndicator = document.getElementById('loading-indicator');
-    const errorContainer = document.getElementById('error-container');
-    const conversionOutput = document.getElementById('conversion-output');
     
-    // Function to fix image URLs
-    function fixImageUrls(html) {
-      return html.replace(/src="\/wp-content\//g, `src="${WP_SITE_URL}/wp-content/`);
+    // State
+    let currentPosts = [];
+    let useRealApi = false;
+    
+    // Mock data for the demo
+    const MOCK_POSTS = [
+      {
+        title: {
+          rendered: "Demo Post with Various Blocks"
+        },
+        date: "2023-07-15T12:00:00",
+        content: {
+          rendered: "<p class=\"has-text-align-center\">This is a pre-rendered paragraph from WordPress with center alignment.</p><h2 class=\"has-text-align-left\">This is a heading</h2><p>This is a regular paragraph with no special formatting. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>"
+        },
+        blocks: [
+          {
+            blockName: "core/paragraph",
+            attrs: { 
+              align: "center",
+              content: "This is a pre-rendered paragraph from WordPress with center alignment."
+            },
+            innerBlocks: [],
+            innerContent: [
+              "<p class=\"has-text-align-center\">This is a pre-rendered paragraph from WordPress with center alignment.</p>"
+            ]
+          },
+          {
+            blockName: "core/heading",
+            attrs: {
+              align: "left",
+              level: 2,
+              content: "This is a heading"
+            },
+            innerBlocks: [],
+            innerContent: [
+              "<h2 class=\"has-text-align-left\">This is a heading</h2>"
+            ]
+          },
+          {
+            blockName: "core/paragraph",
+            attrs: {
+              content: "This is a regular paragraph with no special formatting. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            },
+            innerBlocks: [],
+            innerContent: [
+              "<p>This is a regular paragraph with no special formatting. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>"
+            ]
+          },
+          {
+            blockName: "core/list",
+            attrs: {
+              ordered: true
+            },
+            innerBlocks: [],
+            innerContent: [
+              "<ol class=\"wp-block-list\"><li>First item in an ordered list</li><li>Second item in the list</li><li>Third item with some <strong>bold text</strong></li></ol>"
+            ]
+          },
+          {
+            blockName: "core/image",
+            attrs: {
+              align: "center",
+              url: "https://via.placeholder.com/800x400",
+              alt: "Placeholder Image",
+              caption: "This is an example caption for the image"
+            },
+            innerBlocks: [],
+            innerContent: [
+              "<figure class=\"wp-block-image aligncenter\"><img src=\"https://via.placeholder.com/800x400\" alt=\"Placeholder Image\"/><figcaption>This is an example caption for the image</figcaption></figure>"
+            ]
+          }
+        ]
+      }
+    ];
+    
+    // Toggle between mock data and real API data
+    function toggleDataSource() {
+      useRealApi = liveApiToggle.checked;
+      console.log("Data source changed to:", useRealApi ? "Real WordPress API" : "Mock Data");
+      
+      if (useRealApi) {
+        loadingIndicator.style.display = 'block';
+        fetchPosts();
+      } else {
+        renderPosts(MOCK_POSTS);
+      }
     }
     
-    // Function to apply basic styling
-    function applyBasicStyling(html) {
-      return html;
-    }
-    
-    // Fetch posts from WordPress
+    // Fetch posts from WordPress API
     async function fetchPosts() {
-      loadingIndicator.style.display = 'block';
-      errorContainer.style.display = 'none';
+      // Show loading state
+      loadingIndicator.style.display = "block";
       
       try {
+        console.log("Fetching posts from:", API_ENDPOINT);
         const response = await fetch(API_ENDPOINT);
         
         if (!response.ok) {
@@ -176,106 +307,155 @@
         const posts = await response.json();
         
         if (posts.length === 0) {
-          errorContainer.textContent = 'No posts found.';
-          errorContainer.style.display = 'block';
-        } else {
-          renderPosts(posts);
-          
-          // Get the first post's blocks for conversion demo
-          if (posts[0].blocks) {
-            showBlockConversion(posts[0].blocks);
-          }
+          throw new Error("No posts found in the API response.");
         }
+        
+        console.log("API responded with", posts.length, "posts");
+        currentPosts = posts;
+        
+        // Process the posts
+        renderPosts(currentPosts);
       } catch (error) {
-        console.error('Error fetching posts:', error);
-        errorContainer.textContent = `Error fetching posts: ${error.message}`;
-        errorContainer.style.display = 'block';
+        console.error("Error fetching posts:", error);
+        loadingIndicator.textContent = `Error fetching posts: ${error.message}. Falling back to mock data.`;
+        
+        // Fall back to mock data
+        renderPosts(MOCK_POSTS);
       } finally {
-        loadingIndicator.style.display = 'none';
+        // Hide loading state
+        loadingIndicator.style.display = "none";
       }
     }
     
-    // Show block conversion example
-    function showBlockConversion(blocks) {
+    // Function to handle block conversion
+    function showBlockConversion(post) {
       try {
-        // Convert blocks to HTML using our library
-        const convertedHtml = convertBlocks(blocks);
+        // Use the selected content handling mode
+        const contentHandlingMode = renderModeSelect.value;
+        console.log(`Converting with content handling mode: ${contentHandlingMode}`);
         
-        conversionOutput.innerHTML = `
-          <div class="conversion-example">
-            <h3>Block Conversion Example</h3>
-            <h4>Original Blocks (first 2):</h4>
-            <pre>${JSON.stringify(blocks.slice(0, 2), null, 2)}</pre>
-            <h4>Converted HTML:</h4>
-            <div class="output">${convertedHtml}</div>
-          </div>
-        `;
+        // Configure conversion options
+        const conversionOptions = {
+          contentHandling: contentHandlingMode,
+          cssFramework: cssFrameworkSelect.value || 'none'
+        };
+        
+        // Check if we have blocks data
+        if (post.blocks) {
+          console.log('Using blocks data for conversion');
+          // Convert blocks to HTML
+          const convertedHTML = convertBlocks(post.blocks, conversionOptions);
+          
+          contentContainer.innerHTML = `
+            <div class="data-source-note">Using raw block data with '${contentHandlingMode}' mode</div>
+            ${convertedHTML}
+          `;
+        } 
+        // If no blocks but we have rendered content
+        else if (post.content && post.content.rendered) {
+          console.log('No blocks found, using rendered content');
+          
+          if (contentHandlingMode === 'raw') {
+            // For raw mode with no blocks, show a message about missing block data
+            contentContainer.innerHTML = `
+              <div class="data-source-note error">No raw block data available. Cannot use 'raw' mode.</div>
+              <div class="data-source-note">Falling back to rendered content</div>
+              ${post.content.rendered}
+            `;
+          } else if (contentHandlingMode === 'hybrid') {
+            // For hybrid mode, enhance the rendered content
+            const convertedHTML = convertBlocks({ 
+              rendered: post.content.rendered 
+            }, conversionOptions);
+            
+            contentContainer.innerHTML = `
+              <div class="data-source-note">Using rendered content with '${contentHandlingMode}' mode</div>
+              ${convertedHTML}
+            `;
+          } else {
+            // For rendered mode, use the content as-is
+            contentContainer.innerHTML = `
+              <div class="data-source-note">Using rendered content as-is</div>
+              ${post.content.rendered}
+            `;
+          }
+        } 
+        // Neither blocks nor rendered content
+        else {
+          console.error('No content found for this post');
+          contentContainer.innerHTML = '<div class="error">No content found for this post</div>';
+        }
       } catch (error) {
         console.error('Error converting blocks:', error);
-        conversionOutput.innerHTML = `
-          <div class="error">
-            <strong>Error converting blocks:</strong> ${error.message}
-          </div>
-        `;
+        contentContainer.innerHTML = `<div class="error">Error converting content: ${error.message}</div>`;
       }
     }
     
-    // Render posts
+    // Function to render posts
     function renderPosts(posts) {
+      if (!posts || posts.length === 0) {
+        postsContainer.innerHTML = '<div class="error">No posts found</div>';
+        return;
+      }
+      
+      currentPosts = posts;
       postsContainer.innerHTML = '';
       
+      // Add a note about the data source
+      const dataSourceNote = document.createElement('div');
+      dataSourceNote.className = 'data-source-note';
+      dataSourceNote.textContent = useRealApi ? 'Using real WordPress API data from wp.madebyaris.com' : 'Using mock data';
+      postsContainer.appendChild(dataSourceNote);
+      
+      // Render each post
       posts.forEach((post) => {
-        // Create post container
         const postElement = document.createElement('div');
-        postElement.className = 'post-container';
+        postElement.className = 'post';
         
-        // Add post title
-        const titleElement = document.createElement('h2');
-        titleElement.className = 'post-title';
-        titleElement.innerHTML = post.title.rendered;
-        postElement.appendChild(titleElement);
+        const title = document.createElement('h2');
+        title.textContent = post.title.rendered || 'Untitled';
         
-        // Add post date
-        const dateElement = document.createElement('div');
-        dateElement.className = 'post-date';
-        const postDate = new Date(post.date);
-        dateElement.textContent = postDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        });
-        postElement.appendChild(dateElement);
+        const date = document.createElement('div');
+        date.className = 'date';
+        date.textContent = new Date(post.date).toLocaleDateString();
         
-        // Add post content
-        const contentElement = document.createElement('div');
-        contentElement.className = 'post-content';
+        const button = document.createElement('button');
+        button.textContent = 'Show Content';
+        button.addEventListener('click', () => showBlockConversion(post));
         
-        // Convert blocks to HTML if available, otherwise use rendered content
-        let html;
-        if (post.blocks) {
-          html = convertBlocks(post.blocks);
-        } else {
-          html = post.content.rendered;
-        }
+        postElement.appendChild(title);
+        postElement.appendChild(date);
+        postElement.appendChild(button);
         
-        // Fix image URLs
-        html = fixImageUrls(html);
-        
-        contentElement.innerHTML = html;
-        
-        // Add a note about the styling
-        const noteElement = document.createElement('div');
-        noteElement.className = 'mt-3 p-3 bg-gray-100 border border-gray-300 rounded';
-        noteElement.innerHTML = '<small>This content is styled using the default WordPress styling.</small>';
-        contentElement.appendChild(noteElement);
-        
-        postElement.appendChild(contentElement);
         postsContainer.appendChild(postElement);
       });
+      
+      // Show the first post by default
+      if (posts.length > 0) {
+        showBlockConversion(posts[0]);
+      }
     }
     
-    // Initial fetch
-    fetchPosts();
+    // Set up event listeners
+    liveApiToggle.addEventListener('change', toggleDataSource);
+    
+    // Event listener for render mode dropdown
+    renderModeSelect.addEventListener('change', () => {
+      if (currentPosts.length > 0) {
+        showBlockConversion(currentPosts[0]);
+      }
+    });
+    
+    // Event listener for CSS framework dropdown
+    cssFrameworkSelect.addEventListener('change', () => {
+      if (currentPosts.length > 0) {
+        showBlockConversion(currentPosts[0]);
+      }
+    });
+    
+    // Initialize
+    loadingIndicator.style.display = 'none';
+    renderPosts(MOCK_POSTS);
   </script>
 </body>
 </html> 

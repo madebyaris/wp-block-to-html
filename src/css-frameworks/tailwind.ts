@@ -6,18 +6,18 @@ import { CustomClassMap } from '../types';
 export const tailwindMapping: CustomClassMap = {
   // Text blocks
   'core/paragraph': {
-    block: '',
+    block: 'my-4 px-0',
     align: {
       left: 'text-left',
       center: 'text-center',
       right: 'text-right',
     },
     dropCap:
-      'first-letter:float-left first-letter:text-7xl first-letter:font-bold first-letter:mr-3',
+      'first-letter:float-left first-letter:text-7xl first-letter:font-bold first-letter:mr-3 first-letter:mt-1',
   },
 
   'core/heading': {
-    block: '',
+    block: 'mt-6 mb-4',
     level: {
       1: 'text-4xl font-bold',
       2: 'text-3xl font-bold',
@@ -34,18 +34,18 @@ export const tailwindMapping: CustomClassMap = {
   },
 
   'core/list': {
-    block: '',
-    ordered: 'list-decimal pl-5',
-    unordered: 'list-disc pl-5',
+    block: 'my-4 px-0',
+    ordered: 'list-decimal pl-8 space-y-2',
+    unordered: 'list-disc pl-8 space-y-2',
   },
 
   // Media blocks
   'core/image': {
-    block: 'max-w-full h-auto',
+    block: 'max-w-full h-auto my-6',
     align: {
-      left: 'float-left mr-4 mb-4',
+      left: 'float-left mr-6 mb-4',
       center: 'mx-auto',
-      right: 'float-right ml-4 mb-4',
+      right: 'float-right ml-6 mb-4',
     },
     sizeSlug: {
       thumbnail: 'max-w-xs',
@@ -57,11 +57,11 @@ export const tailwindMapping: CustomClassMap = {
 
   // Layout blocks
   'core/group': {
-    block: 'p-4',
+    block: 'p-6 my-6 rounded',
   },
 
   'core/columns': {
-    block: 'flex flex-wrap',
+    block: 'flex flex-wrap gap-4 my-6',
   },
 
   'core/column': {
@@ -78,20 +78,20 @@ export const tailwindMapping: CustomClassMap = {
 
   // Widget blocks
   'core/button': {
-    block: 'inline-block px-4 py-2 font-medium rounded',
+    block: 'inline-block px-6 py-3 font-medium rounded transition-colors duration-200 my-4',
     style: {
       fill: 'bg-blue-600 text-white hover:bg-blue-700',
       outline: 'border border-blue-600 text-blue-600 hover:bg-blue-100',
     },
     size: {
-      small: 'text-sm',
-      medium: 'text-base',
-      large: 'text-lg',
+      small: 'text-sm px-4 py-2',
+      medium: 'text-base px-6 py-3',
+      large: 'text-lg px-8 py-4',
     },
   },
 
   'core/separator': {
-    block: 'border-t my-4',
+    block: 'border-t my-8',
     style: {
       default: 'border-gray-200',
       wide: 'border-gray-200 w-full',
@@ -102,9 +102,9 @@ export const tailwindMapping: CustomClassMap = {
   'core/spacer': {
     block: '',
     height: {
-      small: 'h-4',
-      medium: 'h-8',
-      large: 'h-16',
+      small: 'h-4 my-4',
+      medium: 'h-8 my-6',
+      large: 'h-16 my-8',
     },
   },
 };
