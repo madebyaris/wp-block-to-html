@@ -1,6 +1,6 @@
 # WordPress Block to HTML Converter - Release Notes
 
-## v1.2.0 (2023-07-29)
+## v0.3.0 (2025-03-17)
 
 This update introduces a revolutionary modular bundle structure that dramatically reduces bundle size for applications that only use specific features of the library. Our testing shows size reductions of up to 99% compared to the full bundle!
 
@@ -67,7 +67,7 @@ const html = convertBlocks(wordpressContent, {
 ### Breaking Changes
 None - This update is fully backwards compatible with existing code while enabling new optimized import paths.
 
-## v1.1.0 (2023-07-22)
+## v0.2.0 (2024-05-17)
 
 This update introduces significant enhancements to handle both WordPress block data and rendered HTML content, making the library more flexible and compatible with various WordPress configurations.
 
@@ -94,7 +94,7 @@ This update introduces significant enhancements to handle both WordPress block d
 ### Breaking Changes
 None - This update is fully backwards compatible with existing code.
 
-## v1.0.0-beta (2023-07-15)
+## v0.1.0-beta (2025-03-17)
 
 We're excited to announce the first beta release of the WordPress Block to HTML Converter library! This library allows you to convert WordPress block data into HTML or framework-specific components.
 
