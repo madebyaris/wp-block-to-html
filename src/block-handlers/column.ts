@@ -104,7 +104,7 @@ export const columnBlockHandler: BlockHandler = {
 
     // Bootstrap mappings
     bootstrap: {
-      block: 'col-12',
+      block: 'col-12 col-md-6',
       width: {
         '25%': 'col-md-3',
         '33.33%': 'col-md-4',

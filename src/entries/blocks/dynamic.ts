@@ -7,6 +7,9 @@ import {
   spacerBlockHandler,
 } from '../../block-handlers';
 
+// Import pagination utility directly
+import { processPaginatedContent } from '../../block-handlers/page-break';
+
 // Export dynamic block handlers
 export {
   latestPostsBlockHandler,
@@ -14,6 +17,8 @@ export {
   pageBreakBlockHandler,
   separatorBlockHandler,
   spacerBlockHandler,
+  // Export pagination utility
+  processPaginatedContent,
 };
 
 // Import registry functions

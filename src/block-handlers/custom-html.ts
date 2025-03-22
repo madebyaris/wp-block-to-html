@@ -1,5 +1,5 @@
 import { Block, BlockHandler, ConversionOptions } from '../types';
-import { getBlockClasses, createElement } from '../core/utils';
+import { getBlockClasses } from '../core/utils';
 
 /**
  * Handler for the 'core/html' block

@@ -17,6 +17,7 @@ Convert WordPress Gutenberg blocks to HTML or framework-specific components with
 - Extensible plugin system for custom blocks
 - TypeScript support
 - Minimal dependencies
+- **Blazing fast performance** - Process up to 947 blocks per millisecond
 
 ## Installation
 
@@ -90,6 +91,29 @@ async function fetchWordPressPost() {
 }
 ```
 
+## Performance
+
+The library is optimized for speed and efficiency, with impressive performance metrics:
+
+| Block Count | Average Time (ms) | Blocks per ms |
+|------------:|------------------:|-------------:|
+| 100         | 0.495             | 202.0        |
+| 1,000       | 2.185             | 457.7        |
+| 10,000      | 17.757            | 563.2        |
+| 100,000     | 105.56            | 947.3        |
+
+Real-world content (complex post with mixed block types) is processed at over 230 blocks per millisecond.
+
+### Memory Efficiency
+
+| Block Count | Memory Usage (MB) | MB per 10K blocks |
+|------------:|------------------:|------------------:|
+| 20,000      | 18.10             | 9.05              |
+| 50,000      | 33.54             | 6.71              |
+| 100,000     | 86.59             | 8.66              |
+
+For more details, see the [performance report](performance-report.md).
+
 ## Configuration Options
 
 ```javascript
@@ -137,8 +161,8 @@ When working with WordPress REST API, you have options for handling the content:
 ```javascript
 // WordPress block with rendered HTML in innerContent
 const blockWithRenderedHTML = {
-  blockName: 'core/paragraph',
-  attrs: { align: 'center' },
+  blockName: "core/paragraph",
+  attrs: { align: "center" },
   innerContent: ['<p class="has-text-align-center">Pre-rendered paragraph</p>']
 };
 
@@ -162,13 +186,52 @@ const htmlHybrid = convertBlocks(blockWithRenderedHTML, {
 // Output: <p class="has-text-align-center text-center">Pre-rendered paragraph</p>
 ```
 
-### Choosing the Right Content Handling Mode
+### Using Only Rendered Content
 
-Each content handling mode has specific use cases:
+If you're only working with rendered content from WordPress and don't need block processing, you can:
 
-- **raw** (default): Best when you want to process the raw block data for full control over the output HTML and apply your chosen CSS framework consistently.
-- **rendered**: Best when you want to preserve the exact HTML and styling provided by WordPress, without modifications.
-- **hybrid**: A middle ground that keeps WordPress attributes (like IDs, data attributes) but adds your framework's classes.
+1. **Use the Content Directly** (No Library Needed):
+```javascript
+async function fetchPost() {
+  const response = await fetch('https://your-wp-site.com/wp-json/wp/v2/posts/1');
+  const post = await response.json();
+  
+  // Use rendered content directly
+  const html = post.content.rendered;
+  document.getElementById('content').innerHTML = html;
+}
+```
+
+2. **Use Minimal Library** (If you need CSS framework integration):
+```javascript
+import { convertBlocks } from 'wp-block-to-html/core';
+
+// Option 1: Pass the content object directly
+const html = convertBlocks(post.content, {
+  contentHandling: 'rendered',
+  cssFramework: 'tailwind'
+});
+
+// Option 2: Create an object with rendered property
+const html = convertBlocks({
+  rendered: post.content.rendered
+}, {
+  contentHandling: 'rendered',
+  cssFramework: 'tailwind'
+});
+
+// ❌ Incorrect - Don't pass rendered string directly
+const html = convertBlocks(post.content.rendered, {
+  contentHandling: 'rendered',
+  cssFramework: 'tailwind'
+}); // This will throw an error
+```
+
+This approach:
+- Reduces bundle size (0KB if using content directly)
+- Simplifies implementation
+- Maintains compatibility with WordPress sites that don't expose block data
+- Requires proper object structure when using the library
 
 ## Fallback Strategy
 
@@ -211,6 +274,9 @@ Check out the examples and demos to see the library in action:
    
 2. **CSS Framework Demo**: Compare WordPress default, Bootstrap, and Tailwind styling
    - [View Demo](./demo/index.html)
+   
+3. **Performance Benchmark**: View performance testing results
+   - [View Report](./performance-report.md)
 
 To run the demos locally:
 
@@ -223,6 +289,10 @@ npm run build
 
 # Start the demo server
 npm run serve
+
+# Run performance benchmarks
+npm run benchmark
+npm run extreme-benchmark
 ```
 
 Then navigate to:
@@ -304,6 +374,14 @@ The library provides built-in mappings for popular CSS frameworks:
 - **Tailwind CSS**: Modern utility-first CSS framework
 - **Bootstrap**: Popular UI framework
 - **Custom**: Define your own class mappings
+
+## Performance Recommendations
+
+Based on our performance testing:
+
+1. For maximum performance in high-volume scenarios, use the "rendered" content handling mode when applicable.
+2. Framework selection should be based on design requirements rather than performance concerns, as all frameworks perform well.
+3. For applications processing extremely large content, consider using the library in a batch or streaming mode.
 
 ## Documentation
 

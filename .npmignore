@@ -1,0 +1,32 @@
+# Source files
+src/
+tsconfig.json
+.eslintrc.json
+.prettierrc
+.github/
+.gitignore
+.npmignore
+
+# Test files
+test/
+vitest.config.ts
+coverage/
+
+# Performance testing
+perf-test.js
+throughput-test.js
+performance-report.md
+
+# Documentation
+docs/
+examples/
+TODO.md
+
+# Development files
+node_modules/
+.vscode/
+.DS_Store
+
+# Build artifacts
+*.log
+*.tgz 

@@ -130,20 +130,48 @@ export function convertBlocksWithFormat(
   // These will be lazy-loaded to avoid unnecessary dependencies
   switch (mergedOptions.outputFormat) {
     case 'react':
-      // This would be implemented in framework-adapters/react.ts
-      throw new Error('React output format not yet implemented');
+      try {
+        // Dynamic import to avoid dependency on react adapter
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { convertBlocksToReact } = require('../framework-adapters/react');
+        return convertBlocksToReact(blockData, mergedOptions);
+      } catch (error) {
+        console.error('Error using React adapter:', error);
+        throw new Error('React adapter could not be loaded. Make sure the adapter is available.');
+      }
 
     case 'vue':
-      // This would be implemented in framework-adapters/vue.ts
-      throw new Error('Vue output format not yet implemented');
+      try {
+        // Dynamic import to avoid dependency on vue adapter
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { convertBlocksToVue } = require('../framework-adapters/vue');
+        return convertBlocksToVue(blockData, mergedOptions);
+      } catch (error) {
+        console.error('Error using Vue adapter:', error);
+        throw new Error('Vue adapter could not be loaded. Make sure the adapter is available.');
+      }
 
     case 'angular':
-      // This would be implemented in framework-adapters/angular.ts
-      throw new Error('Angular output format not yet implemented');
+      try {
+        // Dynamic import to avoid dependency on angular adapter
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { convertBlocksToAngular } = require('../framework-adapters/angular');
+        return convertBlocksToAngular(blockData, mergedOptions);
+      } catch (error) {
+        console.error('Error using Angular adapter:', error);
+        throw new Error('Angular adapter could not be loaded. Make sure the adapter is available.');
+      }
 
     case 'svelte':
-      // This would be implemented in framework-adapters/svelte.ts
-      throw new Error('Svelte output format not yet implemented');
+      try {
+        // Dynamic import to avoid dependency on svelte adapter
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { convertBlocksToSvelte } = require('../framework-adapters/svelte');
+        return convertBlocksToSvelte(blockData, mergedOptions);
+      } catch (error) {
+        console.error('Error using Svelte adapter:', error);
+        throw new Error('Svelte adapter could not be loaded. Make sure the adapter is available.');
+      }
 
     default:
       // For unknown formats, fall back to HTML

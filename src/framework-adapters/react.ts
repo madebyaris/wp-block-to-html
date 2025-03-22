@@ -44,7 +44,7 @@ type ReactComponent<P = any> = (props: P) => any;
  * @returns React component that renders WordPress blocks
  */
 export function createReactComponent(): ReactComponent<WordPressBlocksProps> {
-  return (props: WordPressBlocksProps) => {
+  return (_props: WordPressBlocksProps) => {
     // This implementation is intentionally abstract to avoid direct
     // React dependency in the main package
 

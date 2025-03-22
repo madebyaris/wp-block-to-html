@@ -21,12 +21,36 @@ export const latestPostsBlockHandler: BlockHandler = {
     const displayFeaturedImage = block.attrs?.displayFeaturedImage || false;
     const displayPostContent = block.attrs?.displayPostContent || false;
     const displayPostContentRadio = block.attrs?.displayPostContentRadio || 'excerpt';
-    const excerptLength = block.attrs?.excerptLength || 55;
     const postLayout = block.attrs?.postLayout || 'list';
     const columns = block.attrs?.columns || 3;
     const order = block.attrs?.order || 'desc';
     const orderBy = block.attrs?.orderBy || 'date';
     const categories = block.attrs?.categories || [];
+
+    // Check if we have inner content that already contains the posts
+    if (
+      block.innerContent &&
+      block.innerContent.length > 0 &&
+      block.innerContent[0].includes('<li>')
+    ) {
+      // If we have pre-rendered content, use it directly
+      return createElement(
+        'div',
+        {
+          class: classes,
+          'data-posts-to-show': postsToShow,
+          'data-display-post-date': displayPostDate ? 'true' : 'false',
+          'data-display-featured-image': displayFeaturedImage ? 'true' : 'false',
+          'data-display-post-content': displayPostContent ? 'true' : 'false',
+          'data-post-layout': postLayout,
+          'data-columns': columns,
+          'data-order': order,
+          'data-order-by': orderBy,
+          'data-categories': categories.join(','),
+        },
+        block.innerContent[0],
+      );
+    }
 
     // Create a placeholder for the latest posts
     // In a real implementation, this would be replaced with actual posts data

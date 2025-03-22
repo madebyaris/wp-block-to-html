@@ -1,6 +1,6 @@
 {
   "name": "wp-block-to-html",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Convert WordPress Gutenberg blocks to HTML or framework-specific components with customizable styling",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -74,7 +74,9 @@
     "test:coverage": "vitest run --coverage",
     "prepare": "npm run build",
     "prepare-beta": "node scripts/prepare-beta.js",
-    "serve": "npx serve ."
+    "serve": "npx serve .",
+    "benchmark": "node perf-test.js",
+    "extreme-benchmark": "node throughput-test.js"
   },
   "keywords": [
     "wordpress",

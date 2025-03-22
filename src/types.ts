@@ -209,6 +209,44 @@ export interface ConversionOptions {
   customEmbedProcessor?: (block: Block, options: ConversionOptions) => string | unknown;
 
   /**
+   * Custom pagination processor function for page breaks
+   * @param block The page break block object
+   * @param options The conversion options
+   * @returns Processed HTML or component
+   */
+  customPaginationProcessor?: (block: Block, options: ConversionOptions) => string | unknown;
+
+  /**
+   * Label to use for page break blocks
+   */
+  paginationLabel?: string;
+
+  /**
+   * Options for pagination when handling paginated content
+   */
+  paginationOptions?: {
+    currentPage?: number;
+    showNavigation?: boolean;
+    navigationPosition?: 'top' | 'bottom' | 'both';
+    prevLabel?: string;
+    nextLabel?: string;
+    pageIndicatorTemplate?: string;
+    wrapperClass?: string;
+  };
+
+  /**
+   * Options for enhanced embed handling
+   */
+  embedOptions?: {
+    responsive?: boolean;
+    defaultAspectRatio?: string;
+    lazyLoad?: boolean;
+    includeScripts?: boolean;
+    allowFullscreen?: boolean;
+    maxWidth?: number;
+  };
+
+  /**
    * How to handle WordPress content
    * - 'raw' (default): Process raw block data for full control over the output HTML
    * - 'rendered': Use the rendered HTML content as-is from WordPress

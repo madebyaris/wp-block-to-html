@@ -34,8 +34,6 @@ export const coverBlockHandler: BlockHandler = {
 
     // Extract cover attributes
     const url = block.attrs?.url || '';
-    const id = block.attrs?.id;
-    const hasParallax = block.attrs?.hasParallax;
     const dimRatio = block.attrs?.dimRatio !== undefined ? block.attrs.dimRatio : 50;
     const overlayColor = block.attrs?.overlayColor || '';
     const customOverlayColor = block.attrs?.customOverlayColor || '';
@@ -165,7 +163,7 @@ function getOverlayClass(cssFramework?: string): string {
     case 'bootstrap':
       return 'position-absolute top-0 start-0 end-0 bottom-0';
     default:
-      return 'wp-block-cover__overlay';
+      return 'wp-block-cover__overlay has-background-dim';
   }
 }
 

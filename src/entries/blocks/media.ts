@@ -8,6 +8,7 @@ import {
   coverBlockHandler,
   mediaTextBlockHandler,
   embedBlockHandler,
+  enhancedEmbedBlockHandler,
 } from '../../block-handlers';
 
 // Export media block handlers
@@ -20,6 +21,7 @@ export {
   coverBlockHandler,
   mediaTextBlockHandler,
   embedBlockHandler,
+  enhancedEmbedBlockHandler,
 };
 
 // Import registry functions
@@ -35,6 +37,29 @@ export function registerMediaBlockHandlers(): void {
   registerBlockHandler('core/cover', coverBlockHandler);
   registerBlockHandler('core/media-text', mediaTextBlockHandler);
   registerBlockHandler('core/embed', embedBlockHandler);
+
+  // Register enhancedEmbedBlockHandler for specific providers
+  // WordPress supports these providers by default
+  [
+    'youtube',
+    'vimeo',
+    'twitter',
+    'instagram',
+    'spotify',
+    'soundcloud',
+    'flickr',
+    'animoto',
+    'cloudup',
+    'dailymotion',
+    'imgur',
+    'kickstarter',
+    'mixcloud',
+    'reddit',
+    'tiktok',
+    'pinterest',
+  ].forEach((provider) => {
+    registerBlockHandler(`core/embed-${provider}`, enhancedEmbedBlockHandler);
+  });
 }
 
 // Export core types and functions for usage

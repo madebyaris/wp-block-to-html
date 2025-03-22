@@ -1,5 +1,5 @@
 import { Block, BlockHandler, ConversionOptions } from '../types';
-import { getBlockClasses, createElement } from '../core/utils';
+import { getBlockClasses } from '../core/utils';
 
 /**
  * Interface for gallery image
@@ -69,7 +69,7 @@ export const galleryBlockHandler: BlockHandler = {
     // Process images if available
     if (images.length > 0) {
       const imageElements = images.map((image: GalleryImage) => {
-        const { url, id, alt, caption: imgCaption, link } = image;
+        const { url, alt, caption: imgCaption, link } = image;
 
         // Create image element
         let imgElement = `<img src="${url}" alt="${alt || ''}" class="${getImageClass(options.cssFramework)}" />`;
@@ -92,7 +92,7 @@ export const galleryBlockHandler: BlockHandler = {
         }
 
         // Wrap in column div
-        return `<div class="${getColumnClass(options.cssFramework, columns)}">${imgElement}</div>`;
+        return `<div class="${getColumnClass(options.cssFramework)}">${imgElement}</div>`;
       });
 
       // Join image elements
@@ -185,14 +185,14 @@ function getGalleryWrapperClass(cssFramework?: string, columns: number = 3): str
 /**
  * Helper function to get the column class
  */
-function getColumnClass(cssFramework?: string, columns: number = 3): string {
+function getColumnClass(cssFramework?: string): string {
   switch (cssFramework) {
     case 'tailwind':
-      return '';
+      return 'p-1';
     case 'bootstrap':
-      return 'col';
+      return 'mb-4';
     default:
-      return `blocks-gallery-item`;
+      return 'wp-block-gallery-item';
   }
 }
 

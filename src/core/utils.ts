@@ -130,7 +130,7 @@ export function createElement(
 
   // Handle self-closing tags
   const selfClosingTags = ['img', 'br', 'hr', 'input', 'meta', 'link'];
-  if (selfClosingTags.includes(tag) && !content) {
+  if (selfClosingTags.indexOf(tag) !== -1 && !content) {
     return openTag.replace(/>$/, ' />');
   }
 
@@ -158,7 +158,7 @@ export function processInnerBlocks(block: Block, options: ConversionOptions): st
 }
 
 // Placeholder for now - will be implemented to avoid circular dependencies
-function processBlock(block: Block, options: ConversionOptions): string {
+function processBlock(block: Block, _options: ConversionOptions): string {
   // This will be properly implemented to avoid circular import
   return block.innerContent.join('') || '';
 }
@@ -187,51 +187,50 @@ export function processContentWithRenderMode(
   }
 
   // Handle based on rendering mode
-  switch (renderMode) {
-    case 'respect':
-      // Return the original HTML as provided
-      return content;
-
-    case 'preserve-attrs':
-      // Keep the original tag but add our attributes
-      let processedContent = content;
-
-      // Process each attribute
-      Object.entries(attributes).forEach(([key, value]) => {
-        if (!value) return; // Skip false, null, undefined, empty string
-
-        const attrRegex = new RegExp(`${key}="([^"]*)"`, 'i');
-        const hasAttr = attrRegex.test(processedContent);
-
-        if (hasAttr) {
-          // If the attribute already exists, merge values for class, or replace others
-          if (key === 'class') {
-            processedContent = processedContent.replace(attrRegex, (match, existingClass) => {
-              const combinedClass = `${existingClass} ${value}`.trim();
-              return `class="${combinedClass}"`;
-            });
-          } else {
-            // Replace other attributes
-            processedContent = processedContent.replace(attrRegex, `${key}="${value}"`);
-          }
-        } else {
-          // Add attribute if it doesn't exist
-          processedContent = processedContent.replace(
-            new RegExp(`<${tag}([^>]*)>`, 'i'),
-            `<${tag}$1 ${key}="${value}">`,
-          );
-        }
-      });
-
-      return processedContent;
-
-    case 'rebuild':
-    default:
-      // Extract content and rebuild with our attributes
-      const contentMatch = content.match(tagRegex);
-      const innerContent = contentMatch ? contentMatch[1] : content;
-      return createElement(tag, attributes, innerContent);
+  if (renderMode === 'respect') {
+    // Return the original HTML as provided
+    return content;
   }
+
+  if (renderMode === 'preserve-attrs') {
+    // Keep the original tag but add our attributes
+    let processedContent = content;
+
+    // Process each attribute
+    Object.entries(attributes).forEach(([key, value]) => {
+      if (!value) return; // Skip false, null, undefined, empty string
+
+      const attrRegex = new RegExp(`${key}="([^"]*)"`, 'i');
+      const hasAttr = attrRegex.test(processedContent);
+
+      if (hasAttr) {
+        // If the attribute already exists, merge values for class, or replace others
+        if (key === 'class') {
+          processedContent = processedContent.replace(attrRegex, (match, existingClass) => {
+            const combinedClass = `${existingClass} ${value}`.trim();
+            return `class="${combinedClass}"`;
+          });
+        } else {
+          // Replace other attributes
+          processedContent = processedContent.replace(attrRegex, `${key}="${value}"`);
+        }
+      } else {
+        // Add attribute if it doesn't exist
+        processedContent = processedContent.replace(
+          new RegExp(`<${tag}([^>]*)>`, 'i'),
+          `<${tag}$1 ${key}="${value}">`,
+        );
+      }
+    });
+
+    return processedContent;
+  }
+
+  // Default case (rebuild)
+  // Extract content and rebuild with our attributes
+  const contentMatch = content.match(tagRegex);
+  const innerContent = contentMatch ? contentMatch[1] : content;
+  return createElement(tag, attributes, innerContent);
 }
 
 /**

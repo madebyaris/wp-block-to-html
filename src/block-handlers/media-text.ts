@@ -34,11 +34,9 @@ export const mediaTextBlockHandler: BlockHandler = {
 
     // Extract media-text attributes
     const mediaPosition = block.attrs?.mediaPosition || 'left';
-    const mediaId = block.attrs?.mediaId;
     const mediaUrl = block.attrs?.mediaUrl || '';
     const mediaType = block.attrs?.mediaType || 'image';
     const mediaWidth = block.attrs?.mediaWidth || 50;
-    const isStackedOnMobile = block.attrs?.isStackedOnMobile !== false;
     const verticalAlignment = block.attrs?.verticalAlignment || 'center';
     const backgroundColor = block.attrs?.backgroundColor || '';
     const customBackgroundColor = block.attrs?.customBackgroundColor || '';

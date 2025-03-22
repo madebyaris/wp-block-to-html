@@ -30,7 +30,6 @@ export const audioBlockHandler: BlockHandler = {
     // Extract audio attributes
     const src = block.attrs?.src || '';
     const caption = block.attrs?.caption || '';
-    const id = block.attrs?.id;
     const loop = block.attrs?.loop;
     const autoplay = block.attrs?.autoplay;
     const preload = block.attrs?.preload || 'none';

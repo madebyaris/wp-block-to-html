@@ -15,6 +15,14 @@ export const buttonBlockHandler: BlockHandler = {
     // Get CSS classes based on framework
     const classes = getBlockClasses(block, this, options);
 
+    // Get default style class based on framework if needed
+    let enhancedClasses = classes;
+    if (options.cssFramework === 'bootstrap') {
+      enhancedClasses += ' btn-primary';
+    } else if (options.cssFramework === 'tailwind') {
+      enhancedClasses += ' bg-blue-600 text-white hover:bg-blue-700';
+    }
+
     // Extract the button content from innerContent
     let content = '';
 
@@ -32,7 +40,6 @@ export const buttonBlockHandler: BlockHandler = {
     const linkTarget = block.attrs?.linkTarget || '';
     const rel = block.attrs?.rel || '';
     const text = block.attrs?.text || '';
-    const buttonStyle = block.attrs?.style || {};
 
     // If we already have a button or anchor tag, we'll modify its attributes
     if (
@@ -44,7 +51,7 @@ export const buttonBlockHandler: BlockHandler = {
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
 
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass ? `${existingClass} ${classes}` : classes;
+      const combinedClasses = existingClass ? `${existingClass} ${enhancedClasses}` : enhancedClasses;
 
       // Replace or add the class attribute
       if (existingClassMatch) {
@@ -52,9 +59,9 @@ export const buttonBlockHandler: BlockHandler = {
       } else {
         // Add class to button or anchor tag
         if (content.trim().startsWith('<button')) {
-          content = content.replace(/^<button/, `<button class="${classes}"`);
+          content = content.replace(/^<button/, `<button class="${enhancedClasses}"`);
         } else {
-          content = content.replace(/^<a/, `<a class="${classes}"`);
+          content = content.replace(/^<a/, `<a class="${enhancedClasses}"`);
         }
       }
 
@@ -68,7 +75,7 @@ export const buttonBlockHandler: BlockHandler = {
     // Create attributes for the anchor tag
     const attributes: Record<string, string> = {
       href: url,
-      class: classes,
+      class: enhancedClasses,
     };
 
     // Add optional attributes if they exist

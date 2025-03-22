@@ -33,9 +33,7 @@ export const gridBlockHandler: BlockHandler = {
     }
 
     // Extract grid attributes
-    const columnCount = block.attrs?.columnCount || 3;
-    const rowGap = block.attrs?.rowGap || 'default';
-    const columnGap = block.attrs?.columnGap || 'default';
+    // No attributes needed for current implementation
 
     // If we already have a div with the grid structure, we'll modify its attributes
     if (innerContent.trim().startsWith('<div') && innerContent.trim().endsWith('</div>')) {

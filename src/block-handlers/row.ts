@@ -13,9 +13,6 @@ export const rowBlockHandler: BlockHandler = {
    * @returns HTML string or component based on options
    */
   transform(block: Block, options: ConversionOptions): string | unknown {
-    // Get CSS classes based on framework
-    const classes = getBlockClasses(block, this, options);
-
     // Process inner blocks if any
     let innerContent = '';
     if (block.innerBlocks && block.innerBlocks.length > 0) {
@@ -32,10 +29,8 @@ export const rowBlockHandler: BlockHandler = {
       }
     }
 
-    // Extract row attributes
-    const justifyContent = block.attrs?.justifyContent || 'space-between';
-    const verticalAlignment = block.attrs?.verticalAlignment || 'top';
-    const isStackedOnMobile = block.attrs?.isStackedOnMobile !== false;
+    // Get CSS classes based on framework
+    const classes = getBlockClasses(block, this, options);
 
     // If we already have a div with the row structure, we'll modify its attributes
     if (innerContent.trim().startsWith('<div') && innerContent.trim().endsWith('</div>')) {

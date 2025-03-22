@@ -13,9 +13,6 @@ export const stackBlockHandler: BlockHandler = {
    * @returns HTML string or component based on options
    */
   transform(block: Block, options: ConversionOptions): string | unknown {
-    // Get CSS classes based on framework
-    const classes = getBlockClasses(block, this, options);
-
     // Process inner blocks if any
     let innerContent = '';
     if (block.innerBlocks && block.innerBlocks.length > 0) {
@@ -32,10 +29,8 @@ export const stackBlockHandler: BlockHandler = {
       }
     }
 
-    // Extract stack attributes
-    const spacing = block.attrs?.spacing || 'default';
-    const justifyContent = block.attrs?.justifyContent || 'flex-start';
-    const orientation = block.attrs?.orientation || 'vertical';
+    // Get CSS classes based on framework
+    const classes = getBlockClasses(block, this, options);
 
     // If we already have a div with the stack structure, we'll modify its attributes
     if (innerContent.trim().startsWith('<div') && innerContent.trim().endsWith('</div>')) {

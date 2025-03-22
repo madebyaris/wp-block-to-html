@@ -1,4 +1,3 @@
-import { BlockHandler } from './types';
 import { registerBlockHandler } from './core/registry';
 import { paragraphBlockHandler } from './block-handlers/paragraph';
 import { headingBlockHandler } from './block-handlers/heading';

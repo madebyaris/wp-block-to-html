@@ -27,7 +27,6 @@ export const embedBlockHandler: BlockHandler = {
     const providerNameSlug = attrs.providerNameSlug || '';
     const type = attrs.type || '';
     const responsive = attrs.responsive !== false;
-    const align = attrs.align || 'none';
 
     // Determine the provider based on the block name or provider slug
     const provider = getProviderFromBlock(block, providerNameSlug);

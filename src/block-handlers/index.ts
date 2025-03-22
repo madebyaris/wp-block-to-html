@@ -27,11 +27,20 @@ import { mediaTextBlockHandler } from './media-text';
 import { rowBlockHandler } from './row';
 import { stackBlockHandler } from './stack';
 import { gridBlockHandler } from './grid';
-import { pageBreakBlockHandler } from './page-break';
+import { pageBreakBlockHandler, processPaginatedContent } from './page-break';
 import { moreBlockHandler } from './more';
 import { shortcodeBlockHandler } from './shortcode';
 import { customHtmlBlockHandler } from './custom-html';
 import { latestPostsBlockHandler } from './latest-posts';
+import { enhancedEmbedBlockHandler } from './enhanced-embed';
+import { archivesBlockHandler } from './archives';
+import { calendarBlockHandler } from './calendar';
+import { categoriesBlockHandler } from './categories';
+import { termListBlockHandler } from './term-list';
+import { pageListBlockHandler } from './page-list';
+import { rssBlockHandler } from './rss';
+import { searchBlockHandler } from './search';
+import { socialLinksBlockHandler } from './social-links';
 
 // Register all built-in block handlers
 export function registerBuiltInBlockHandlers(): void {
@@ -79,39 +88,65 @@ export function registerBuiltInBlockHandlers(): void {
   registerBlockHandler('core/grid', gridBlockHandler);
 }
 
-// Export individual handlers for direct use
+// Text block handlers
 export {
   paragraphBlockHandler,
   headingBlockHandler,
   listBlockHandler,
-  imageBlockHandler,
   quoteBlockHandler,
   codeBlockHandler,
   preformattedBlockHandler,
-  tableBlockHandler,
-  buttonBlockHandler,
-  separatorBlockHandler,
-  spacerBlockHandler,
-  groupBlockHandler,
-  columnsBlockHandler,
-  columnBlockHandler,
-  embedBlockHandler,
-  galleryBlockHandler,
-  detailsBlockHandler,
   pullquoteBlockHandler,
   verseBlockHandler,
+  detailsBlockHandler,
   classicBlockHandler,
+};
+
+// Media block handlers
+export {
+  imageBlockHandler,
+  galleryBlockHandler,
   audioBlockHandler,
   videoBlockHandler,
   fileBlockHandler,
   coverBlockHandler,
   mediaTextBlockHandler,
+  embedBlockHandler,
+  enhancedEmbedBlockHandler,
+};
+
+// Layout block handlers
+export {
+  groupBlockHandler,
+  columnsBlockHandler,
+  columnBlockHandler,
   rowBlockHandler,
   stackBlockHandler,
   gridBlockHandler,
-  pageBreakBlockHandler,
-  moreBlockHandler,
+};
+
+// Widget block handlers
+export {
   shortcodeBlockHandler,
+  buttonBlockHandler,
   customHtmlBlockHandler,
+  tableBlockHandler,
+  archivesBlockHandler,
+  calendarBlockHandler,
+  categoriesBlockHandler,
+  termListBlockHandler,
+  pageListBlockHandler,
+  rssBlockHandler,
+  searchBlockHandler,
+  socialLinksBlockHandler,
+};
+
+// Dynamic block handlers
+export {
   latestPostsBlockHandler,
+  moreBlockHandler,
+  pageBreakBlockHandler,
+  processPaginatedContent,
+  separatorBlockHandler,
+  spacerBlockHandler,
 };

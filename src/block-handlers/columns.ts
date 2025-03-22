@@ -59,7 +59,7 @@ export const columnsBlockHandler: BlockHandler = {
   cssMapping: {
     // Tailwind CSS mappings
     tailwind: {
-      block: 'flex flex-wrap -mx-2 my-4',
+      block: 'flex flex-wrap -mx-2 my-4 gap-4',
       verticalAlignment: {
         top: 'items-start',
         center: 'items-center',
@@ -68,7 +68,7 @@ export const columnsBlockHandler: BlockHandler = {
       isStackedOnMobile: 'md:flex-row flex-col',
       align: {
         left: 'justify-start',
-        center: 'justify-center',
+        center: 'justify-center mx-auto',
         right: 'justify-end',
         wide: 'max-w-screen-xl mx-auto',
         full: 'w-full',
