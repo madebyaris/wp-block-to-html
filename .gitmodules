@@ -1,0 +1,3 @@
+[submodule "web-documentation"]
+	path = web-documentation
+	url = https://github.com/madebyaris/wp-block-to-html-docs.git

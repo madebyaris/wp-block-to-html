@@ -56,4 +56,4 @@ demo/node_modules/
 
 # Test coverage
 .nyc_output/
-coverage/ 
+coverage/
