@@ -10,10 +10,15 @@ interface GalleryImage {
   alt?: string;
   caption?: string;
   link?: string;
+  linkTarget?: string;
+  rel?: string;
+  width?: number;
+  height?: number;
 }
 
 /**
  * Handler for the 'core/gallery' block
+ * Enhanced with improved caption formatting
  */
 export const galleryBlockHandler: BlockHandler = {
   /**
@@ -38,14 +43,62 @@ export const galleryBlockHandler: BlockHandler = {
       content = block.innerContent.join('');
     }
 
+    // Process captions immediately, ensuring they have proper classes
+    if (content && content.includes('<figcaption')) {
+      const captionClass = getFigcaptionClass(options.cssFramework);
+
+      // Add class to figcaption elements without a class attribute
+      content = content.replace(
+        /<figcaption>([^<]*)<\/figcaption>/g,
+        `<figcaption class="${captionClass}">$1</figcaption>`,
+      );
+
+      // Also ensure figcaptions with classes get our framework-specific class
+      content = content.replace(
+        /<figcaption class="([^"]*)">([^<]*)<\/figcaption>/g,
+        (match, existingClass, captionText) => {
+          if (!existingClass.includes(captionClass)) {
+            return `<figcaption class="${existingClass} ${captionClass}">${captionText}</figcaption>`;
+          }
+          return match;
+        },
+      );
+    }
+
+    // Get rendering mode from options
+    const renderMode = options.renderedContentHandling || 'rebuild';
+
+    // For 'respect' mode, just return the enhanced content
+    if (renderMode === 'respect' && content) {
+      return content;
+    }
+
+    // For 'preserve-attrs' mode, enhance the figure wrapper classes too
+    if (renderMode === 'preserve-attrs' && content) {
+      // Apply classes to the main figure element while preserving existing classes
+      if (content.trim().startsWith('<figure') && content.includes('class=')) {
+        content = content.replace(/<figure class="([^"]*)"/g, (match, existingClass) => {
+          return `<figure class="${existingClass} ${classes}"`;
+        });
+      } else if (content.trim().startsWith('<figure') && !content.includes('class=')) {
+        content = content.replace(/<figure/g, `<figure class="${classes}"`);
+      }
+
+      return content;
+    }
+
     // Extract gallery attributes
     const images = block.attrs?.images || [];
     const columns = block.attrs?.columns || 3;
     const linkTo = block.attrs?.linkTo || 'none';
     const caption = block.attrs?.caption || '';
 
-    // If we already have a gallery structure, we'll modify its attributes
-    if (content.trim().startsWith('<figure') && content.trim().endsWith('</figure>')) {
+    // If we already have a gallery structure and we're in 'rebuild' mode, we'll process it fully
+    if (
+      renderMode === 'rebuild' &&
+      content.trim().startsWith('<figure') &&
+      content.trim().endsWith('</figure>')
+    ) {
       // Extract existing classes if any
       const existingClassMatch = content.match(/class="([^"]*)"/);
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
@@ -69,16 +122,57 @@ export const galleryBlockHandler: BlockHandler = {
     // Process images if available
     if (images.length > 0) {
       const imageElements = images.map((image: GalleryImage) => {
-        const { url, alt, caption: imgCaption, link } = image;
+        const { url, alt = '', caption: imgCaption, link, linkTarget, rel, width, height } = image;
+
+        // Create image attributes
+        const imgAttributes = [
+          `src="${url}"`,
+          `alt="${alt}"`,
+          `class="${getImageClass(options.cssFramework)}"`,
+        ];
+
+        // Add dimensions if available
+        if (width) {
+          imgAttributes.push(`width="${width}"`);
+        }
+
+        if (height) {
+          imgAttributes.push(`height="${height}"`);
+        }
 
         // Create image element
-        let imgElement = `<img src="${url}" alt="${alt || ''}" class="${getImageClass(options.cssFramework)}" />`;
+        let imgElement = `<img ${imgAttributes.join(' ')} />`;
 
         // Add link if specified
         if (linkTo === 'media') {
-          imgElement = `<a href="${url}" class="${getLinkClass(options.cssFramework)}">${imgElement}</a>`;
+          const linkAttributes = [`href="${url}"`, `class="${getLinkClass(options.cssFramework)}"`];
+
+          // Add target and rel if available
+          if (linkTarget) {
+            linkAttributes.push(`target="${linkTarget}"`);
+          }
+
+          if (rel) {
+            linkAttributes.push(`rel="${rel}"`);
+          }
+
+          imgElement = `<a ${linkAttributes.join(' ')}>${imgElement}</a>`;
         } else if (linkTo === 'attachment' && link) {
-          imgElement = `<a href="${link}" class="${getLinkClass(options.cssFramework)}">${imgElement}</a>`;
+          const linkAttributes = [
+            `href="${link}"`,
+            `class="${getLinkClass(options.cssFramework)}"`,
+          ];
+
+          // Add target and rel if available
+          if (linkTarget) {
+            linkAttributes.push(`target="${linkTarget}"`);
+          }
+
+          if (rel) {
+            linkAttributes.push(`rel="${rel}"`);
+          }
+
+          imgElement = `<a ${linkAttributes.join(' ')}>${imgElement}</a>`;
         }
 
         // Add caption if available
@@ -87,6 +181,13 @@ export const galleryBlockHandler: BlockHandler = {
             <figure class="${getFigureClass(options.cssFramework)}">
               ${imgElement}
               <figcaption class="${getFigcaptionClass(options.cssFramework)}">${imgCaption}</figcaption>
+            </figure>
+          `;
+        } else {
+          // Wrap in figure anyway for consistency, but without caption
+          imgElement = `
+            <figure class="${getFigureClass(options.cssFramework)}">
+              ${imgElement}
             </figure>
           `;
         }
@@ -126,6 +227,26 @@ export const galleryBlockHandler: BlockHandler = {
 
   // CSS framework mappings
   cssMapping: {
+    // Default WordPress mappings
+    default: {
+      block: 'wp-block-gallery',
+      columns: {
+        '1': 'columns-1',
+        '2': 'columns-2',
+        '3': 'columns-3',
+        '4': 'columns-4',
+        '5': 'columns-5',
+        '6': 'columns-6',
+      },
+      align: {
+        left: 'alignleft',
+        center: 'aligncenter',
+        right: 'alignright',
+        wide: 'alignwide',
+        full: 'alignfull',
+      },
+    },
+
     // Tailwind CSS mappings
     tailwind: {
       block: 'my-4',
@@ -190,7 +311,7 @@ function getColumnClass(cssFramework?: string): string {
     case 'tailwind':
       return 'p-1';
     case 'bootstrap':
-      return 'mb-4';
+      return 'col mb-4';
     default:
       return 'wp-block-gallery-item';
   }
@@ -216,11 +337,11 @@ function getImageClass(cssFramework?: string): string {
 function getFigureClass(cssFramework?: string): string {
   switch (cssFramework) {
     case 'tailwind':
-      return 'relative';
+      return 'relative mb-4';
     case 'bootstrap':
       return 'figure';
     default:
-      return '';
+      return 'wp-block-image';
   }
 }
 
@@ -230,11 +351,11 @@ function getFigureClass(cssFramework?: string): string {
 function getFigcaptionClass(cssFramework?: string): string {
   switch (cssFramework) {
     case 'tailwind':
-      return 'text-sm text-gray-600 mt-2';
+      return 'text-sm text-gray-600 mt-1 text-center';
     case 'bootstrap':
-      return 'figure-caption';
+      return 'figure-caption text-center';
     default:
-      return '';
+      return 'wp-element-caption';
   }
 }
 
@@ -244,7 +365,7 @@ function getFigcaptionClass(cssFramework?: string): string {
 function getLinkClass(cssFramework?: string): string {
   switch (cssFramework) {
     case 'tailwind':
-      return 'block';
+      return 'block hover:opacity-80 transition-opacity';
     case 'bootstrap':
       return 'd-block';
     default:

@@ -1,0 +1,28 @@
+Post Size,Configuration,Avg Time (ms),Size (KB),Throughput (KB/s)
+small,No Optimization,0.27,0.64,2341.64
+small,Minimal Optimization,0.11,0.64,6054.30
+small,Balanced Optimization,0.11,0.64,5815.51
+small,Maximum Optimization,0.12,0.64,5397.14
+small,Balanced with Lazy Loading,0.16,0.64,4051.97
+small,Balanced with Preconnect,0.06,0.64,11472.79
+small,Balanced with Remove Duplicate Styles,0.06,0.64,10636.37
+small,Balanced with Minify Output,0.07,0.64,9790.60
+small,Maximum with All Features,0.10,0.64,6222.92
+medium,No Optimization,0.44,2.83,6349.17
+medium,Minimal Optimization,25.64,2.83,110.20
+medium,Balanced Optimization,0.33,2.83,8563.36
+medium,Maximum Optimization,0.19,2.83,14925.75
+medium,Balanced with Lazy Loading,0.41,2.83,6965.97
+medium,Balanced with Preconnect,24.35,2.83,116.03
+medium,Balanced with Remove Duplicate Styles,0.13,2.83,21071.11
+medium,Balanced with Minify Output,0.18,2.83,15747.29
+medium,Maximum with All Features,0.16,2.83,17643.70
+large,No Optimization,0.30,4.71,15650.09
+large,Minimal Optimization,0.31,4.71,15410.54
+large,Balanced Optimization,0.50,4.71,9386.84
+large,Maximum Optimization,0.28,4.71,16667.54
+large,Balanced with Lazy Loading,0.25,4.71,18570.15
+large,Balanced with Preconnect,0.35,4.71,13390.31
+large,Balanced with Remove Duplicate Styles,0.24,4.71,19719.63
+large,Balanced with Minify Output,0.28,4.71,16835.55
+large,Maximum with All Features,0.24,4.71,19314.05

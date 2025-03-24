@@ -1,0 +1,197 @@
+{
+  "small": [
+    {
+      "name": "No Optimization",
+      "avgTime": "0.27",
+      "outputSize": "0.64",
+      "throughput": "2341.64",
+      "output": "<h1 class=\"wp-block-heading\">Small Test Post</h1><p class=\"wp-block-paragraph\">This is a small test ..."
+    },
+    {
+      "name": "Minimal Optimization",
+      "avgTime": "0.11",
+      "outputSize": "0.64",
+      "throughput": "6054.30",
+      "output": "<h1 class=\"wp-block-heading\">Small Test Post</h1><p class=\"wp-block-paragraph\">This is a small test ..."
+    },
+    {
+      "name": "Balanced Optimization",
+      "avgTime": "0.11",
+      "outputSize": "0.64",
+      "throughput": "5815.51",
+      "output": "<h1 class=\"wp-block-heading\">Small Test Post</h1><p class=\"wp-block-paragraph\">This is a small test ..."
+    },
+    {
+      "name": "Maximum Optimization",
+      "avgTime": "0.12",
+      "outputSize": "0.64",
+      "throughput": "5397.14",
+      "output": "<h1 class=\"wp-block-heading\">Small Test Post</h1><p class=\"wp-block-paragraph\">This is a small test ..."
+    },
+    {
+      "name": "Balanced with Lazy Loading",
+      "avgTime": "0.16",
+      "outputSize": "0.64",
+      "throughput": "4051.97",
+      "output": "<h1 class=\"wp-block-heading\">Small Test Post</h1><p class=\"wp-block-paragraph\">This is a small test ..."
+    },
+    {
+      "name": "Balanced with Preconnect",
+      "avgTime": "0.06",
+      "outputSize": "0.64",
+      "throughput": "11472.79",
+      "output": "<h1 class=\"wp-block-heading\">Small Test Post</h1><p class=\"wp-block-paragraph\">This is a small test ..."
+    },
+    {
+      "name": "Balanced with Remove Duplicate Styles",
+      "avgTime": "0.06",
+      "outputSize": "0.64",
+      "throughput": "10636.37",
+      "output": "<h1 class=\"wp-block-heading\">Small Test Post</h1><p class=\"wp-block-paragraph\">This is a small test ..."
+    },
+    {
+      "name": "Balanced with Minify Output",
+      "avgTime": "0.07",
+      "outputSize": "0.64",
+      "throughput": "9790.60",
+      "output": "<h1 class=\"wp-block-heading\">Small Test Post</h1><p class=\"wp-block-paragraph\">This is a small test ..."
+    },
+    {
+      "name": "Maximum with All Features",
+      "avgTime": "0.10",
+      "outputSize": "0.64",
+      "throughput": "6222.92",
+      "output": "<h1 class=\"wp-block-heading\">Small Test Post</h1><p class=\"wp-block-paragraph\">This is a small test ..."
+    }
+  ],
+  "medium": [
+    {
+      "name": "No Optimization",
+      "avgTime": "0.44",
+      "outputSize": "2.83",
+      "throughput": "6349.17",
+      "output": "<h1 class=\"wp-block-heading\">Medium Size Test Post</h1><p class=\"wp-block-paragraph\">This is a mediu..."
+    },
+    {
+      "name": "Minimal Optimization",
+      "avgTime": "25.64",
+      "outputSize": "2.83",
+      "throughput": "110.20",
+      "output": "<h1 class=\"wp-block-heading\">Medium Size Test Post</h1><p class=\"wp-block-paragraph\">This is a mediu..."
+    },
+    {
+      "name": "Balanced Optimization",
+      "avgTime": "0.33",
+      "outputSize": "2.83",
+      "throughput": "8563.36",
+      "output": "<h1 class=\"wp-block-heading\">Medium Size Test Post</h1><p class=\"wp-block-paragraph\">This is a mediu..."
+    },
+    {
+      "name": "Maximum Optimization",
+      "avgTime": "0.19",
+      "outputSize": "2.83",
+      "throughput": "14925.75",
+      "output": "<h1 class=\"wp-block-heading\">Medium Size Test Post</h1><p class=\"wp-block-paragraph\">This is a mediu..."
+    },
+    {
+      "name": "Balanced with Lazy Loading",
+      "avgTime": "0.41",
+      "outputSize": "2.83",
+      "throughput": "6965.97",
+      "output": "<h1 class=\"wp-block-heading\">Medium Size Test Post</h1><p class=\"wp-block-paragraph\">This is a mediu..."
+    },
+    {
+      "name": "Balanced with Preconnect",
+      "avgTime": "24.35",
+      "outputSize": "2.83",
+      "throughput": "116.03",
+      "output": "<h1 class=\"wp-block-heading\">Medium Size Test Post</h1><p class=\"wp-block-paragraph\">This is a mediu..."
+    },
+    {
+      "name": "Balanced with Remove Duplicate Styles",
+      "avgTime": "0.13",
+      "outputSize": "2.83",
+      "throughput": "21071.11",
+      "output": "<h1 class=\"wp-block-heading\">Medium Size Test Post</h1><p class=\"wp-block-paragraph\">This is a mediu..."
+    },
+    {
+      "name": "Balanced with Minify Output",
+      "avgTime": "0.18",
+      "outputSize": "2.83",
+      "throughput": "15747.29",
+      "output": "<h1 class=\"wp-block-heading\">Medium Size Test Post</h1><p class=\"wp-block-paragraph\">This is a mediu..."
+    },
+    {
+      "name": "Maximum with All Features",
+      "avgTime": "0.16",
+      "outputSize": "2.83",
+      "throughput": "17643.70",
+      "output": "<h1 class=\"wp-block-heading\">Medium Size Test Post</h1><p class=\"wp-block-paragraph\">This is a mediu..."
+    }
+  ],
+  "large": [
+    {
+      "name": "No Optimization",
+      "avgTime": "0.30",
+      "outputSize": "4.71",
+      "throughput": "15650.09",
+      "output": "<h1 class=\"wp-block-heading\">Large Test Post for Comprehensive Benchmarking</h1><p class=\"wp-block-p..."
+    },
+    {
+      "name": "Minimal Optimization",
+      "avgTime": "0.31",
+      "outputSize": "4.71",
+      "throughput": "15410.54",
+      "output": "<h1 class=\"wp-block-heading\">Large Test Post for Comprehensive Benchmarking</h1><p class=\"wp-block-p..."
+    },
+    {
+      "name": "Balanced Optimization",
+      "avgTime": "0.50",
+      "outputSize": "4.71",
+      "throughput": "9386.84",
+      "output": "<h1 class=\"wp-block-heading\">Large Test Post for Comprehensive Benchmarking</h1><p class=\"wp-block-p..."
+    },
+    {
+      "name": "Maximum Optimization",
+      "avgTime": "0.28",
+      "outputSize": "4.71",
+      "throughput": "16667.54",
+      "output": "<h1 class=\"wp-block-heading\">Large Test Post for Comprehensive Benchmarking</h1><p class=\"wp-block-p..."
+    },
+    {
+      "name": "Balanced with Lazy Loading",
+      "avgTime": "0.25",
+      "outputSize": "4.71",
+      "throughput": "18570.15",
+      "output": "<h1 class=\"wp-block-heading\">Large Test Post for Comprehensive Benchmarking</h1><p class=\"wp-block-p..."
+    },
+    {
+      "name": "Balanced with Preconnect",
+      "avgTime": "0.35",
+      "outputSize": "4.71",
+      "throughput": "13390.31",
+      "output": "<h1 class=\"wp-block-heading\">Large Test Post for Comprehensive Benchmarking</h1><p class=\"wp-block-p..."
+    },
+    {
+      "name": "Balanced with Remove Duplicate Styles",
+      "avgTime": "0.24",
+      "outputSize": "4.71",
+      "throughput": "19719.63",
+      "output": "<h1 class=\"wp-block-heading\">Large Test Post for Comprehensive Benchmarking</h1><p class=\"wp-block-p..."
+    },
+    {
+      "name": "Balanced with Minify Output",
+      "avgTime": "0.28",
+      "outputSize": "4.71",
+      "throughput": "16835.55",
+      "output": "<h1 class=\"wp-block-heading\">Large Test Post for Comprehensive Benchmarking</h1><p class=\"wp-block-p..."
+    },
+    {
+      "name": "Maximum with All Features",
+      "avgTime": "0.24",
+      "outputSize": "4.71",
+      "throughput": "19314.05",
+      "output": "<h1 class=\"wp-block-heading\">Large Test Post for Comprehensive Benchmarking</h1><p class=\"wp-block-p..."
+    }
+  ]
+}

@@ -27,3 +27,6 @@ export * from './svelte';
 
 // Export block categories
 export * from './blocks';
+
+// Export SEO functionality
+export * from './seo';

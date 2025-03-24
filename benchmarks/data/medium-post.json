@@ -1,0 +1,232 @@
+{
+  "blocks": [
+    {
+      "blockName": "core/heading",
+      "attrs": {
+        "level": 1,
+        "content": "Medium Size Test Post"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<h1>Medium Size Test Post</h1>"
+      ]
+    },
+    {
+      "blockName": "core/paragraph",
+      "attrs": {
+        "content": "This is a medium size post with multiple blocks for more extensive SSR benchmarking."
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<p>This is a medium size post with multiple blocks for more extensive SSR benchmarking.</p>"
+      ]
+    },
+    {
+      "blockName": "core/image",
+      "attrs": {
+        "url": "https://example.com/hero-image.jpg",
+        "alt": "Hero image",
+        "width": 1200,
+        "height": 600
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<figure class=\"wp-block-image\"><img src=\"https://example.com/hero-image.jpg\" alt=\"Hero image\" width=\"1200\" height=\"600\"/></figure>"
+      ]
+    },
+    {
+      "blockName": "core/paragraph",
+      "attrs": {
+        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa."
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa.</p>"
+      ]
+    },
+    {
+      "blockName": "core/heading",
+      "attrs": {
+        "level": 2,
+        "content": "Section With Multiple Elements"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<h2>Section With Multiple Elements</h2>"
+      ]
+    },
+    {
+      "blockName": "core/list",
+      "attrs": {
+        "ordered": false
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<ul><li>First list item with some content</li><li>Second list item with <strong>bold text</strong> and more content</li><li>Third list item with even more sample text for benchmarking</li></ul>"
+      ]
+    },
+    {
+      "blockName": "core/image",
+      "attrs": {
+        "url": "https://example.com/content-image.jpg",
+        "alt": "Content image",
+        "width": 800,
+        "height": 400
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<figure class=\"wp-block-image\"><img src=\"https://example.com/content-image.jpg\" alt=\"Content image\" width=\"800\" height=\"400\"/></figure>"
+      ]
+    },
+    {
+      "blockName": "core/quote",
+      "attrs": {},
+      "innerBlocks": [],
+      "innerContent": [
+        "<blockquote class=\"wp-block-quote\"><p>This is a sample quote to test how quotations are optimized in the SSR process.</p><cite>Sample Author</cite></blockquote>"
+      ]
+    },
+    {
+      "blockName": "core/paragraph",
+      "attrs": {
+        "content": "Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor."
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<p>Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor.</p>"
+      ]
+    },
+    {
+      "blockName": "core/heading",
+      "attrs": {
+        "level": 2,
+        "content": "Below The Fold Content"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<h2>Below The Fold Content</h2>"
+      ]
+    },
+    {
+      "blockName": "core/paragraph",
+      "attrs": {
+        "content": "This content is likely below the fold and can be optimized differently by the SSR process when prioritizeAboveTheFold is enabled."
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<p>This content is likely below the fold and can be optimized differently by the SSR process when prioritizeAboveTheFold is enabled.</p>"
+      ]
+    },
+    {
+      "blockName": "core/columns",
+      "attrs": {},
+      "innerBlocks": [
+        {
+          "blockName": "core/column",
+          "attrs": {},
+          "innerBlocks": [
+            {
+              "blockName": "core/heading",
+              "attrs": {
+                "level": 3,
+                "content": "Column 1"
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<h3>Column 1</h3>"
+              ]
+            },
+            {
+              "blockName": "core/paragraph",
+              "attrs": {
+                "content": "Content for the first column to test nested blocks optimization."
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<p>Content for the first column to test nested blocks optimization.</p>"
+              ]
+            }
+          ],
+          "innerContent": [
+            "<div class=\"wp-block-column\">",
+            null,
+            null,
+            "</div>"
+          ]
+        },
+        {
+          "blockName": "core/column",
+          "attrs": {},
+          "innerBlocks": [
+            {
+              "blockName": "core/heading",
+              "attrs": {
+                "level": 3,
+                "content": "Column 2"
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<h3>Column 2</h3>"
+              ]
+            },
+            {
+              "blockName": "core/paragraph",
+              "attrs": {
+                "content": "Content for the second column to test nested blocks optimization."
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<p>Content for the second column to test nested blocks optimization.</p>"
+              ]
+            }
+          ],
+          "innerContent": [
+            "<div class=\"wp-block-column\">",
+            null,
+            null,
+            "</div>"
+          ]
+        }
+      ],
+      "innerContent": [
+        "<div class=\"wp-block-columns\">",
+        null,
+        null,
+        "</div>"
+      ]
+    },
+    {
+      "blockName": "core/image",
+      "attrs": {
+        "url": "https://example.com/image2.jpg",
+        "alt": "Another image",
+        "width": 800,
+        "height": 600
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<figure class=\"wp-block-image\"><img src=\"https://example.com/image2.jpg\" alt=\"Another image\" width=\"800\" height=\"600\"/></figure>"
+      ]
+    },
+    {
+      "blockName": "core/embed",
+      "attrs": {
+        "url": "https://www.youtube.com/watch?v=example",
+        "type": "video",
+        "providerNameSlug": "youtube"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<figure class=\"wp-block-embed is-type-video is-provider-youtube\"><div class=\"wp-block-embed__wrapper\"><iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/example\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe></div></figure>"
+      ]
+    },
+    {
+      "blockName": "core/html",
+      "attrs": {},
+      "innerBlocks": [],
+      "innerContent": [
+        "<div onclick=\"alert('Hello World!')\" onmouseover=\"console.log('mouse event')\">This div has multiple inline event handlers</div><script>console.log('Medium post script');</script><style>.test1 { color: blue; font-size: 16px; }</style><style>.test1 { color: blue; font-size: 16px; }</style>"
+      ]
+    }
+  ]
+} 

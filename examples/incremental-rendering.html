@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incremental Rendering Example - WP Block to HTML</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin: 20px 0;
+      padding: 15px;
+      background: #f7f7f7;
+      border-radius: 5px;
+    }
+    .option {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    button {
+      background: #0073aa;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 15px 0;
+    }
+    button:hover {
+      background: #005177;
+    }
+    #content {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-top: 20px;
+      min-height: 200px;
+    }
+    .progress {
+      margin: 10px 0;
+      height: 5px;
+      width: 100%;
+      background: #eee;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #0073aa;
+      transition: width 0.3s;
+    }
+    .wp-block-incremental-placeholder {
+      background: #f9f9f9;
+      border: 1px dashed #ddd;
+      padding: 20px;
+      text-align: center;
+      margin: 10px 0;
+      color: #777;
+    }
+    .stats {
+      font-size: 14px;
+      color: #666;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Incremental Rendering Example</h1>
+  <p>This example demonstrates how to use the incremental rendering functionality in the WP Block to HTML converter to progressively render large content sets without blocking the UI.</p>
+  
+  <div class="options">
+    <div class="option">
+      <label for="numBlocks">Number of Blocks</label>
+      <input type="number" id="numBlocks" min="10" max="1000" value="100">
+    </div>
+    <div class="option">
+      <label for="initialRender">Initial Render Count</label>
+      <input type="number" id="initialRender" min="1" max="50" value="10">
+    </div>
+    <div class="option">
+      <label for="batchSize">Batch Size</label>
+      <input type="number" id="batchSize" min="1" max="20" value="5">
+    </div>
+    <div class="option">
+      <label for="batchDelay">Delay (ms)</label>
+      <input type="number" id="batchDelay" min="0" max="1000" value="50">
+    </div>
+  </div>
+  
+  <button id="render">Render Content</button>
+  
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  
+  <div id="content"></div>
+  
+  <div class="stats" id="stats"></div>
+  
+  <script type="module">
+    // Import the library
+    // In a real project, you would import from 'wp-block-to-html'
+    import { convertBlocks } from '../dist/index.mjs';
+    import { DEFAULT_INCREMENTAL_OPTIONS } from '../dist/incremental.mjs';
+    
+    // Generate sample blocks
+    function generateBlocks(count) {
+      const blocks = [];
+      for (let i = 0; i < count; i++) {
+        // Create different block types for variety
+        const blockType = i % 5 === 0 ? 'core/heading' : 
+                        i % 3 === 0 ? 'core/image' : 'core/paragraph';
+        
+        let block;
+        if (blockType === 'core/heading') {
+          block = {
+            blockName: 'core/heading',
+            attrs: { level: 2, content: `Heading ${i}` },
+            innerBlocks: [],
+            innerHTML: `<h2>Heading ${i}</h2>`,
+            innerContent: [`<h2>Heading ${i}</h2>`]
+          };
+        } else if (blockType === 'core/image') {
+          block = {
+            blockName: 'core/image',
+            attrs: { 
+              url: `https://picsum.photos/600/400?random=${i}`,
+              alt: `Sample image ${i}`
+            },
+            innerBlocks: [],
+            innerHTML: `<figure><img src="https://picsum.photos/600/400?random=${i}" alt="Sample image ${i}"><figcaption>Image ${i}</figcaption></figure>`,
+            innerContent: [`<figure><img src="https://picsum.photos/600/400?random=${i}" alt="Sample image ${i}"><figcaption>Image ${i}</figcaption></figure>`]
+          };
+        } else {
+          block = {
+            blockName: 'core/paragraph',
+            attrs: {},
+            innerBlocks: [],
+            innerHTML: `<p>This is paragraph ${i}. It contains some sample text to demonstrate incremental rendering with the WordPress Block to HTML converter. This helps prevent UI blocking with large content sets.</p>`,
+            innerContent: [`<p>This is paragraph ${i}. It contains some sample text to demonstrate incremental rendering with the WordPress Block to HTML converter. This helps prevent UI blocking with large content sets.</p>`]
+          };
+        }
+        
+        blocks.push(block);
+      }
+      return blocks;
+    }
+    
+    // Set up the UI
+    document.getElementById('render').addEventListener('click', () => {
+      const numBlocks = parseInt(document.getElementById('numBlocks').value, 10);
+      const initialRender = parseInt(document.getElementById('initialRender').value, 10);
+      const batchSize = parseInt(document.getElementById('batchSize').value, 10);
+      const batchDelay = parseInt(document.getElementById('batchDelay').value, 10);
+      
+      const blocks = generateBlocks(numBlocks);
+      const contentEl = document.getElementById('content');
+      const progressBar = document.getElementById('progressBar');
+      const statsEl = document.getElementById('stats');
+      
+      // Clear previous content
+      contentEl.innerHTML = '';
+      statsEl.innerHTML = 'Starting render...';
+      progressBar.style.width = '0%';
+      
+      const startTime = performance.now();
+      
+      // Convert blocks with incremental rendering
+      const html = convertBlocks(blocks, {
+        incrementalOptions: {
+          enabled: true,
+          initialRenderCount: initialRender,
+          batchSize: batchSize,
+          batchDelay: batchDelay
+        },
+        cssFramework: 'bootstrap'  // You can change this to 'tailwind' or any other supported framework
+      });
+      
+      // Inject the HTML
+      contentEl.innerHTML = html;
+      
+      // Update progress bar as blocks are rendered
+      let processed = initialRender;
+      const updateProgress = () => {
+        const percent = Math.min(100, Math.round((processed / numBlocks) * 100));
+        progressBar.style.width = `${percent}%`;
+        
+        if (processed >= numBlocks) {
+          const endTime = performance.now();
+          statsEl.innerHTML = `
+            Rendered ${numBlocks} blocks in ${Math.round(endTime - startTime)}ms<br>
+            Initial render: ${initialRender} blocks<br>
+            Batch size: ${batchSize} blocks<br>
+            Batch delay: ${batchDelay}ms
+          `;
+        } else {
+          statsEl.innerHTML = `Rendered ${processed} of ${numBlocks} blocks...`;
+        }
+      };
+      
+      // Process remaining blocks
+      if (processed < numBlocks) {
+        updateProgress();
+        
+        // This part would normally be handled by the library's client-side script
+        // but for demo purposes, we're implementing it inline
+        const remainingBlocks = blocks.slice(initialRender);
+        let currentBatch = 0;
+        
+        const processNextBatch = () => {
+          const start = currentBatch * batchSize;
+          const end = Math.min(start + batchSize, remainingBlocks.length);
+          if (start >= remainingBlocks.length) return;
+          
+          const batchBlocks = remainingBlocks.slice(start, end);
+          
+          // Process this batch
+          batchBlocks.forEach((block, index) => {
+            const blockIndex = initialRender + start + index;
+            const placeholderId = `incremental-block-${start + index}`;
+            const placeholder = document.getElementById(placeholderId);
+            
+            if (placeholder) {
+              // Replace placeholder with actual content
+              const blockHtml = convertBlocks([block]);
+              placeholder.outerHTML = blockHtml;
+              processed++;
+            }
+          });
+          
+          updateProgress();
+          currentBatch++;
+          
+          // Schedule next batch
+          if (currentBatch * batchSize < remainingBlocks.length) {
+            setTimeout(processNextBatch, batchDelay);
+          }
+        };
+        
+        // Start processing
+        setTimeout(processNextBatch, batchDelay);
+      }
+    });
+  </script>
+</body>
+</html> 

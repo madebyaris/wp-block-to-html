@@ -1,0 +1,56 @@
+{
+  "blocks": [
+    {
+      "blockName": "core/heading",
+      "attrs": {
+        "level": 1,
+        "content": "Small Test Post"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<h1>Small Test Post</h1>"
+      ]
+    },
+    {
+      "blockName": "core/paragraph",
+      "attrs": {
+        "content": "This is a small test post with minimal content for SSR benchmarking."
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<p>This is a small test post with minimal content for SSR benchmarking.</p>"
+      ]
+    },
+    {
+      "blockName": "core/image",
+      "attrs": {
+        "url": "https://example.com/image.jpg",
+        "alt": "Test image",
+        "width": 800,
+        "height": 600
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<figure class=\"wp-block-image\"><img src=\"https://example.com/image.jpg\" alt=\"Test image\" width=\"800\" height=\"600\"/></figure>"
+      ]
+    },
+    {
+      "blockName": "core/paragraph",
+      "attrs": {
+        "content": "This post contains a few basic blocks to test SSR optimization performance."
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<p>This post contains a few basic blocks to test SSR optimization performance.</p>"
+      ]
+    },
+    {
+      "blockName": "core/html",
+      "attrs": {},
+      "innerBlocks": [],
+      "innerContent": [
+        "<div onclick=\"alert('Hello')\">This div has an inline event handler</div><script>console.log('Test script');</script><style>.test { color: red; }</style><style>.test { color: red; }</style>"
+      ]
+    }
+  ]
+} 

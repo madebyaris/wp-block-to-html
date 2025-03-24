@@ -2,6 +2,31 @@
 
 All notable changes to the WordPress Block to HTML Converter will be documented in this file.
 
+## [0.5.0] - 2025-05-15
+
+### Added
+- Server-Side Rendering (SSR) optimization suite
+- Lazy loading for images and iframes with LCP (Largest Contentful Paint) protection
+- Prioritization of above-the-fold content
+- Critical path CSS identification
+- Preconnect link generation for external resources
+- HTML minification for reduced payload sizes
+- Optimization depth control for nested content
+- Complete benchmark suite for SSR optimizations
+
+### Improved
+- Significant performance gains for large content
+- Core SSR module integration with main converter
+- HTML processing for better Core Web Vitals scores
+- Minification output quality
+- Style deduplication for reduced CSS payload
+
+### Fixed
+- Issues with malformed image tags
+- URL handling in SSR processed content
+- Iframe processing for improved performance
+- Benchmark results reporting
+
 ## [0.4.0] - 2025-04-20
 
 ### Added

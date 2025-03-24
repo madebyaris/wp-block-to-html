@@ -51,7 +51,9 @@ export const buttonBlockHandler: BlockHandler = {
       const existingClass = existingClassMatch ? existingClassMatch[1] : '';
 
       // Combine existing classes with our framework classes
-      const combinedClasses = existingClass ? `${existingClass} ${enhancedClasses}` : enhancedClasses;
+      const combinedClasses = existingClass
+        ? `${existingClass} ${enhancedClasses}`
+        : enhancedClasses;
 
       // Replace or add the class attribute
       if (existingClassMatch) {

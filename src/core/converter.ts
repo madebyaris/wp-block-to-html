@@ -1,6 +1,7 @@
 import { Block, BlockList, ConversionOptions, DEFAULT_OPTIONS } from '../types';
 import { getBlockHandler } from './registry';
 import { mergeOptions, enhanceRenderedHTML } from './utils';
+import { processBlocksIncrementally } from './incremental';
 
 /**
  * Convert WordPress blocks to the specified format
@@ -24,6 +25,9 @@ export function convertBlocks(
     blocks = [blockData as Block];
   }
 
+  // Store blocks reference for incremental rendering
+  options.blocks = blocks;
+
   // Handle rendered content directly if rendered mode is specified and we have rendered HTML
   if (
     options.contentHandling === 'rendered' &&
@@ -40,6 +44,15 @@ export function convertBlocks(
     typeof blockData.rendered === 'string'
   ) {
     return enhanceRenderedHTML(blockData.rendered, options);
+  }
+
+  // Handle incremental rendering if enabled
+  if (options.incrementalOptions?.enabled && options.outputFormat === 'html') {
+    return processBlocksIncrementally(
+      blocks,
+      (block) => processBlock(block, options),
+      options.incrementalOptions
+    );
   }
 
   // Process each block
@@ -105,6 +118,37 @@ export function convertBlock(block: Block, options: ConversionOptions): string |
   const handler = getBlockHandler(block.blockName);
   if (handler) {
     return handler.transform(block, updatedOptions);
+  }
+
+  // If no handler is available, return original content
+  return block.innerContent.join('') || '';
+}
+
+/**
+ * Process a single block and convert it to HTML
+ * @param block Block to process
+ * @param options Conversion options
+ * @returns HTML string for the block
+ */
+function processBlock(block: Block, options: ConversionOptions): string {
+  // Map contentHandling to renderedContentHandling for backward compatibility
+  const updatedOptions = {
+    ...options,
+    renderedContentHandling: getCompatibleRenderingMode(options),
+  };
+
+  // Check for custom transformer first
+  const customTransformer = updatedOptions.blockTransformers?.[block.blockName];
+  if (customTransformer) {
+    const result = customTransformer.transform(block, updatedOptions);
+    return typeof result === 'string' ? result : '';
+  }
+
+  // Fall back to built-in handler
+  const handler = getBlockHandler(block.blockName);
+  if (handler) {
+    const result = handler.transform(block, updatedOptions);
+    return typeof result === 'string' ? result : '';
   }
 
   // If no handler is available, return original content

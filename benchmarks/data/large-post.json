@@ -1,0 +1,494 @@
+{
+  "blocks": [
+    {
+      "blockName": "core/heading",
+      "attrs": {
+        "level": 1,
+        "content": "Large Test Post for Comprehensive Benchmarking"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<h1>Large Test Post for Comprehensive Benchmarking</h1>"
+      ]
+    },
+    {
+      "blockName": "core/paragraph",
+      "attrs": {
+        "content": "This is a large test post with many blocks and nested structures to thoroughly test SSR optimization performance at scale."
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<p>This is a large test post with many blocks and nested structures to thoroughly test SSR optimization performance at scale.</p>"
+      ]
+    },
+    {
+      "blockName": "core/image",
+      "attrs": {
+        "url": "https://example.com/hero-large.jpg",
+        "alt": "Large hero image",
+        "width": 1920,
+        "height": 1080,
+        "className": "is-style-default featured"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<figure class=\"wp-block-image is-style-default featured\"><img src=\"https://example.com/hero-large.jpg\" alt=\"Large hero image\" width=\"1920\" height=\"1080\"/></figure>"
+      ]
+    },
+    {
+      "blockName": "core/paragraph",
+      "attrs": {
+        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa."
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa.</p>"
+      ]
+    },
+    {
+      "blockName": "core/heading",
+      "attrs": {
+        "level": 2,
+        "content": "First Major Section - Above the Fold"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<h2>First Major Section - Above the Fold</h2>"
+      ]
+    },
+    {
+      "blockName": "core/columns",
+      "attrs": {},
+      "innerBlocks": [
+        {
+          "blockName": "core/column",
+          "attrs": {},
+          "innerBlocks": [
+            {
+              "blockName": "core/heading",
+              "attrs": {
+                "level": 3,
+                "content": "Column 1 Content"
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<h3>Column 1 Content</h3>"
+              ]
+            },
+            {
+              "blockName": "core/paragraph",
+              "attrs": {
+                "content": "This is the first column with some important content that should be prioritized in SSR optimizations."
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<p>This is the first column with some important content that should be prioritized in SSR optimizations.</p>"
+              ]
+            },
+            {
+              "blockName": "core/image",
+              "attrs": {
+                "url": "https://example.com/column1-image.jpg",
+                "alt": "Column 1 image",
+                "width": 400,
+                "height": 300
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<figure class=\"wp-block-image\"><img src=\"https://example.com/column1-image.jpg\" alt=\"Column 1 image\" width=\"400\" height=\"300\"/></figure>"
+              ]
+            }
+          ],
+          "innerContent": [
+            "<div class=\"wp-block-column\">", 
+            null, 
+            null, 
+            null, 
+            "</div>"
+          ]
+        },
+        {
+          "blockName": "core/column",
+          "attrs": {},
+          "innerBlocks": [
+            {
+              "blockName": "core/heading",
+              "attrs": {
+                "level": 3,
+                "content": "Column 2 Content"
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<h3>Column 2 Content</h3>"
+              ]
+            },
+            {
+              "blockName": "core/paragraph",
+              "attrs": {
+                "content": "This is the second column with some additional content that might be less critical for immediate rendering."
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<p>This is the second column with some additional content that might be less critical for immediate rendering.</p>"
+              ]
+            },
+            {
+              "blockName": "core/list",
+              "attrs": {},
+              "innerBlocks": [],
+              "innerContent": [
+                "<ul><li>Feature one with <strong>bold text</strong></li><li>Feature two with some details</li><li>Feature three with <em>emphasis</em></li><li>Feature four with <a href=\"https://example.com\">a link</a></li></ul>"
+              ]
+            }
+          ],
+          "innerContent": [
+            "<div class=\"wp-block-column\">", 
+            null, 
+            null, 
+            null, 
+            "</div>"
+          ]
+        }
+      ],
+      "innerContent": [
+        "<div class=\"wp-block-columns\">", 
+        null, 
+        null, 
+        "</div>"
+      ]
+    },
+    {
+      "blockName": "core/separator",
+      "attrs": {},
+      "innerBlocks": [],
+      "innerContent": [
+        "<hr class=\"wp-block-separator\"/>"
+      ]
+    },
+    {
+      "blockName": "core/heading",
+      "attrs": {
+        "level": 2,
+        "content": "Middle Section - More Complex Content"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<h2>Middle Section - More Complex Content</h2>"
+      ]
+    },
+    {
+      "blockName": "core/quote",
+      "attrs": {
+        "content": "The true test of SSR optimization is not just how fast it renders, but how efficiently it prioritizes what matters most to the user experience.",
+        "citation": "Web Performance Expert"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<blockquote class=\"wp-block-quote\"><p>The true test of SSR optimization is not just how fast it renders, but how efficiently it prioritizes what matters most to the user experience.</p><cite>Web Performance Expert</cite></blockquote>"
+      ]
+    },
+    {
+      "blockName": "core/paragraph",
+      "attrs": {
+        "content": "In this section, we'll examine how the library handles a mix of complex content types. This should test the library's capability to handle various HTML structures and optimize them appropriately."
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<p>In this section, we'll examine how the library handles a mix of complex content types. This should test the library's capability to handle various HTML structures and optimize them appropriately.</p>"
+      ]
+    },
+    {
+      "blockName": "core/gallery",
+      "attrs": {},
+      "innerBlocks": [
+        {
+          "blockName": "core/image",
+          "attrs": {
+            "url": "https://example.com/gallery-image-1.jpg",
+            "alt": "Gallery image 1",
+            "width": 600,
+            "height": 400
+          },
+          "innerBlocks": [],
+          "innerContent": [
+            "<figure class=\"wp-block-image\"><img src=\"https://example.com/gallery-image-1.jpg\" alt=\"Gallery image 1\" width=\"600\" height=\"400\"/></figure>"
+          ]
+        },
+        {
+          "blockName": "core/image",
+          "attrs": {
+            "url": "https://example.com/gallery-image-2.jpg",
+            "alt": "Gallery image 2",
+            "width": 600,
+            "height": 400
+          },
+          "innerBlocks": [],
+          "innerContent": [
+            "<figure class=\"wp-block-image\"><img src=\"https://example.com/gallery-image-2.jpg\" alt=\"Gallery image 2\" width=\"600\" height=\"400\"/></figure>"
+          ]
+        },
+        {
+          "blockName": "core/image",
+          "attrs": {
+            "url": "https://example.com/gallery-image-3.jpg",
+            "alt": "Gallery image 3",
+            "width": 600,
+            "height": 400
+          },
+          "innerBlocks": [],
+          "innerContent": [
+            "<figure class=\"wp-block-image\"><img src=\"https://example.com/gallery-image-3.jpg\" alt=\"Gallery image 3\" width=\"600\" height=\"400\"/></figure>"
+          ]
+        },
+        {
+          "blockName": "core/image",
+          "attrs": {
+            "url": "https://example.com/gallery-image-4.jpg",
+            "alt": "Gallery image 4",
+            "width": 600,
+            "height": 400
+          },
+          "innerBlocks": [],
+          "innerContent": [
+            "<figure class=\"wp-block-image\"><img src=\"https://example.com/gallery-image-4.jpg\" alt=\"Gallery image 4\" width=\"600\" height=\"400\"/></figure>"
+          ]
+        }
+      ],
+      "innerContent": [
+        "<div class=\"wp-block-gallery\">",
+        null,
+        null,
+        null,
+        null,
+        "</div>"
+      ]
+    },
+    {
+      "blockName": "core/embed",
+      "attrs": {
+        "url": "https://www.youtube.com/watch?v=example12345",
+        "type": "video",
+        "providerNameSlug": "youtube",
+        "responsive": true
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<figure class=\"wp-block-embed is-type-video is-provider-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio\"><div class=\"wp-block-embed__wrapper\"><iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/example12345\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe></div></figure>"
+      ]
+    },
+    {
+      "blockName": "core/heading",
+      "attrs": {
+        "level": 2,
+        "content": "Below The Fold Content - Advanced Features"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<h2>Below The Fold Content - Advanced Features</h2>"
+      ]
+    },
+    {
+      "blockName": "core/columns",
+      "attrs": {},
+      "innerBlocks": [
+        {
+          "blockName": "core/column",
+          "attrs": {},
+          "innerBlocks": [
+            {
+              "blockName": "core/heading",
+              "attrs": {
+                "level": 3,
+                "content": "Deeply Nested Column Structure"
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<h3>Deeply Nested Column Structure</h3>"
+              ]
+            },
+            {
+              "blockName": "core/paragraph",
+              "attrs": {
+                "content": "This tests how the optimizer handles deeply nested structures."
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<p>This tests how the optimizer handles deeply nested structures.</p>"
+              ]
+            },
+            {
+              "blockName": "core/columns",
+              "attrs": {},
+              "innerBlocks": [
+                {
+                  "blockName": "core/column",
+                  "attrs": {},
+                  "innerBlocks": [
+                    {
+                      "blockName": "core/paragraph",
+                      "attrs": {
+                        "content": "Nested column 1 content"
+                      },
+                      "innerBlocks": [],
+                      "innerContent": [
+                        "<p>Nested column 1 content</p>"
+                      ]
+                    }
+                  ],
+                  "innerContent": [
+                    "<div class=\"wp-block-column\">", 
+                    null, 
+                    "</div>"
+                  ]
+                },
+                {
+                  "blockName": "core/column",
+                  "attrs": {},
+                  "innerBlocks": [
+                    {
+                      "blockName": "core/paragraph",
+                      "attrs": {
+                        "content": "Nested column 2 content"
+                      },
+                      "innerBlocks": [],
+                      "innerContent": [
+                        "<p>Nested column 2 content</p>"
+                      ]
+                    }
+                  ],
+                  "innerContent": [
+                    "<div class=\"wp-block-column\">", 
+                    null, 
+                    "</div>"
+                  ]
+                }
+              ],
+              "innerContent": [
+                "<div class=\"wp-block-columns\">", 
+                null, 
+                null, 
+                "</div>"
+              ]
+            }
+          ],
+          "innerContent": [
+            "<div class=\"wp-block-column\">", 
+            null, 
+            null, 
+            null, 
+            "</div>"
+          ]
+        },
+        {
+          "blockName": "core/column",
+          "attrs": {},
+          "innerBlocks": [
+            {
+              "blockName": "core/heading",
+              "attrs": {
+                "level": 3,
+                "content": "Many Images Column"
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<h3>Many Images Column</h3>"
+              ]
+            },
+            {
+              "blockName": "core/paragraph",
+              "attrs": {
+                "content": "This column has many images to test lazy loading."
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<p>This column has many images to test lazy loading.</p>"
+              ]
+            },
+            {
+              "blockName": "core/image",
+              "attrs": {
+                "url": "https://example.com/below-fold-1.jpg",
+                "alt": "Below fold image 1",
+                "width": 400,
+                "height": 300
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<figure class=\"wp-block-image\"><img src=\"https://example.com/below-fold-1.jpg\" alt=\"Below fold image 1\" width=\"400\" height=\"300\"/></figure>"
+              ]
+            },
+            {
+              "blockName": "core/image",
+              "attrs": {
+                "url": "https://example.com/below-fold-2.jpg",
+                "alt": "Below fold image 2",
+                "width": 400,
+                "height": 300
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<figure class=\"wp-block-image\"><img src=\"https://example.com/below-fold-2.jpg\" alt=\"Below fold image 2\" width=\"400\" height=\"300\"/></figure>"
+              ]
+            },
+            {
+              "blockName": "core/image",
+              "attrs": {
+                "url": "https://example.com/below-fold-3.jpg",
+                "alt": "Below fold image 3",
+                "width": 400,
+                "height": 300
+              },
+              "innerBlocks": [],
+              "innerContent": [
+                "<figure class=\"wp-block-image\"><img src=\"https://example.com/below-fold-3.jpg\" alt=\"Below fold image 3\" width=\"400\" height=\"300\"/></figure>"
+              ]
+            }
+          ],
+          "innerContent": [
+            "<div class=\"wp-block-column\">", 
+            null, 
+            null, 
+            null, 
+            null, 
+            null, 
+            "</div>"
+          ]
+        }
+      ],
+      "innerContent": [
+        "<div class=\"wp-block-columns\">", 
+        null, 
+        null, 
+        "</div>"
+      ]
+    },
+    {
+      "blockName": "core/html",
+      "attrs": {
+        "content": "<div class=\"custom-html-block\">\n  <div onclick=\"alert('clicked')\" class=\"with-event-handler\">\n    <p>This block has an inline event handler to test how it's handled.</p>\n  </div>\n  <script>\n    document.addEventListener('DOMContentLoaded', function() {\n      console.log('Custom script loaded');\n    });\n  </script>\n  <style>\n    .custom-html-block { background-color: #f0f0f0; padding: 20px; }\n    .with-event-handler { cursor: pointer; }\n  </style>\n</div>"
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<div class=\"custom-html-block\">\n  <div onclick=\"alert('clicked')\" class=\"with-event-handler\">\n    <p>This block has an inline event handler to test how it's handled.</p>\n  </div>\n  <script>\n    document.addEventListener('DOMContentLoaded', function() {\n      console.log('Custom script loaded');\n    });\n  </script>\n  <style>\n    .custom-html-block { background-color: #f0f0f0; padding: 20px; }\n    .with-event-handler { cursor: pointer; }\n  </style>\n</div>"
+      ]
+    },
+    {
+      "blockName": "core/table",
+      "attrs": {},
+      "innerBlocks": [],
+      "innerContent": [
+        "<figure class=\"wp-block-table\"><table><thead><tr><th>Header 1</th><th>Header 2</th><th>Header 3</th></tr></thead><tbody><tr><td>Row 1, Cell 1</td><td>Row 1, Cell 2</td><td>Row 1, Cell 3</td></tr><tr><td>Row 2, Cell 1</td><td>Row 2, Cell 2</td><td>Row 2, Cell 3</td></tr><tr><td>Row 3, Cell 1</td><td>Row 3, Cell 2</td><td>Row 3, Cell 3</td></tr></tbody></table></figure>"
+      ]
+    },
+    {
+      "blockName": "core/paragraph",
+      "attrs": {
+        "content": "Final paragraph at the very bottom of the page with some concluding text. This should be the last thing optimized and possibly deferred in a maximum optimization scenario."
+      },
+      "innerBlocks": [],
+      "innerContent": [
+        "<p>Final paragraph at the very bottom of the page with some concluding text. This should be the last thing optimized and possibly deferred in a maximum optimization scenario.</p>"
+      ]
+    }
+  ]
+} 

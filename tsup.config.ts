@@ -19,6 +19,15 @@ export default defineConfig({
     'blocks/widget': 'src/entries/blocks/widget.ts',
     'blocks/dynamic': 'src/entries/blocks/dynamic.ts',
     
+    // SEO module
+    seo: 'src/entries/seo.ts',
+    
+    // Streaming module for large content
+    streaming: 'src/streaming/index.ts',
+    
+    // Incremental rendering module
+    incremental: 'src/entries/incremental.ts',
+    
     // Framework adapters
     react: 'src/entries/react.ts',
     vue: 'src/entries/vue.ts',

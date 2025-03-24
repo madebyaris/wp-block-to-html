@@ -254,7 +254,7 @@ const htmlWithBootstrap = convertBlocks(blocks, { cssFramework: 'bootstrap' });
 
 ### Feedback and Contributions
 
-We welcome feedback and contributions! Please submit issues and pull requests on our [GitHub repository](https://github.com/yourusername/wp-block-to-html).
+We welcome feedback and contributions! Please submit issues and pull requests on our [GitHub repository](https://github.com/madebyaris/wp-block-to-html).
 
 ## Upcoming Features (Planned for v1.3.0)
 

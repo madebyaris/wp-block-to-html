@@ -1,6 +1,6 @@
 {
   "name": "wp-block-to-html",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Convert WordPress Gutenberg blocks to HTML or framework-specific components with customizable styling",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -53,6 +53,21 @@
       "types": "./dist/blocks/dynamic.d.ts",
       "import": "./dist/blocks/dynamic.mjs",
       "require": "./dist/blocks/dynamic.js"
+    },
+    "./seo": {
+      "types": "./dist/seo.d.ts",
+      "import": "./dist/seo.mjs",
+      "require": "./dist/seo.js"
+    },
+    "./streaming": {
+      "types": "./dist/streaming.d.ts",
+      "import": "./dist/streaming.mjs",
+      "require": "./dist/streaming.js"
+    },
+    "./incremental": {
+      "types": "./dist/incremental.d.ts",
+      "import": "./dist/incremental.mjs",
+      "require": "./dist/incremental.js"
     },
     "./react": {
       "types": "./dist/react.d.ts",

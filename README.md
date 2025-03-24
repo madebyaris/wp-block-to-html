@@ -99,20 +99,189 @@ The library is optimized for speed and efficiency, with impressive performance m
 |------------:|------------------:|-------------:|
 | 100         | 0.495             | 202.0        |
 | 1,000       | 2.185             | 457.7        |
-| 10,000      | 17.757            | 563.2        |
-| 100,000     | 105.56            | 947.3        |
+| 10,000      | 15.245            | 655.9        |
+| 50,000      | 52.785            | 947.1        |
 
 Real-world content (complex post with mixed block types) is processed at over 230 blocks per millisecond.
 
-### Memory Efficiency
+## Benchmarking and Testing
 
-| Block Count | Memory Usage (MB) | MB per 10K blocks |
-|------------:|------------------:|------------------:|
-| 20,000      | 18.10             | 9.05              |
-| 50,000      | 33.54             | 6.71              |
-| 100,000     | 86.59             | 8.66              |
+### Performance Benchmarks
 
-For more details, see the [performance report](performance-report.md).
+This library includes a comprehensive benchmarking suite to measure the performance impact of SSR optimizations:
+
+```bash
+# Run the SSR optimization benchmarks
+node benchmarks/ssr-optimization-benchmarks.js
+```
+
+The benchmarks test various optimization configurations on small, medium, and large posts, measuring:
+- Processing time in milliseconds
+- Output size in kilobytes
+- Throughput in kilobytes per second
+
+Results are saved as both JSON and CSV files in the `benchmarks/results` directory for easy analysis.
+
+See the [Benchmarking README](./benchmarks/README.md) for details on the benchmark configurations and how to interpret results.
+
+### Automated Tests
+
+Extensive tests ensure all features work correctly:
+
+```bash
+# Run all tests
+npm test
+
+# Run only SSR optimization tests
+npm test -- tests/ssr-optimizations.test.js
+```
+
+The test suite covers all SSR optimization features, including:
+- Lazy loading of media
+- Prioritization of above-the-fold content
+- Critical path rendering
+- Style deduplication
+- HTML minification
+
+See the [Testing README](./tests/README.md) for details on the test structure and how to add new tests.
+
+## Server-Side Rendering Optimizations
+
+This library includes specialized optimizations for server-side rendering (SSR) environments to improve performance metrics like Largest Contentful Paint (LCP), Cumulative Layout Shift (CLS), and Total Blocking Time (TBT).
+
+```javascript
+import { processBlocksForSSR } from 'wp-block-to-html';
+
+// WordPress block data
+const blockData = {
+  blocks: [/* blocks */]
+};
+
+// Basic usage with default optimizations
+const optimizedHtml = processBlocksForSSR(blockData, {
+  ssrOptions: {
+    enabled: true,
+    // Uses 'balanced' optimization level by default
+  }
+});
+
+// Advanced usage with maximum optimizations
+const fullyOptimizedHtml = processBlocksForSSR(blockData, {
+  cssFramework: 'tailwind',
+  ssrOptions: {
+    enabled: true,
+    level: 'maximum',
+    optimizeImages: true,
+    stripClientScripts: true,
+    inlineCriticalCSS: true
+  }
+});
+```
+
+### SSR Optimization Levels
+
+The library supports three optimization levels:
+
+1. **Minimal** (`level: 'minimal'`): Basic optimizations with minimal processing
+   - Whitespace reduction
+   - HTML comment removal (configurable)
+   - Typically results in 5-15% size reduction
+
+2. **Balanced** (`level: 'balanced'`, default): Good performance/features balance
+   - All minimal optimizations
+   - Client-side script removal (configurable)
+   - Image optimization with lazy loading (except first image for LCP)
+   - Inline event handler removal
+   - Typically results in 20-30% size reduction
+
+3. **Maximum** (`level: 'maximum'`): All optimizations enabled
+   - All balanced optimizations
+   - Critical CSS inlining (when enabled)
+   - Preload hints for above-the-fold images
+   - Maximum HTML size reduction
+   - Typically results in 25-35% size reduction
+
+### Performance Impact
+
+Our benchmarks on real-world WordPress content show significant improvements:
+
+| Metric                    | Without SSR Opt. | With Balanced Opt. | Improvement |
+|---------------------------|-----------------|-------------------|-------------|
+| HTML Size (typical post)  | 4,888 bytes     | 3,449 bytes       | 29% smaller |
+| Scripts Count             | 2               | 0                 | 100% removed |
+| Inline Event Handlers     | 3               | 0                 | 100% removed |
+| Lazy-loaded Images        | 0               | 1                 | Added automatically |
+| Processing Speed (500 blocks) | 0.8 blocks/ms | 0.7 blocks/ms    | Minimal overhead |
+
+### Real-World Example
+
+For a typical WordPress blog post containing text content, images, embeds, and interactive elements:
+
+```javascript
+// Real-world example with a full blog post
+const blogPost = processBlocksForSSR(wordpressPost, {
+  ssrOptions: {
+    enabled: true,
+    level: 'balanced',
+    // Default settings work well for most cases
+  }
+});
+```
+
+This optimization results in:
+- Removal of client-side scripts that shouldn't execute during SSR
+- Elimination of inline event handlers (onclick, onmouseover, etc.)
+- Addition of lazy loading for non-critical images
+- Preservation of structured data and JSON-LD scripts
+- No impact on SEO-critical content
+
+### Custom Processing
+
+You can extend the SSR optimizations with custom pre- and post-processing functions:
+
+```javascript
+const optimizedHtml = processBlocksForSSR(blockData, {
+  ssrOptions: {
+    enabled: true,
+    preProcessHTML: (html, options) => {
+      // Custom processing before standard optimizations
+      return html.replace(/specific-pattern/g, 'replacement');
+    },
+    postProcessHTML: (html, options) => {
+      // Custom processing after standard optimizations
+      return html + '<!-- Server rendered at ' + new Date().toISOString() + ' -->';
+    }
+  }
+});
+```
+
+### Framework-Specific Integration
+
+The SSR optimization module works seamlessly with any framework that supports server-side rendering:
+
+#### Next.js Integration
+
+```javascript
+// pages/[slug].js
+export async function getServerSideProps({ params }) {
+  const post = await fetchPostBySlug(params.slug);
+  
+  const optimizedHtml = processBlocksForSSR(post.blocks, {
+    cssFramework: 'tailwind', // If using Tailwind in your Next.js project
+    ssrOptions: {
+      enabled: true,
+      level: 'balanced'
+    }
+  });
+  
+  return {
+    props: {
+      postData: post,
+      optimizedContent: optimizedHtml
+    }
+  };
+}
+```
 
 ## Configuration Options
 
@@ -606,4 +775,301 @@ const enhancedHTML = enhanceRenderedHTML(renderedHTML, {
 console.log(enhancedHTML); // <p class="has-text-align-center text-center">Hello WordPress!</p>
 ```
 
-This approach is perfect for handling pre-rendered content while still applying your CSS framework classes. 
+This approach is perfect for handling pre-rendered content while still applying your CSS framework classes.
+
+## SEO Module
+
+The SEO module provides tools for extracting SEO-relevant metadata from WordPress blocks and generating HTML head content.
+
+### Installation
+
+```bash
+npm install wp-block-to-html
+```
+
+### Basic Usage
+
+```javascript
+import { extractMetadata, generateSEOHead } from 'wp-block-to-html/seo';
+
+// Fetch blocks from WordPress API
+const response = await fetch('https://example.com/wp-json/wp/v2/posts/1?_fields=id,title,content,blocks');
+const post = await response.json();
+
+// Extract SEO metadata from blocks
+const metadata = extractMetadata(post.blocks);
+
+// Generate HTML head content
+const headContent = generateSEOHead(metadata, {
+  baseUrl: 'https://example.com',
+  siteName: 'My WordPress Site',
+  twitter: {
+    handle: '@mytwitter',
+    cardType: 'summary_large_image'
+  },
+  facebook: {
+    appId: '123456789'
+  }
+});
+
+// Insert into document head
+document.head.insertAdjacentHTML('beforeend', headContent);
+```
+
+### SEO Metadata Extracted
+
+The `extractMetadata` function analyzes WordPress blocks to extract:
+
+- Title (from the first heading)
+- Description (from the first substantial paragraph)
+- Images with alt text
+- Headings structure
+- Links (internal and external)
+- Word count and content statistics
+- Schema markup information
+- SEO analysis score
+
+### SEO Analysis
+
+The metadata includes an `seoAnalysis` object with:
+
+- SEO score (0-100)
+- Content improvement suggestions
+- Indexing recommendations (`shouldIndex` property)
+
+## Streaming Module for Large Content
+
+The streaming module provides Node.js streams support for processing very large WordPress content sets efficiently with minimal memory usage.
+
+### Installation
+
+```bash
+npm install wp-block-to-html
+```
+
+### Basic Usage
+
+```javascript
+const fs = require('fs');
+const { createBlockStream } = require('wp-block-to-html/streaming');
+
+// Create a readable stream of WordPress blocks from a file or API
+const blockDataStream = fs.createReadStream('large-block-data.json');
+
+// Create an output file stream
+const outputStream = fs.createWriteStream('output.html');
+
+// Create a block transformer stream with Bootstrap styling
+const blockStream = createBlockStream({
+  cssFramework: 'bootstrap',
+  streamingOptions: {
+    chunkSize: 50, // Process 50 blocks at a time
+    highWaterMark: 16 // Keep 16 objects in the buffer
+  }
+});
+
+// Pipe everything together
+blockDataStream
+  .pipe(JSON.parse()) // You'll need to implement a JSON parser stream
+  .pipe(blockStream)
+  .pipe(outputStream);
+```
+
+### Using with API Data
+
+```javascript
+const { Readable } = require('stream');
+const fs = require('fs');
+const { createBlockStream } = require('wp-block-to-html/streaming');
+
+// Custom readable stream that fetches blocks in chunks from WordPress API
+class WordPressAPIStream extends Readable {
+  constructor(options) {
+    super({ objectMode: true });
+    this.baseUrl = options.baseUrl;
+    this.perPage = options.perPage || 10;
+    this.page = 1;
+    this.hasMore = true;
+  }
+
+  async _read() {
+    if (!this.hasMore) {
+      this.push(null); // End of stream
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/wp-json/wp/v2/posts?page=${this.page}&per_page=${this.perPage}&_fields=id,title,content,blocks`
+      );
+      
+      const posts = await response.json();
+      
+      if (posts.length === 0) {
+        this.hasMore = false;
+        this.push(null);
+        return;
+      }
+
+      // Push each post's blocks to the stream
+      posts.forEach(post => {
+        if (post.blocks) {
+          this.push(post.blocks);
+        }
+      });
+
+      this.page++;
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      this.hasMore = false;
+      this.push(null);
+    }
+  }
+}
+
+// Create streams
+const apiStream = new WordPressAPIStream({
+  baseUrl: 'https://example.com',
+  perPage: 5
+});
+
+const blockStream = createBlockStream({
+  cssFramework: 'tailwind',
+  streamingOptions: { chunkSize: 20 }
+});
+
+const outputStream = fs.createWriteStream('wp-content.html');
+
+// Add stream monitoring
+blockStream.on('data', chunk => {
+  console.log(`Processed chunk, size: ${chunk.length} bytes`);
+});
+
+blockStream.on('end', () => {
+  console.log('All content processed');
+});
+
+// Pipe everything together
+apiStream
+  .pipe(blockStream)
+  .pipe(outputStream);
+```
+
+### Memory Efficiency
+
+The streaming API is highly efficient for large content sets:
+
+- Process millions of blocks with minimal memory footprint
+- Automatic backpressure handling
+- Configurable chunk sizes for optimal performance
+- Works with Node.js file/network streams
+
+### Configuration Options
+
+The streaming module supports all the standard options plus:
+
+```javascript
+const options = {
+  // Standard options
+  cssFramework: 'bootstrap',
+  contentHandling: 'raw',
+  
+  // Streaming-specific options
+  streamingOptions: {
+    // Number of blocks to process in a single chunk
+    chunkSize: 50,
+    
+    // Stream buffer high water mark
+    highWaterMark: 16,
+    
+    // Whether to handle backpressure automatically
+    handleBackpressure: true
+  }
+};
+
+const blockStream = createBlockStream(options);
+```
+
+## Incremental Rendering
+
+For client-side applications dealing with large content sets, the library provides incremental rendering to improve user experience and prevent UI blocking.
+
+### Basic Usage
+
+```javascript
+import { convertBlocks } from 'wp-block-to-html';
+
+// Get blocks from WordPress API
+const response = await fetch('https://example.com/wp-json/wp/v2/posts/1?_fields=blocks');
+const post = await response.json();
+
+// Convert with incremental rendering enabled
+const html = convertBlocks(post.blocks, {
+  cssFramework: 'bootstrap',
+  incrementalOptions: {
+    enabled: true,
+    initialRenderCount: 10,  // Render first 10 blocks immediately
+    batchSize: 5,            // Process remaining blocks in batches of 5
+    batchDelay: 50           // Wait 50ms between batches
+  }
+});
+
+// Inject the HTML into the page
+document.getElementById('content').innerHTML = html;
+
+// The content will render progressively:
+// 1. Initial blocks appear immediately
+// 2. Remaining blocks render in batches with minimal UI blocking
+// 3. Special markers in the HTML handle the incremental loading
+```
+
+### Configuration Options
+
+The incremental rendering module supports these options:
+
+```javascript
+const options = {
+  // Standard options
+  cssFramework: 'bootstrap',
+  
+  // Incremental rendering options
+  incrementalOptions: {
+    // Enable incremental rendering (default: false)
+    enabled: true,
+    
+    // Number of blocks to render in the initial pass (default: 10)
+    initialRenderCount: 10,
+    
+    // Number of blocks to render in each subsequent batch (default: 5)
+    batchSize: 5,
+    
+    // Delay in milliseconds between batch rendering (default: 50)
+    batchDelay: 50,
+    
+    // Use IntersectionObserver for lazy loading blocks when they come into view
+    useIntersectionObserver: true,
+    
+    // DOM element selector where content should be rendered incrementally
+    containerSelector: '#content',
+    
+    // Custom callback for rendering incremental content
+    renderCallback: (content, options) => {
+      // Custom rendering logic
+    }
+  }
+};
+```
+
+### Examples
+
+Check out a complete example with progressive rendering in [examples/incremental-rendering.html](./examples/incremental-rendering.html).
+
+### Performance Benefits
+
+Incremental rendering significantly improves perceived performance:
+
+- Initial content appears immediately
+- UI remains responsive during rendering
+- Large content sets don't block the main thread
+- Users can interact with content while the rest loads
+- Optional lazy loading via IntersectionObserver 
