@@ -1,5 +1,74 @@
 # WordPress Block to HTML Converter - Release Notes
 
+## v0.5.1 (2025-05-20)
+
+This update introduces a comprehensive Server-Side Rendering (SSR) optimization suite that significantly improves page performance metrics like Core Web Vitals.
+
+### New Features
+
+#### SSR Optimization Suite
+- **Core Web Vitals Optimization**: Substantial improvements for LCP, CLS, and TBT metrics
+- **Lazy Loading**: Intelligent image and iframe lazy loading with first image preservation for LCP
+- **Above-the-fold Prioritization**: Special handling for crucial content visible in the viewport
+- **Critical Path Identification**: Marking and optimizing critical rendering path elements
+- **External Resource Optimization**: Automatic preconnect link generation for third-party resources
+- **HTML Minification**: Reduced payload sizes with whitespace removal and comment stripping
+- **Optimization Depth Control**: Configurable processing depth for nested content
+
+#### Performance Benchmarking
+- **Comprehensive Benchmark Suite**: Detailed performance metrics across different post sizes
+- **Optimization Strategy Comparison**: Data-driven analysis of different optimization techniques
+- **Feature-specific Metrics**: Individual measurements for each optimization technique
+- **Throughput Analysis**: Processing speed measurements in KB/s across configurations
+
+### Usage Examples
+
+```javascript
+import { convertBlocks, processBlocksForSSR } from 'wp-block-to-html';
+
+// Basic SSR optimization with default settings (balanced)
+const optimizedBlocks = processBlocksForSSR(blocks);
+const html = convertBlocks(optimizedBlocks);
+
+// With specific optimization features
+const optimizedBlocks = processBlocksForSSR(blocks, {
+  optimizationLevel: 'maximum', // 'minimal', 'balanced', or 'maximum'
+  lazyLoadMedia: true,          // Add loading="lazy" to images and iframes
+  preserveFirstImage: true,     // Keep first image for LCP
+  prioritizeAboveTheFold: true, // Mark content for above-the-fold rendering
+  criticalPathOnly: true,       // Focus on critical rendering path elements
+  preconnect: true,             // Add preconnect links for external resources
+  removeDuplicateStyles: true,  // Consolidate duplicate style blocks
+  minifyOutput: true            // Reduce HTML size
+});
+```
+
+### Performance Insights
+
+Our benchmark results demonstrate impressive optimization capabilities:
+
+1. **Small Content (0.64KB)**
+   - Fastest: "Balanced with Preconnect" (0.06ms, 11,472 KB/s)
+   - Most efficient: "Balanced with Remove Duplicate Styles" (0.06ms, 10,636 KB/s)
+
+2. **Medium Content (2.83KB)**
+   - Fastest: "Balanced with Remove Duplicate Styles" (0.13ms, 21,071 KB/s)
+   - Strong performer: "Maximum with All Features" (0.16ms, 17,643 KB/s)
+
+3. **Large Content (4.71KB)**
+   - Best overall: "Balanced with Remove Duplicate Styles" (0.24ms, 19,719 KB/s)
+   - Excellent alternative: "Maximum with All Features" (0.24ms, 19,314 KB/s)
+
+### Bug Fixes and Improvements
+- Fixed issues with malformed image tags in SSR processing
+- Improved URL handling in HTML content
+- Enhanced iframe processing with proper lazy loading
+- Optimized minification to consistently reduce output size
+- Fixed benchmark results reporting and data visualization
+
+### Breaking Changes
+None - This update is fully backwards compatible while adding significant performance optimization capabilities.
+
 ## v0.4.0 (2025-04-20)
 
 This update introduces comprehensive performance benchmarks and optimizations, demonstrating the library's exceptional speed and efficiency even with extremely large content.

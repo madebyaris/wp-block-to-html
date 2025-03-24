@@ -2,6 +2,16 @@
 
 All notable changes to the WordPress Block to HTML Converter will be documented in this file.
 
+## [0.5.1] - 2025-05-20
+
+### Added
+- Comprehensive documentation in RELEASE_NOTES.md
+- Additional usage examples for SSR optimization features
+- Performance insights based on benchmark results
+
+### Fixed
+- Documentation sync issues between CHANGELOG.md and RELEASE_NOTES.md
+
 ## [0.5.0] - 2025-05-15
 
 ### Added
