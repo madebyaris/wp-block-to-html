@@ -1,6 +1,6 @@
 # WordPress Block to HTML Converter - Release Notes
 
-## v1.0.0 (2025-01-01) - FIRST STABLE RELEASE 🎉
+## v1.0.0 (2025-06-17) - FIRST STABLE RELEASE 🎉
 
 **wp-block-to-html reaches v1.0.0 - Production Ready with Industry-Leading Performance**
 
