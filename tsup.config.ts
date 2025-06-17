@@ -31,6 +31,9 @@ export default defineConfig({
     // Framework adapters
     react: 'src/entries/react.ts',
     vue: 'src/entries/vue.ts',
+    
+    // Hydration module
+    hydration: 'src/hydration/index.ts',
   },
   format: ['cjs', 'esm'],
   dts: true,

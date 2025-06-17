@@ -1,6 +1,6 @@
 {
   "name": "wp-block-to-html",
-  "version": "0.5.1",
+  "version": "1.0.0",
   "description": "Convert WordPress Gutenberg blocks to HTML or framework-specific components with customizable styling",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -106,7 +106,7 @@
     "svelte",
     "headless"
   ],
-  "author": "Made by Aris",
+  "author": "MadebyAris",
   "license": "MIT",
   "repository": {
     "type": "git",

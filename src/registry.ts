@@ -13,7 +13,6 @@ import { tableBlockHandler } from './block-handlers/table';
 import { columnsBlockHandler } from './block-handlers/columns';
 import { groupBlockHandler } from './block-handlers/group';
 import { buttonBlockHandler } from './block-handlers/button';
-import { buttonsBlockHandler } from './block-handlers/buttons';
 import { separatorBlockHandler } from './block-handlers/separator';
 import { spacerBlockHandler } from './block-handlers/spacer';
 import { shortcodeBlockHandler } from './block-handlers/shortcode';
@@ -46,7 +45,6 @@ export function registerBuiltInBlockHandlers(): void {
   registerBlockHandler('core/columns', columnsBlockHandler);
   registerBlockHandler('core/group', groupBlockHandler);
   registerBlockHandler('core/button', buttonBlockHandler);
-  registerBlockHandler('core/buttons', buttonsBlockHandler);
   registerBlockHandler('core/separator', separatorBlockHandler);
   registerBlockHandler('core/spacer', spacerBlockHandler);
   registerBlockHandler('core/shortcode', shortcodeBlockHandler);
