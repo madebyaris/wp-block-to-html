@@ -12,7 +12,7 @@ All notable changes to the WordPress Block to HTML Converter will be documented 
 ### Fixed
 - Documentation sync issues between CHANGELOG.md and RELEASE_NOTES.md
 
-## [0.5.0] - 2025-05-15
+## [0.5.0] - 2025-03-24
 
 ### Added
 - Server-Side Rendering (SSR) optimization suite
@@ -37,7 +37,7 @@ All notable changes to the WordPress Block to HTML Converter will be documented 
 - Iframe processing for improved performance
 - Benchmark results reporting
 
-## [0.4.0] - 2025-04-20
+## [0.4.0] - 2025-03-20
 
 ### Added
 - Comprehensive performance benchmarking suite
@@ -57,7 +57,7 @@ All notable changes to the WordPress Block to HTML Converter will be documented 
 - Various memory optimization issues
 - Batch processing efficiency
 
-## [0.3.0] - 2025-03-15
+## [0.3.0] - 2025-03-18
 
 ### Added
 - Modular bundle structure with subpath exports
@@ -75,7 +75,7 @@ All notable changes to the WordPress Block to HTML Converter will be documented 
 - Circular dependency issues
 - Import path resolution
 
-## [0.2.0] - 2025-02-10
+## [0.2.0] - 2025-03-17
 
 ### Added
 - Content handling modes: 'raw', 'rendered', and 'hybrid'
@@ -93,7 +93,7 @@ All notable changes to the WordPress Block to HTML Converter will be documented 
 - Empty block content processing
 - WordPress API integration issues
 
-## [0.1.0] - 2025-01-05
+## [0.1.0] - 2025-03-17
 
 ### Added
 - Initial release with core functionality

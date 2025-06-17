@@ -1,6 +1,6 @@
 # WordPress Block to HTML Converter - Release Notes
 
-## v0.5.1 (2025-05-20)
+## v0.5.1 (2025-03-24)
 
 This update introduces a comprehensive Server-Side Rendering (SSR) optimization suite that significantly improves page performance metrics like Core Web Vitals.
 
@@ -69,7 +69,7 @@ Our benchmark results demonstrate impressive optimization capabilities:
 ### Breaking Changes
 None - This update is fully backwards compatible while adding significant performance optimization capabilities.
 
-## v0.4.0 (2025-04-20)
+## v0.4.0 (2025-03-20)
 
 This update introduces comprehensive performance benchmarks and optimizations, demonstrating the library's exceptional speed and efficiency even with extremely large content.
 
@@ -117,7 +117,7 @@ npm run extreme-benchmark
 ### Breaking Changes
 None - This update is fully backwards compatible with existing code while providing significant performance improvements.
 
-## v0.3.0 (2025-03-17)
+## v0.3.0 (2025-03-18)
 
 This update introduces a revolutionary modular bundle structure that dramatically reduces bundle size for applications that only use specific features of the library. Our testing shows size reductions of up to 99% compared to the full bundle!
 
@@ -184,7 +184,7 @@ const html = convertBlocks(wordpressContent, {
 ### Breaking Changes
 None - This update is fully backwards compatible with existing code while enabling new optimized import paths.
 
-## v0.2.0 (2024-05-17)
+## v0.2.0 (2025-03-17)
 
 This update introduces significant enhancements to handle both WordPress block data and rendered HTML content, making the library more flexible and compatible with various WordPress configurations.
 
