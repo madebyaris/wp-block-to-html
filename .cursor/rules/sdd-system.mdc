@@ -1,0 +1,32 @@
+---
+description: Lightweight spec-driven workflow for this repo
+alwaysApply: true
+---
+
+# Spec-Kit SDD Workflow
+
+Use Spec-Driven Development for new work in this repository.
+
+## Primary Workflow
+- Quick path: `/brief [task-id] [description]`
+- Full path: `/research` -> `/specify` -> `/plan` -> `/tasks` -> `/implement`
+- Save new planning artifacts in `specs/active/[task-id]/`
+- Use `.sdd/templates/` for concise outputs
+
+## Historical Context
+- Project history migrated from the legacy workflow now lives in `specs/00-overview.md` and `specs/completed/`.
+- Prefer `specs/completed/hydration-phase1/`, `specs/completed/v1-0-0-release/`, and `specs/completed/legacy-memory-bank/` when older context is needed.
+
+## Working Rules
+- Keep this always-applied rule thin. Load details from `.cursor/commands/`, `.cursor/agents/`, `.cursor/skills/`, and `.sdd/` on demand.
+- For non-trivial work, plan before editing.
+- Use subagents when they reduce main-context bloat.
+- Validate implementation with readback, lints, tests, or review steps as appropriate.
+
+## Key References
+- Commands: `.cursor/commands/`
+- Agents: `.cursor/agents/`
+- Skills: `.cursor/skills/`
+- Config and templates: `.sdd/`
+- Specs index: `specs/index.md`
+- Migration notes: `.sdd/MIGRATION.md`
