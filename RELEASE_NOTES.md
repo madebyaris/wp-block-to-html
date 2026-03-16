@@ -1,5 +1,35 @@
 # WordPress Block to HTML Converter - Release Notes
 
+## v1.5.0 (Unreleased) - Compatibility Release
+
+This release hardens the converter for modern WordPress content instead of expanding claims beyond audited coverage. The focus is WordPress `6.9` as the release baseline, with selected `7.0 beta/RC` compatibility where the block or metadata shape directly affects output.
+
+### What Changed
+
+- Added handlers for `core/buttons`, `core/math`, `core/accordion`, `core/latest-comments`, `core/terms-query`, `core/comments-link`, `core/comments-count`, and `core/breadcrumbs`
+- Added compatibility handling for viewport-based `metadata.blockVisibility`
+- Expanded social link and embed-provider support for newer official providers such as `x`, `bluesky`, `videopress`, `wordpress-tv`, and `wolfram`
+- Aligned the shipped package surface with source entrypoints by exporting `hydration`, `angular`, `svelte`, and `blocks/theme`
+
+### Performance and API Hardening
+
+- Removed debug logging from conversion hot paths
+- Consolidated SSR to a single implementation used by both source imports and built package exports
+- Reworked incremental rendering to emit server-rendered batch templates instead of serializing raw block JSON into the page
+- Re-ran the repository benchmark suite: `1000` flat blocks averaged `2.078ms`, while `10000` flat blocks averaged `20.641ms`
+
+### Compatibility Matrix
+
+| WordPress Version | Status | Notes |
+|------------------|--------|-------|
+| `6.8` | Supported | Stable baseline for existing installs |
+| `6.9` | Supported | Primary release target |
+| `7.0 beta/RC` | Partial | Includes `core/breadcrumbs` and `blockVisibility` metadata compatibility; broader theme/query/navigation work remains deferred |
+
+### Public Support Statement
+
+`wp-block-to-html` now documents audited compatibility rather than claiming blanket support for every core block. Remaining theme/query/navigation catch-up work is explicitly deferred until it is implemented and tested.
+
 ## v1.0.0 (2025-06-17) - FIRST STABLE RELEASE 🎉
 
 **wp-block-to-html reaches v1.0.0 - Production Ready with Industry-Leading Performance**
@@ -8,9 +38,9 @@ This milestone release establishes wp-block-to-html as the definitive WordPress 
 
 ### 🎯 Strategic Accomplishments
 
-**Market Leadership Achieved**: wp-block-to-html is now the first and only comprehensive WordPress block converter that includes client-side hydration capabilities, setting a new standard for headless WordPress development.
+**Launch Positioning**: The original `v1.0.0` release positioned hydration support as a differentiator for headless WordPress workflows.
 
-**Performance Excellence**: With 947 blocks/ms throughput, we've achieved performance metrics that exceed our ambitious targets by 99.5%, establishing new industry benchmarks for WordPress block processing.
+**Performance Excellence**: The initial launch benchmark headline reported `947 blocks/ms`; current repository-backed benchmark snapshots are documented in the `v1.5.0` notes above.
 
 **Production Quality**: All 77 tests pass, comprehensive documentation is complete, and the modular architecture has proven its effectiveness through the successful implementation of the hydration module.
 
@@ -76,7 +106,7 @@ import { convertBlocksToSvelte } from 'wp-block-to-html/svelte';
 ### 📈 Performance Achievements
 
 **Industry-Leading Metrics**:
-- **Speed**: 947 blocks/ms (exceeds 500ms target by 99.5%)
+- **Speed**: Initial launch messaging highlighted a `947 blocks/ms` benchmark result
 - **Bundle Size**: Core bundle <11KB (96% smaller than target)
 - **Memory Efficiency**: Linear scaling with optimized memory usage
 - **Test Performance**: All 77 tests complete in 1.05 seconds
@@ -133,7 +163,7 @@ import { convertBlocksToSvelte } from 'wp-block-to-html/svelte';
 
 ### 🎉 Community Impact
 
-**Market Differentiation**: wp-block-to-html is now the only comprehensive WordPress block converter with client-side hydration, establishing clear market leadership.
+**Hydration Focus**: The original release notes emphasized hydration support as the package's main differentiator at launch.
 
 **Performance Standard**: Our metrics set new performance benchmarks that will influence future development in the WordPress ecosystem.
 

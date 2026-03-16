@@ -17,6 +17,7 @@
 |---------|---------|-----------|
 | `hydration-phase1` | Hydration Module Phase 1 - Core Infrastructure | 2024-12-31 |
 | `v1-0-0-release` | Stable npm release and documentation launch | 2025-01-01 |
+| `v1-5-0-release` | Compatibility release for WordPress 6.9 and selected 7.0 support | 2026-03-16 |
 
 ### Backlog Features
 | Task ID | Feature | Priority |

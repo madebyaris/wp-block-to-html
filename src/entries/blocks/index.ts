@@ -4,6 +4,7 @@ import { registerMediaBlockHandlers } from './media';
 import { registerLayoutBlockHandlers } from './layout';
 import { registerWidgetBlockHandlers } from './widget';
 import { registerDynamicBlockHandlers } from './dynamic';
+import { registerThemeBlockHandlers } from './theme';
 
 // Export individual category registration functions
 export {
@@ -12,6 +13,7 @@ export {
   registerLayoutBlockHandlers,
   registerWidgetBlockHandlers,
   registerDynamicBlockHandlers,
+  registerThemeBlockHandlers,
 };
 
 /**
@@ -33,6 +35,9 @@ export function registerAllBlockHandlers(): void {
 
   // Register dynamic blocks
   registerDynamicBlockHandlers();
+
+  // Register selected theme/query blocks
+  registerThemeBlockHandlers();
 }
 
 // Export block handlers from all categories
@@ -41,6 +46,7 @@ export * from './media';
 export * from './layout';
 export * from './widget';
 export * from './dynamic';
+export * from './theme';
 
 // Export core types and functions for usage
 export type { Block, BlockList, BlockHandler, ConversionOptions } from '../../types';

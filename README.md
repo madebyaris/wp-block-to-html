@@ -1,6 +1,6 @@
 # wp-block-to-html
 
-**🎉 v1.0.0 Stable Release - Production Ready with Client-Side Hydration**
+**Audited Gutenberg block conversion with hydration, SSR helpers, and WordPress 6.9 compatibility updates**
 
 Convert WordPress Gutenberg blocks to HTML or framework-specific components with customizable styling and progressive hydration capabilities.
 
@@ -9,11 +9,11 @@ Convert WordPress Gutenberg blocks to HTML or framework-specific components with
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/madebyaris/wp-block-to-html)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
-> **v1.0.0 Milestone**: The first and only WordPress block converter with production-ready client-side hydration. Perfect for headless WordPress, SSR applications, and modern web development.
+> **v1.5.0 compatibility release**: focuses on truthful support claims, performance hardening, package-surface cleanup, and coverage for high-impact WordPress 6.9 plus selected 7.0 blocks.
 
 ## Features
 
-### 🚀 **New in v1.0.0: Client-Side Hydration**
+### 🚀 **Client-Side Hydration**
 - **Progressive Hydration**: Viewport-based, interaction-based, and idle hydration strategies
 - **Performance Monitoring**: Built-in statistics and performance tracking
 - **Framework Ready**: Plugin architecture for React, Vue, Angular, and Svelte integration
@@ -21,7 +21,7 @@ Convert WordPress Gutenberg blocks to HTML or framework-specific components with
 
 ### 🏗️ **Core Capabilities**
 - Convert WordPress Gutenberg blocks to clean HTML
-- **100% WordPress core block support** - All blocks handled
+- Audited support for common core blocks plus targeted WordPress 6.9 and 7.0 additions
 - Handle both raw block data and rendered HTML content
 - Multiple content handling modes for switching between raw and rendered content
 - Customizable CSS class mapping
@@ -31,16 +31,30 @@ Convert WordPress Gutenberg blocks to HTML or framework-specific components with
 - Full TypeScript support with advanced type features
 - Minimal dependencies with modular architecture
 
-### ⚡ **Performance Excellence**
-- **Industry-leading speed**: Process up to 947 blocks per millisecond
-- **99% bundle size reduction**: Import only what you need
-- **Memory efficient**: Linear scaling with optimized memory usage
-- **SSR optimized**: Core Web Vitals improvements included
+### ⚡ **Performance and Delivery**
+- Benchmark-backed conversion performance with `npm run benchmark`
+- Modular entrypoints for core, framework, block-family, hydration, streaming, and incremental imports
+- Memory-efficient string conversion paths with hot-path debug logging removed
+- SSR and incremental rendering helpers tuned for headless and server-rendered delivery
+
+## Compatibility Snapshot
+
+| Target | Status | Notes |
+|-------:|:------:|------|
+| WordPress 6.8 | Supported | Baseline compatibility for existing stable installs |
+| WordPress 6.9 | Supported | Includes `core/math`, `core/accordion`, `core/latest-comments`, `core/terms-query`, `core/comments-link`, and `core/comments-count` |
+| WordPress 7.0 beta/RC | Partial | Adds compatibility hooks for `core/breadcrumbs` and viewport-based `metadata.blockVisibility`; full navigation/query/theme parity is still deferred |
+
+### Included in v1.5.0
+
+- New handlers for `core/buttons`, `core/math`, `core/accordion`, `core/latest-comments`, `core/terms-query`, `core/comments-link`, `core/comments-count`, and `core/breadcrumbs`
+- Expanded embed-provider aliases including `x`, `bluesky`, `wordpress-tv`, `videopress`, `crowdsignal`, and `wolfram`
+- Package exports aligned with built output for `angular`, `svelte`, `hydration`, and `blocks/theme`
 
 ## Installation
 
 ```bash
-# Install the stable v1.0.0 release
+# Install the latest release
 npm install wp-block-to-html
 # or
 yarn add wp-block-to-html
@@ -48,7 +62,7 @@ yarn add wp-block-to-html
 pnpm add wp-block-to-html
 ```
 
-**v1.0.0 Stable**: Production-ready with comprehensive testing, full TypeScript support, and zero breaking changes from v0.x.
+Published releases remain TypeScript-first and backwards-compatible across the current documented surface.
 
 ## Basic Usage
 
@@ -77,7 +91,7 @@ const tailwindHtml = convertBlocks(blockData, { cssFramework: 'tailwind' });
 console.log(tailwindHtml); // <p class="text-center">Hello WordPress!</p>
 ```
 
-### 🆕 Client-Side Hydration (v1.0.0)
+### 🆕 Client-Side Hydration
 ```javascript
 import { HydrationManager } from 'wp-block-to-html/hydration';
 
@@ -138,16 +152,22 @@ async function fetchWordPressPost() {
 
 ## Performance
 
-The library is optimized for speed and efficiency, with impressive performance metrics:
+Current benchmark snapshots from `npm run benchmark` in this repository:
 
-| Block Count | Average Time (ms) | Blocks per ms |
-|------------:|------------------:|-------------:|
-| 100         | 0.495             | 202.0        |
-| 1,000       | 2.185             | 457.7        |
-| 10,000      | 15.245            | 655.9        |
-| 50,000      | 52.785            | 947.1        |
+| Block Count | Average Time (ms) |
+|------------:|------------------:|
+| 100         | 0.658             |
+| 1,000       | 2.078             |
+| 5,000       | 7.468             |
+| 10,000      | 20.641            |
 
-Real-world content (complex post with mixed block types) is processed at over 230 blocks per millisecond.
+Framework comparison for 1,000 blocks from the same benchmark run:
+
+| Framework | Average Time (ms) |
+|----------:|------------------:|
+| none      | 1.601             |
+| tailwind  | 2.029             |
+| bootstrap | 1.308             |
 
 ## Benchmarking and Testing
 

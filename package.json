@@ -1,6 +1,6 @@
 {
   "name": "wp-block-to-html",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "description": "Convert WordPress Gutenberg blocks to HTML or framework-specific components with customizable styling",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -54,6 +54,11 @@
       "import": "./dist/blocks/dynamic.mjs",
       "require": "./dist/blocks/dynamic.js"
     },
+    "./blocks/theme": {
+      "types": "./dist/blocks/theme.d.ts",
+      "import": "./dist/blocks/theme.mjs",
+      "require": "./dist/blocks/theme.js"
+    },
     "./seo": {
       "types": "./dist/seo.d.ts",
       "import": "./dist/seo.mjs",
@@ -78,6 +83,21 @@
       "types": "./dist/vue.d.ts",
       "import": "./dist/vue.mjs",
       "require": "./dist/vue.js"
+    },
+    "./angular": {
+      "types": "./dist/angular.d.ts",
+      "import": "./dist/angular.mjs",
+      "require": "./dist/angular.js"
+    },
+    "./svelte": {
+      "types": "./dist/svelte.d.ts",
+      "import": "./dist/svelte.mjs",
+      "require": "./dist/svelte.js"
+    },
+    "./hydration": {
+      "types": "./dist/hydration.d.ts",
+      "import": "./dist/hydration.mjs",
+      "require": "./dist/hydration.js"
     }
   },
   "scripts": {

@@ -10,6 +10,7 @@ import {
   verseBlockHandler,
   classicBlockHandler,
   detailsBlockHandler,
+  mathBlockHandler,
 } from '../../block-handlers';
 
 // Export text block handlers
@@ -24,6 +25,7 @@ export {
   verseBlockHandler,
   classicBlockHandler,
   detailsBlockHandler,
+  mathBlockHandler,
 };
 
 // Import registry functions
@@ -41,6 +43,7 @@ export function registerTextBlockHandlers(): void {
   registerBlockHandler('core/verse', verseBlockHandler);
   registerBlockHandler('core/freeform', classicBlockHandler); // Classic editor
   registerBlockHandler('core/details', detailsBlockHandler);
+  registerBlockHandler('core/math', mathBlockHandler);
 }
 
 // Export core types and functions for usage
