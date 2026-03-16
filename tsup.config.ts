@@ -18,6 +18,7 @@ export default defineConfig({
     'blocks/layout': 'src/entries/blocks/layout.ts',
     'blocks/widget': 'src/entries/blocks/widget.ts',
     'blocks/dynamic': 'src/entries/blocks/dynamic.ts',
+    'blocks/theme': 'src/entries/blocks/theme.ts',
     
     // SEO module
     seo: 'src/entries/seo.ts',
@@ -31,6 +32,8 @@ export default defineConfig({
     // Framework adapters
     react: 'src/entries/react.ts',
     vue: 'src/entries/vue.ts',
+    angular: 'src/entries/angular.ts',
+    svelte: 'src/entries/svelte.ts',
     
     // Hydration module
     hydration: 'src/hydration/index.ts',

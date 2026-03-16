@@ -30,9 +30,6 @@ export function getBlockClasses(
   // Start with empty set of classes
   const classes: string[] = [];
 
-  // Debug log
-  console.log(`Applying classes for block: ${block.blockName}, framework: ${cssFramework}`);
-
   // Add default WordPress classes if not using a CSS framework
   if (cssFramework === 'none') {
     if (block.blockName) {
@@ -52,46 +49,74 @@ export function getBlockClasses(
     // Check for custom mapping first
     if (customClassMap[block.blockName]) {
       cssMapping = customClassMap[block.blockName];
-      console.log('Using custom mapping:', cssMapping);
     }
     // Then fallback to built-in mapping for the framework
     else if (blockHandler.cssMapping?.[cssFramework]) {
       cssMapping = blockHandler.cssMapping[cssFramework];
-      console.log('Using built-in mapping:', cssMapping);
     }
 
     if (cssMapping) {
       // Add base block class if defined
       if (cssMapping.block) {
         classes.push(cssMapping.block);
-        console.log(`Added base class: ${cssMapping.block}`);
       }
 
       // Add attribute-specific classes
       if (block.attrs) {
-        console.log('Block attributes:', block.attrs);
         for (const [attr, value] of Object.entries(block.attrs)) {
           const attrMapping = cssMapping[attr];
           if (typeof attrMapping === 'string') {
             classes.push(attrMapping);
-            console.log(`Added attribute class for ${attr}: ${attrMapping}`);
           } else if (typeof attrMapping === 'object' && attrMapping !== null) {
             const mappedValue = attrMapping[value as string];
             if (mappedValue) {
               classes.push(mappedValue);
-              console.log(`Added mapped class for ${attr}=${value}: ${mappedValue}`);
             }
           }
         }
       }
-    } else {
-      console.log(`No CSS mapping found for ${block.blockName} with framework ${cssFramework}`);
     }
   }
 
-  const result = classes.join(' ');
-  console.log(`Final classes for ${block.blockName}: "${result}"`);
-  return result;
+  classes.push(...getBlockVisibilityClasses(block));
+  return classes.join(' ');
+}
+
+/**
+ * Convert modern block visibility metadata into portable CSS hooks.
+ * Blocks hidden for specific viewports remain in the DOM in WordPress, so we
+ * emit stable classes that consumers can target in their own stylesheets.
+ */
+export function getBlockVisibilityClasses(block: Block): string[] {
+  const metadata = block.attrs?.metadata;
+  const blockVisibility = metadata?.blockVisibility;
+
+  if (blockVisibility === false) {
+    return ['wp-block-to-html-hidden'];
+  }
+
+  if (!blockVisibility || typeof blockVisibility !== 'object') {
+    return [];
+  }
+
+  const viewportVisibility = blockVisibility.viewport;
+  if (!viewportVisibility || typeof viewportVisibility !== 'object') {
+    return [];
+  }
+
+  const classes: string[] = [];
+
+  if (viewportVisibility.mobile === false) {
+    classes.push('wp-block-to-html-hidden-mobile');
+  }
+  if (viewportVisibility.tablet === false) {
+    classes.push('wp-block-to-html-hidden-tablet');
+  }
+  if (viewportVisibility.desktop === false) {
+    classes.push('wp-block-to-html-hidden-desktop');
+  }
+
+  return classes;
 }
 
 /**
@@ -135,6 +160,32 @@ export function createElement(
   }
 
   return `${openTag}${content}</${tag}>`;
+}
+
+/**
+ * Add a class name to the first HTML element in a string.
+ */
+export function appendClassName(html: string, className: string): string {
+  const trimmed = html.trim();
+  if (!trimmed || !className) {
+    return html;
+  }
+
+  const openTagMatch = trimmed.match(/^<([a-zA-Z0-9-]+)([^>]*)>/);
+  if (!openTagMatch) {
+    return html;
+  }
+
+  const openTag = openTagMatch[0];
+  const classMatch = openTag.match(/\bclass="([^"]*)"/i);
+  const updatedTag = classMatch
+    ? openTag.replace(/\bclass="([^"]*)"/i, (_match, existingClass) => {
+        const combinedClass = `${existingClass} ${className}`.trim();
+        return `class="${combinedClass}"`;
+      })
+    : openTag.replace(/>$/, ` class="${className}">`);
+
+  return html.replace(openTag, updatedTag);
 }
 
 /**

@@ -6,6 +6,8 @@ import {
   rowBlockHandler,
   stackBlockHandler,
   gridBlockHandler,
+  buttonsBlockHandler,
+  accordionBlockHandler,
 } from '../../block-handlers';
 
 // Export layout block handlers
@@ -16,6 +18,8 @@ export {
   rowBlockHandler,
   stackBlockHandler,
   gridBlockHandler,
+  buttonsBlockHandler,
+  accordionBlockHandler,
 };
 
 // Import registry functions
@@ -29,6 +33,8 @@ export function registerLayoutBlockHandlers(): void {
   registerBlockHandler('core/row', rowBlockHandler);
   registerBlockHandler('core/stack', stackBlockHandler);
   registerBlockHandler('core/grid', gridBlockHandler);
+  registerBlockHandler('core/buttons', buttonsBlockHandler);
+  registerBlockHandler('core/accordion', accordionBlockHandler);
 }
 
 // Export core types and functions for usage

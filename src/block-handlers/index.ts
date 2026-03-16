@@ -19,6 +19,7 @@ import { detailsBlockHandler } from './details';
 import { pullquoteBlockHandler } from './pullquote';
 import { verseBlockHandler } from './verse';
 import { classicBlockHandler } from './classic';
+import { mathBlockHandler } from './math';
 import { audioBlockHandler } from './audio';
 import { videoBlockHandler } from './video';
 import { fileBlockHandler } from './file';
@@ -27,20 +28,27 @@ import { mediaTextBlockHandler } from './media-text';
 import { rowBlockHandler } from './row';
 import { stackBlockHandler } from './stack';
 import { gridBlockHandler } from './grid';
+import { buttonsBlockHandler } from './buttons';
+import { accordionBlockHandler } from './accordion';
 import { pageBreakBlockHandler, processPaginatedContent } from './page-break';
 import { moreBlockHandler } from './more';
 import { shortcodeBlockHandler } from './shortcode';
 import { customHtmlBlockHandler } from './custom-html';
 import { latestPostsBlockHandler } from './latest-posts';
+import { latestCommentsBlockHandler } from './latest-comments';
 import { enhancedEmbedBlockHandler } from './enhanced-embed';
 import { archivesBlockHandler } from './archives';
 import { calendarBlockHandler } from './calendar';
 import { categoriesBlockHandler } from './categories';
 import { termListBlockHandler } from './term-list';
+import { termsQueryBlockHandler } from './terms-query';
 import { pageListBlockHandler } from './page-list';
 import { rssBlockHandler } from './rss';
 import { searchBlockHandler } from './search';
 import { socialLinksBlockHandler } from './social-links';
+import { commentsLinkBlockHandler } from './comments-link';
+import { commentsCountBlockHandler } from './comments-count';
+import { breadcrumbsBlockHandler } from './breadcrumbs';
 
 // Register all built-in block handlers
 export function registerBuiltInBlockHandlers(): void {
@@ -55,6 +63,7 @@ export function registerBuiltInBlockHandlers(): void {
   registerBlockHandler('core/verse', verseBlockHandler);
   registerBlockHandler('core/freeform', classicBlockHandler); // Classic editor
   registerBlockHandler('core/details', detailsBlockHandler);
+  registerBlockHandler('core/math', mathBlockHandler);
 
   // Media blocks
   registerBlockHandler('core/image', imageBlockHandler);
@@ -86,6 +95,25 @@ export function registerBuiltInBlockHandlers(): void {
   registerBlockHandler('core/row', rowBlockHandler);
   registerBlockHandler('core/stack', stackBlockHandler);
   registerBlockHandler('core/grid', gridBlockHandler);
+  registerBlockHandler('core/buttons', buttonsBlockHandler);
+  registerBlockHandler('core/accordion', accordionBlockHandler);
+
+  // Widget and utility blocks
+  registerBlockHandler('core/archives', archivesBlockHandler);
+  registerBlockHandler('core/calendar', calendarBlockHandler);
+  registerBlockHandler('core/categories', categoriesBlockHandler);
+  registerBlockHandler('core/tag-cloud', termListBlockHandler);
+  registerBlockHandler('core/page-list', pageListBlockHandler);
+  registerBlockHandler('core/rss', rssBlockHandler);
+  registerBlockHandler('core/search', searchBlockHandler);
+  registerBlockHandler('core/social-links', socialLinksBlockHandler);
+  registerBlockHandler('core/latest-comments', latestCommentsBlockHandler);
+
+  // Selected theme/query blocks
+  registerBlockHandler('core/terms-query', termsQueryBlockHandler);
+  registerBlockHandler('core/comments-link', commentsLinkBlockHandler);
+  registerBlockHandler('core/comments-count', commentsCountBlockHandler);
+  registerBlockHandler('core/breadcrumbs', breadcrumbsBlockHandler);
 }
 
 // Text block handlers
@@ -100,6 +128,7 @@ export {
   verseBlockHandler,
   detailsBlockHandler,
   classicBlockHandler,
+  mathBlockHandler,
 };
 
 // Media block handlers
@@ -123,6 +152,8 @@ export {
   rowBlockHandler,
   stackBlockHandler,
   gridBlockHandler,
+  buttonsBlockHandler,
+  accordionBlockHandler,
 };
 
 // Widget block handlers
@@ -139,6 +170,7 @@ export {
   rssBlockHandler,
   searchBlockHandler,
   socialLinksBlockHandler,
+  latestCommentsBlockHandler,
 };
 
 // Dynamic block handlers
@@ -149,4 +181,12 @@ export {
   processPaginatedContent,
   separatorBlockHandler,
   spacerBlockHandler,
+};
+
+// Selected theme/query block handlers
+export {
+  termsQueryBlockHandler,
+  commentsLinkBlockHandler,
+  commentsCountBlockHandler,
+  breadcrumbsBlockHandler,
 };

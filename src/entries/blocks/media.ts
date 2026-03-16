@@ -41,9 +41,16 @@ export function registerMediaBlockHandlers(): void {
   // Register enhancedEmbedBlockHandler for specific providers
   // WordPress supports these providers by default
   [
+    'amazon-kindle',
     'youtube',
     'vimeo',
     'twitter',
+    'x',
+    'wordpress',
+    'wordpress-tv',
+    'videopress',
+    'tumblr',
+    'ted',
     'instagram',
     'spotify',
     'soundcloud',
@@ -57,6 +64,17 @@ export function registerMediaBlockHandlers(): void {
     'reddit',
     'tiktok',
     'pinterest',
+    'bluesky',
+    'speaker-deck',
+    'smugmug',
+    'slideshare',
+    'scribd',
+    'screencast',
+    'reverbnation',
+    'pocket-casts',
+    'crowdsignal',
+    'issuu',
+    'wolfram',
   ].forEach((provider) => {
     registerBlockHandler(`core/embed-${provider}`, enhancedEmbedBlockHandler);
   });

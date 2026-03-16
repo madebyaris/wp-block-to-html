@@ -1,5 +1,5 @@
 import { Block, BlockHandler, ConversionOptions } from '../types';
-import { getBlockClasses, createElement } from '../core/utils';
+import { appendClassName, createElement, getBlockClasses } from '../core/utils';
 
 /**
  * Handler for individual social link blocks within a social links container
@@ -19,15 +19,34 @@ export const socialLinkBlockHandler: BlockHandler = {
     const url = block.attrs?.url || '';
     const service = block.attrs?.service || '';
     const label = block.attrs?.label || getDefaultServiceLabel(service);
+    const renderedContent = block.innerHTML || block.innerContent.join('');
 
-    // Skip if we don't have a URL
-    if (!url) {
+    // Skip if we don't have enough data to create a link
+    if (!url && !renderedContent.includes('<a')) {
       return '';
+    }
+
+    const itemClasses = ['wp-social-link', service ? `wp-social-link-${service}` : '', classes]
+      .filter(Boolean)
+      .join(' ');
+    const linkClasses = ['wp-block-social-link-anchor', classes].filter(Boolean).join(' ');
+
+    if (renderedContent.trim().startsWith('<li')) {
+      return appendClassName(renderedContent, classes);
+    }
+
+    if (renderedContent.includes('<a')) {
+      const preservedLink = appendClassName(renderedContent, linkClasses);
+      return createElement(
+        'li',
+        { class: itemClasses, 'data-service': service || 'custom' },
+        preservedLink,
+      );
     }
 
     // Create a link element with appropriate attributes
     const linkAttrs = {
-      class: `${classes} wp-social-link-${service}`,
+      class: linkClasses,
       href: url,
       'aria-label': label,
       target: '_blank',
@@ -35,12 +54,12 @@ export const socialLinkBlockHandler: BlockHandler = {
     };
 
     // Create the icon based on service
-    const icon = getSocialIcon(service);
+    const icon = getSocialIcon(service, label);
 
     // Create the link element
     return createElement(
       'li',
-      { class: `wp-social-link ${classes}` },
+      { class: itemClasses, 'data-service': service || 'custom' },
       createElement('a', linkAttrs, icon),
     );
   },
@@ -70,7 +89,12 @@ function getDefaultServiceLabel(service: string): string {
     instagram: 'Instagram',
     linkedin: 'LinkedIn',
     pinterest: 'Pinterest',
+    bluesky: 'Bluesky',
     youtube: 'YouTube',
+    'youtube-music': 'YouTube Music',
+    videopress: 'VideoPress',
+    wordpress: 'WordPress',
+    'wordpress-tv': 'WordPress.tv',
     github: 'GitHub',
     tumblr: 'Tumblr',
     mastodon: 'Mastodon',
@@ -79,19 +103,45 @@ function getDefaultServiceLabel(service: string): string {
     reddit: 'Reddit',
     snapchat: 'Snapchat',
     whatsapp: 'WhatsApp',
+    imdb: 'IMDb',
+    letterboxd: 'Letterboxd',
+    signal: 'Signal',
+    pocketcasts: 'Pocket Casts',
+    'pocket-casts': 'Pocket Casts',
+    soundcloud: 'SoundCloud',
+    mixcloud: 'Mixcloud',
   };
 
-  return serviceLabels[service] || service.charAt(0).toUpperCase() + service.slice(1);
+  return (
+    serviceLabels[service] ||
+    service
+      .split(/[-_]/g)
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ')
+  );
 }
 
 /**
  * Get an SVG icon for a social service
  * This function returns simple SVG icons for common services
  */
-function getSocialIcon(service: string): string {
-  // Simple placeholder SVG for all services
-  // In a real implementation, specific icons would be used
-  return `<svg aria-hidden="true" focusable="false" width="24" height="24" role="img">
-    <span class="screen-reader-text">${service}</span>
-  </svg>`;
+function getSocialIcon(service: string, label: string): string {
+  const displayLabel = label || getDefaultServiceLabel(service || 'link');
+
+  return `
+    <svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" role="img">
+      <title>${escapeHtml(displayLabel)}</title>
+      <path fill="currentColor" d="M17 7h-3V4h-4v3H7v4h3v3h4v-3h3V7Zm2 12H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2V3h10v2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2Z" />
+    </svg>
+  `.trim();
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

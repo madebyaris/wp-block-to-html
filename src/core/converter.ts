@@ -51,7 +51,7 @@ export function convertBlocks(
     return processBlocksIncrementally(
       blocks,
       (block) => processBlock(block, options),
-      options.incrementalOptions
+      options.incrementalOptions,
     );
   }
 
@@ -111,17 +111,19 @@ export function convertBlock(block: Block, options: ConversionOptions): string |
   // Check for custom transformer first
   const customTransformer = updatedOptions.blockTransformers?.[block.blockName];
   if (customTransformer) {
-    return customTransformer.transform(block, updatedOptions);
+    const result = customTransformer.transform(block, updatedOptions);
+    return typeof result === 'string' ? applyBlockCompatibility(result, block) : result;
   }
 
   // Fall back to built-in handler
   const handler = getBlockHandler(block.blockName);
   if (handler) {
-    return handler.transform(block, updatedOptions);
+    const result = handler.transform(block, updatedOptions);
+    return typeof result === 'string' ? applyBlockCompatibility(result, block) : result;
   }
 
   // If no handler is available, return original content
-  return block.innerContent.join('') || '';
+  return applyBlockCompatibility(block.innerContent.join('') || '', block);
 }
 
 /**
@@ -141,18 +143,18 @@ function processBlock(block: Block, options: ConversionOptions): string {
   const customTransformer = updatedOptions.blockTransformers?.[block.blockName];
   if (customTransformer) {
     const result = customTransformer.transform(block, updatedOptions);
-    return typeof result === 'string' ? result : '';
+    return typeof result === 'string' ? applyBlockCompatibility(result, block) : '';
   }
 
   // Fall back to built-in handler
   const handler = getBlockHandler(block.blockName);
   if (handler) {
     const result = handler.transform(block, updatedOptions);
-    return typeof result === 'string' ? result : '';
+    return typeof result === 'string' ? applyBlockCompatibility(result, block) : '';
   }
 
   // If no handler is available, return original content
-  return block.innerContent.join('') || '';
+  return applyBlockCompatibility(block.innerContent.join('') || '', block);
 }
 
 /**
@@ -221,4 +223,47 @@ export function convertBlocksWithFormat(
       // For unknown formats, fall back to HTML
       return convertBlocks(blockData, { ...mergedOptions, outputFormat: 'html' });
   }
+}
+
+function applyBlockCompatibility(result: string, block: Block): string {
+  if (result.trim() === '') {
+    return result;
+  }
+
+  const blockVisibility = block.attrs?.metadata?.blockVisibility;
+
+  if (blockVisibility === false) {
+    return `<div hidden data-wp-block-visibility="hidden">${result}</div>`;
+  }
+
+  if (!blockVisibility || typeof blockVisibility !== 'object') {
+    return result;
+  }
+
+  const viewportVisibility = blockVisibility.viewport;
+  if (!viewportVisibility || typeof viewportVisibility !== 'object') {
+    return result;
+  }
+
+  const classes: string[] = [];
+  const hiddenViewports: string[] = [];
+
+  if (viewportVisibility.mobile === false) {
+    classes.push('wp-block-to-html-hidden-mobile');
+    hiddenViewports.push('mobile');
+  }
+  if (viewportVisibility.tablet === false) {
+    classes.push('wp-block-to-html-hidden-tablet');
+    hiddenViewports.push('tablet');
+  }
+  if (viewportVisibility.desktop === false) {
+    classes.push('wp-block-to-html-hidden-desktop');
+    hiddenViewports.push('desktop');
+  }
+
+  if (classes.length === 0) {
+    return result;
+  }
+
+  return `<div class="${classes.join(' ')}" data-wp-block-visibility="${hiddenViewports.join(',')}">${result}</div>`;
 }

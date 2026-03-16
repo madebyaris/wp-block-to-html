@@ -12,6 +12,7 @@ import {
   rssBlockHandler,
   searchBlockHandler,
   socialLinksBlockHandler,
+  latestCommentsBlockHandler,
 } from '../../block-handlers';
 
 // Export widget block handlers
@@ -28,6 +29,7 @@ export {
   rssBlockHandler,
   searchBlockHandler,
   socialLinksBlockHandler,
+  latestCommentsBlockHandler,
 };
 
 // Import registry functions
@@ -47,6 +49,7 @@ export function registerWidgetBlockHandlers(): void {
   registerBlockHandler('core/rss', rssBlockHandler);
   registerBlockHandler('core/search', searchBlockHandler);
   registerBlockHandler('core/social-links', socialLinksBlockHandler);
+  registerBlockHandler('core/latest-comments', latestCommentsBlockHandler);
 }
 
 // Export core types and functions for usage
