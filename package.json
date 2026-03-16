@@ -1,6 +1,6 @@
 {
   "name": "wp-block-to-html",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "description": "Convert WordPress Gutenberg blocks to HTML or framework-specific components with customizable styling",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

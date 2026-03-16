@@ -57,3 +57,6 @@ demo/node_modules/
 # Test coverage
 .nyc_output/
 coverage/
+
+# Active spec session logs
+specs/active/.session-log.txt
